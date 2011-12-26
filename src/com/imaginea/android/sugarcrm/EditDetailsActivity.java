@@ -17,10 +17,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
-import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -254,24 +252,21 @@ public class EditDetailsActivity extends Activity {
                 valueView.setText(editTextValue);
 
                 if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
-                    valueView.addTextChangedListener(new TextWatcher() {
+                    valueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            String email = s.toString();
-                            if (ModuleFieldValidator.isNotEmpty(email)
-                                                            && !ModuleFieldValidator.isEmailValid(email)) {
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            String email = text.toString();
+                            if (!ModuleFieldValidator.isNotEmpty(email)
+                                                            || !ModuleFieldValidator.isEmailValid(email)) {
                                 hasError = true;
                                 valueView.setError(getString(R.string.emailValidationErrorMsg));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
                 }
@@ -279,46 +274,40 @@ public class EditDetailsActivity extends Activity {
                 if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
                                                 || fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
                     valueView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    valueView.addTextChangedListener(new TextWatcher() {
+                    valueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            String phoneNumber = s.toString();
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            String phoneNumber = text.toString();
                             if (ModuleFieldValidator.isNotEmpty(phoneNumber)
                                                             && !ModuleFieldValidator.isPhoneNumberValid(phoneNumber)) {
                                 hasError = true;
                                 valueView.setError(getString(R.string.phNoValidationErrorMsg));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
                 }
 
                 if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
                                                 || fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
-                    valueView.addTextChangedListener(new TextWatcher() {
+                    valueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            if (!ModuleFieldValidator.isNotEmpty(s.toString())) {
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            if (!ModuleFieldValidator.isNotEmpty(text.toString())) {
                                 hasError = true;
                                 valueView.setError(String.format(getString(R.string.emptyValidationErrorMsg), fieldName));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
                 }
@@ -405,24 +394,21 @@ public class EditDetailsActivity extends Activity {
                 dynamicValueView.setText(editTextValue);
 
                 if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
-                    dynamicValueView.addTextChangedListener(new TextWatcher() {
+                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            String email = s.toString();
-                            if (ModuleFieldValidator.isNotEmpty(email)
-                                                            && !ModuleFieldValidator.isEmailValid(email)) {
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            String email = text.toString();
+                            if (!ModuleFieldValidator.isNotEmpty(email)
+                                                            || !ModuleFieldValidator.isEmailValid(email)) {
                                 hasError = true;
                                 dynamicValueView.setError(getString(R.string.emailValidationErrorMsg));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
                 }
@@ -430,46 +416,40 @@ public class EditDetailsActivity extends Activity {
                 if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
                                                 || dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
                     dynamicValueView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    dynamicValueView.addTextChangedListener(new TextWatcher() {
+                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            String phoneNumber = s.toString();
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            String phoneNumber = text.toString();
                             if (ModuleFieldValidator.isNotEmpty(phoneNumber)
-                                                            && !ModuleFieldValidator.isEmailValid(phoneNumber)) {
+                                                            && !ModuleFieldValidator.isPhoneNumberValid(phoneNumber)) {
                                 hasError = true;
                                 dynamicValueView.setError(getString(R.string.phNoValidationErrorMsg));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
                 }
 
                 if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
                                                 || dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
-                    dynamicValueView.addTextChangedListener(new TextWatcher() {
+                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
                         @Override
-                        public void afterTextChanged(Editable s) {
-                            if (!ModuleFieldValidator.isNotEmpty(s.toString())) {
+                        public CharSequence fixText(CharSequence invalidText) {
+                            return invalidText;
+                        }
+
+                        @Override
+                        public boolean isValid(CharSequence text) {
+                            if (!ModuleFieldValidator.isNotEmpty(text.toString())) {
                                 hasError = true;
                                 dynamicValueView.setError(String.format(getString(R.string.emptyValidationErrorMsg), dynamicFieldName));
                             }
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count,
-                                                        int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            return false;
                         }
                     });
 
@@ -544,9 +524,9 @@ public class EditDetailsActivity extends Activity {
                             }
                         }
                     }
-
-                    mDetailsTable.addView(editRow);
                 }
+                
+                mDetailsTable.addView(editRow);
                 break;
 
             case INPUT_TYPE:
@@ -563,7 +543,7 @@ public class EditDetailsActivity extends Activity {
                 if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                     mCursor = getContentResolver().query(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId), mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
                 }
-                setContents();
+                //setContents();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
                 return Util.FETCH_FAILED;
@@ -581,6 +561,8 @@ public class EditDetailsActivity extends Activity {
         @Override
         protected void onPostExecute(Object result) {
             super.onPostExecute(result);
+
+            setContents();
 
             // close the cursor irrespective of the result
             if (mCursor != null && !mCursor.isClosed())
