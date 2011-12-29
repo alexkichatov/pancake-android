@@ -175,9 +175,9 @@ public class ModuleListActivity extends ListActivity {
 
         if (mAdapter.getCount() == 0) {
             mListView.setVisibility(View.GONE);
-            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
             tv1.setVisibility(View.VISIBLE);
-            if (mIntentUri != null) {
+            if (mModuleName != null) {
                 tv1.setText("No " + mModuleName + " found");
             }
         } else {
@@ -661,8 +661,22 @@ public class ModuleListActivity extends ListActivity {
         String userName = SugarCrmSettings.getUsername(ModuleListActivity.this);
         String selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
         Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
+
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
+
+        TextView mainTextView = (TextView) (mEmpty.findViewById(R.id.mainText));
+        if (mAdapter.getCount() == 0) {
+            mListView.setVisibility(View.GONE);
+            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
+            mainTextView.setVisibility(View.VISIBLE);
+            if (mModuleName != null) {
+                mainTextView.setText("No " + mModuleName + " found");
+            }
+        } else {
+            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            mainTextView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -677,6 +691,19 @@ public class ModuleListActivity extends ListActivity {
         Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
+        
+        TextView mainTextView = (TextView) (mEmpty.findViewById(R.id.mainText));
+        if (mAdapter.getCount() == 0) {
+            mListView.setVisibility(View.GONE);
+            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
+            mainTextView.setVisibility(View.VISIBLE);
+            if (mModuleName != null) {
+                mainTextView.setText("No " + mModuleName + " found");
+            }
+        } else {
+            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            mainTextView.setVisibility(View.GONE);
+        }
     }
 
     /**

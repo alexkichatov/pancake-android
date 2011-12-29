@@ -426,7 +426,7 @@ public class ModuleDetailsActivity extends Activity {
                     }
 
                     // set the title
-                    if (titleFields.contains(fieldName)) {
+                    if (titleFields.contains(fieldName) && tempValue != null) {
                         title = title + tempValue + " ";
                         publishProgress(HEADER, fieldName, textViewForTitle, title);
                         continue;
