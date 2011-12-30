@@ -1,55 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent" 
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/bg"
-    android:paddingBottom="20dip">
-	<include android:id="@+id/header" layout="@layout/header"/>
-    <TextView android:id="@+id/accountName"
-		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
-		android:layout_below="@id/header"		
-		style="@style/header_2_text_label"/>
-    <ScrollView 
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:layout_below="@id/accountName"
-		android:scrollbarAlwaysDrawHorizontalTrack="true"
-		android:scrollbars="horizontal|vertical"
-		>
-		<LinearLayout
-		    android:orientation="vertical"
-		    android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent">
-			<LinearLayout android:id="@+id/accountDetalsTable"
-			    android:orientation="vertical"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="fill_parent">
-			    
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				<include layout="@layout/edit_table_row" />
-				
-		</LinearLayout>
-		<Button
-	           android:id="@+id/save"
-	           android:layout_width="fill_parent"
-	           android:layout_height="fill_parent" 
-	           android:gravity="center_horizontal"       
-	           android:text="@string/save"
-	           android:onClick="saveModuleItem"
-	           android:visibility="gone"/>
-	</LinearLayout>
-	</ScrollView>
-</RelativeLayout>
+    android:orientation="vertical"
+    android:paddingBottom="20dip" >
 
+    <include
+        android:id="@+id/header"
+        layout="@layout/header" />
+
+    <TextView
+        android:id="@+id/accountName"
+        style="@style/header_2_text_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/accountName"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
+        android:scrollbars="horizontal|vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/moduleDetailsTable"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_horizontal"
+                android:onClick="saveModuleItem"
+                android:text="@string/save"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
