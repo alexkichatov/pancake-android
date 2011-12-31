@@ -168,7 +168,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     wizardState = Util.URL_USER_AVAILABLE;
 
                     // if the user is not connected to the network : OFFLINE mode
-                    if (!Util.isNetworkOn(getBaseContext())) {
+                    if (Util.isNetworkOn(getBaseContext())) {
                         wizardState = Util.OFFLINE_MODE;
                         // directly send him to dashboard if the user is not connected to the
                         // network

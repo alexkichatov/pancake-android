@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.imaginea.android.sugarcrm.ModuleListActivity;
+import com.imaginea.android.sugarcrm.ModulesActivity;
 import com.imaginea.android.sugarcrm.R;
 import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.SugarCrmApp;
@@ -198,7 +198,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // do not use sync result status to notify, notify module specific comprehensive stats
         mContext.getApplicationContext();
         String msg = mContext.getString(R.string.syncMessage);
-        Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModuleListActivity.class, R.string.syncSuccess, R.string.syncSuccess, String.format(msg, SugarSyncManager.mTotalRecords));
+        Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, String.format(msg, SugarSyncManager.mTotalRecords));
     }
 
     /**

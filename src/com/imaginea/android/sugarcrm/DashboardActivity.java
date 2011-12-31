@@ -1,8 +1,5 @@
 package com.imaginea.android.sugarcrm;
 
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,8 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
+import com.imaginea.android.sugarcrm.tab.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DashboardActivity
@@ -73,9 +75,27 @@ public class DashboardActivity extends Activity {
                 if (moduleName.equals(getString(R.string.settings))) {
                     myIntent = new Intent(DashboardActivity.this, SugarCrmSettings.class);
                 } else if (moduleName.equals(getString(R.string.recent))) {
-                    myIntent = new Intent(DashboardActivity.this, RecentListActivity.class);
+                    // TODO
+                    if (ViewUtil.isHoneycombTablet(getBaseContext())) {
+                        myIntent = new Intent(DashboardActivity.this, RecentModuleMultiPaneActivity.class);
+                    } else {
+                        myIntent = new Intent(DashboardActivity.this, RecentModuleActivity.class);
+                    }
                 } else {
-                    myIntent = new Intent(DashboardActivity.this, ModuleListActivity.class);
+                    // TODO
+                    if (ViewUtil.isHoneycombTablet(getBaseContext())) {
+                        myIntent = new Intent(DashboardActivity.this, ModuleDetailsMultiPaneActivity.class);
+
+                        myIntent.putExtra(Util.ROW_ID, "1");
+                        // myIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+                        myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
+
+                        // ModuleDetailFragment mddetails =
+                        // ModuleDetailFragment.newInstance(position);
+                        // ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(detailIntent);
+                    } else {
+                        myIntent = new Intent(DashboardActivity.this, ModulesActivity.class);
+                    }
                 }
 
                 myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleNames.get(position));

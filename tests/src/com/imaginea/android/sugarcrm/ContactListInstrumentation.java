@@ -6,19 +6,18 @@ import android.test.suitebuilder.annotation.MediumTest;
 /**
  * Instrumentation class for Contacts List launch performance testing.
  */
-public class ContactListInstrumentation extends
-                                ActivityInstrumentationTestCase2<ModuleListActivity> {
+public class ContactListInstrumentation extends ActivityInstrumentationTestCase2<ModulesActivity> {
 
     public static final String LOG_TAG = "ContactListInstrumentation";
 
     public ContactListInstrumentation() {
-        super(ModuleListActivity.class);
+        super(ModulesActivity.class);
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        final ModuleListActivity a = getActivity();
+        final ModulesActivity a = getActivity();
         // ensure a valid handle to the activity has been returned
         assertNotNull(a);
 

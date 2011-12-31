@@ -1,8 +1,5 @@
 package com.imaginea.android.sugarcrm;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -17,6 +14,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,21 +35,25 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.UserColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
+import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.util.ImportContactsUtility;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ModuleFieldValidator;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * <p>
- * EditDetailsActivity class.
+ * EditModuleDetailFragment class.
  * </p>
  * 
  */
-public class EditDetailsActivity extends Activity {
+public class EditModuleDetailFragment extends Fragment {
 
-    private final static String TAG = "EditDetailsActivity";
+    private final static String TAG = "EditModuleDetail";
 
     private int MODE = -1;
 
@@ -99,21 +101,20 @@ public class EditDetailsActivity extends Activity {
 
     private boolean hasError;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * Called when the activity is first created.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.edit_details, container, false);
+    }
 
-        super.onCreate(savedInstanceState);
+    /** {@inheritDoc} */
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        setContentView(R.layout.edit_details);
-
-        mDbHelper = new DatabaseHelper(this);
-
-        Intent intent = getIntent();
+        mDbHelper = new DatabaseHelper(this.getActivity());
+        final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
+        // Intent intent = getActivity().getIntent();
         Bundle extras = intent.getExtras();
 
         mModuleName = Util.CONTACTS;
@@ -167,7 +168,7 @@ public class EditDetailsActivity extends Activity {
 
     /** {@inheritDoc} */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         SugarService.unregisterMessenger(mMessenger);
         if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -184,7 +185,7 @@ public class EditDetailsActivity extends Activity {
 
     /** {@inheritDoc} */
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         if (mMessenger == null) {
             mStatusHandler = new StatusHandler();
@@ -206,7 +207,7 @@ public class EditDetailsActivity extends Activity {
         final static int INPUT_TYPE = 4;
 
         LoadContentTask() {
-            mDetailsTable = (ViewGroup) findViewById(R.id.accountDetalsTable);
+            mDetailsTable = (ViewGroup) getActivity().findViewById(R.id.moduleDetailsTable);
 
             // as the last child is the SAVE button, count - 1 has to be done.
             staticRowsCount = mDetailsTable.getChildCount() - 1;
@@ -216,20 +217,20 @@ public class EditDetailsActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            TextView tv = (TextView) findViewById(R.id.headerText);
+            TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
             if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                 tv.setText(String.format(getString(R.string.editDetailsHeader), mModuleName));
             } else if (MODE == Util.NEW_ORPHAN_MODE || MODE == Util.NEW_RELATIONSHIP_MODE) {
                 tv.setText(String.format(getString(R.string.newDetailsHeader), mModuleName));
             }
 
-            mAccountCursor = getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
-            mAccountAdapter = new AccountsSuggestAdapter(getBaseContext(), mAccountCursor);
+            mAccountCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
+            mAccountAdapter = new AccountsSuggestAdapter(getActivity().getBaseContext(), mAccountCursor);
 
-            mUserCursor = getContentResolver().query(mDbHelper.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
-            mUserAdapter = new UsersSuggestAdapter(getBaseContext(), mUserCursor);
+            mUserCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
+            mUserAdapter = new UsersSuggestAdapter(getActivity().getBaseContext(), mUserCursor);
 
-            mProgressDialog = ViewUtil.getProgressDialog(EditDetailsActivity.this, getString(R.string.loading), true);
+            mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
             mProgressDialog.show();
         }
 
@@ -328,13 +329,13 @@ public class EditDetailsActivity extends Activity {
                         if (Util.ACCOUNTS.equals(module)) {
 
                             if (mDbHelper == null)
-                                mDbHelper = new DatabaseHelper(getBaseContext());
+                                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
                             // get the account name using the account row id in
                             // the URI
                             int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
                             String selection = AccountsColumns.ID + "=" + accountRowId;
-                            Cursor cursor = getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                             cursor.moveToFirst();
                             String accountName = cursor.getString(2);
                             cursor.close();
@@ -470,14 +471,14 @@ public class EditDetailsActivity extends Activity {
                             if (Util.ACCOUNTS.equals(module)) {
 
                                 if (mDbHelper == null)
-                                    mDbHelper = new DatabaseHelper(getBaseContext());
+                                    mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
                                 // get the account name using the account row id
                                 // in
                                 // the URI
                                 int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
                                 String selection = AccountsColumns.ID + "=" + accountRowId;
-                                Cursor cursor = getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                                Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                                 cursor.moveToFirst();
                                 String accountName = cursor.getString(2);
                                 cursor.close();
@@ -525,7 +526,7 @@ public class EditDetailsActivity extends Activity {
                         }
                     }
                 }
-                
+
                 mDetailsTable.addView(editRow);
                 break;
 
@@ -541,9 +542,9 @@ public class EditDetailsActivity extends Activity {
         protected Object doInBackground(Object... params) {
             try {
                 if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                    mCursor = getContentResolver().query(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId), mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
+                    mCursor = getActivity().getContentResolver().query(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId), mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
                 }
-                //setContents();
+                // setContents();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
                 return Util.FETCH_FAILED;
@@ -576,7 +577,7 @@ public class EditDetailsActivity extends Activity {
                 break;
             case Util.FETCH_SUCCESS:
                 // set visibility for the SAVE button
-                findViewById(R.id.save).setVisibility(View.VISIBLE);
+                getActivity().findViewById(R.id.save).setVisibility(View.VISIBLE);
                 break;
             default:
             }
@@ -589,7 +590,7 @@ public class EditDetailsActivity extends Activity {
             String[] detailsProjection = mSelectFields;
 
             if (mDbHelper == null)
-                mDbHelper = new DatabaseHelper(getBaseContext());
+                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
             if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                 if (!isCancelled()) {
@@ -599,7 +600,7 @@ public class EditDetailsActivity extends Activity {
                 }
             }
 
-            LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             Map<String, ModuleField> fieldNameVsModuleField = mDbHelper.getModuleFields(mModuleName);
             Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
@@ -684,7 +685,7 @@ public class EditDetailsActivity extends Activity {
      */
     public void saveModuleItem(View v) {
 
-        mProgressDialog = ViewUtil.getProgressDialog(EditDetailsActivity.this, getString(R.string.saving), true);
+        mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.saving), true);
         mProgressDialog.show();
 
         String[] detailsProjection = mSelectFields;
@@ -693,7 +694,7 @@ public class EditDetailsActivity extends Activity {
         if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
             modifiedValues.put(RestUtilConstants.ID, mSugarBeanId);
 
-        Uri uri = getIntent().getData();
+        Uri uri = getActivity().getIntent().getData();
 
         Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
         int rowsCount = 0;
@@ -796,23 +797,23 @@ public class EditDetailsActivity extends Activity {
         if (!hasError) {
 
             if (MODE == Util.EDIT_ORPHAN_MODE) {
-                ServiceHelper.startServiceForUpdate(getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
+                ServiceHelper.startServiceForUpdate(getActivity().getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
             } else if (MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                ServiceHelper.startServiceForUpdate(getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
+                ServiceHelper.startServiceForUpdate(getActivity().getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
             } else if (MODE == Util.NEW_RELATIONSHIP_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
-                ServiceHelper.startServiceForInsert(getBaseContext(), uri, mModuleName, modifiedValues);
+                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), uri, mModuleName, modifiedValues);
             } else if (MODE == Util.NEW_ORPHAN_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
-                ServiceHelper.startServiceForInsert(getBaseContext(), mDbHelper.getModuleUri(mModuleName), mModuleName, modifiedValues);
+                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), mDbHelper.getModuleUri(mModuleName), mModuleName, modifiedValues);
             }
 
             // finish();
         } else {
-            ViewUtil.makeToast(getBaseContext(), R.string.validationErrorMsg);
+            ViewUtil.makeToast(getActivity().getBaseContext(), R.string.validationErrorMsg);
             mProgressDialog.cancel();
         }
-        ViewUtil.dismissVirtualKeyboard(getBaseContext(), v);
+        ViewUtil.dismissVirtualKeyboard(getActivity().getBaseContext(), v);
     }
 
     /**
@@ -838,11 +839,11 @@ public class EditDetailsActivity extends Activity {
 
     protected void getContactInfo(Intent intent) {
 
-        Cursor cursor = managedQuery(intent.getData(), null, null, null, null);
+        Cursor cursor = getActivity().managedQuery(intent.getData(), null, null, null, null);
         while (cursor.moveToNext()) {
             String contactId = cursor.getString(cursor.getColumnIndex(BaseColumns._ID));
 
-            Cursor nameCursor = getApplicationContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, null, ContactsContract.Data.MIMETYPE
+            Cursor nameCursor = getActivity().getApplicationContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, null, ContactsContract.Data.MIMETYPE
                                             + " = ? AND "
                                             + ContactsContract.RawContactsEntity.CONTACT_ID
                                             + " = ? ", new String[] {
@@ -865,7 +866,7 @@ public class EditDetailsActivity extends Activity {
             }
 
             if (Boolean.parseBoolean(hasPhone)) {
-                Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                Cursor phones = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
                                                 + " = " + contactId, null, null);
                 while (phones.moveToNext()) {
                     String contactPhno = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -880,7 +881,7 @@ public class EditDetailsActivity extends Activity {
                 phones.close();
             }
 
-            Cursor emails = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID
+            Cursor emails = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID
                                             + " = " + contactId, null, null);
             while (emails.moveToNext()) {
                 String contactEmail = emails.getString(emails.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
@@ -893,7 +894,8 @@ public class EditDetailsActivity extends Activity {
     }// getContactInfo
 
     /** {@inheritDoc} */
-    @Override
+    // @Override
+    // TODO
     public boolean onCreateOptionsMenu(Menu menu) {
         // Hold on to this
         // Inflate the currently selected menu XML resource.
@@ -909,7 +911,7 @@ public class EditDetailsActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.save:
-            saveModuleItem(getCurrentFocus());
+            saveModuleItem(getActivity().getCurrentFocus());
             return true;
         default:
             return true;
@@ -932,8 +934,8 @@ public class EditDetailsActivity extends Activity {
                 if (Log.isLoggable(TAG, Log.DEBUG))
                     Log.d(TAG, "Display Status");
                 mProgressDialog.cancel();
-                ViewUtil.makeToast(getBaseContext(), (String) message.obj);
-                finish();
+                ViewUtil.makeToast(getActivity().getBaseContext(), (String) message.obj);
+                getActivity().finish();
                 break;
             }
         }
@@ -1062,5 +1064,23 @@ public class EditDetailsActivity extends Activity {
             }
 
         }
+    }
+
+    /**
+     * Create a new instance of EditModuleDetailFragment, initialized to show the text at 'index'.
+     */
+    public static EditModuleDetailFragment newInstance(int index) {
+        EditModuleDetailFragment f = new EditModuleDetailFragment();
+
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("index", index);
+        f.setArguments(args);
+
+        return f;
+    }
+
+    public int getShownIndex() {
+        return getArguments().getInt("index", 0);
     }
 }

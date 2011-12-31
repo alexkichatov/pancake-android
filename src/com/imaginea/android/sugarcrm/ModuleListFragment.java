@@ -1,12 +1,8 @@
 package com.imaginea.android.sugarcrm;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -27,7 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -37,15 +33,21 @@ import android.widget.TextView;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
+import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
+import com.imaginea.android.sugarcrm.util.ViewUtil;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * ModuleListActivity, lists the view projections for all the modules.
+ * ModuleListFragment, lists the view projections for all the modules.
  * 
  * @author chander
  */
-public class ModuleListActivity extends ListActivity {
+public class ModuleListFragment extends ListFragment {
 
     private ListView mListView;
 
@@ -94,19 +96,27 @@ public class ModuleListActivity extends ListActivity {
 
     private SugarCrmApp app;
 
-    public final static String LOG_TAG = ModuleListActivity.class.getSimpleName();
+    public final static String LOG_TAG = ModuleListFragment.class.getSimpleName();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.common_list, container, false);
+
+    }
 
     /** {@inheritDoc} */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.common_list);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getBaseContext());
-        app = (SugarCrmApp) getApplication();
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // getActivity().setContentView(R.layout.common_list);
 
-        Intent intent = getIntent();
+        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+        app = (SugarCrmApp) getActivity().getApplication();
+        Intent intent = getActivity().getIntent();
+        //final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -116,11 +126,11 @@ public class ModuleListActivity extends ListActivity {
         // If the list is a list of related items, hide the filterImage and
         // allItems image
         if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
-            findViewById(R.id.filterImage).setVisibility(View.GONE);
-            findViewById(R.id.allItems).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
         }
 
-        TextView tv = (TextView) findViewById(R.id.headerText);
+        TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
         tv.setText(mModuleName);
 
         mListView = getListView();
@@ -139,7 +149,7 @@ public class ModuleListActivity extends ListActivity {
         // button code in the layout - 1.6 SDK feature to specify onClick
         mListView.setItemsCanFocus(true);
         mListView.setFocusable(true);
-        mEmpty = findViewById(R.id.empty);
+        mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
         registerForContextMenu(getListView());
 
@@ -157,16 +167,16 @@ public class ModuleListActivity extends ListActivity {
         // TODO - optimize this, if we sync up a dataset, then no need to run
         // detail projection
         // here, just do a list projection
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
 
         // CRMContentObserver observer = new CRMContentObserver()
         // cursor.registerContentObserver(observer);
         String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2)
-            mAdapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] {
+            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
                     android.R.id.text1, android.R.id.text2 });
         else
-            mAdapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
+            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
         setListAdapter(mAdapter);
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
@@ -185,9 +195,9 @@ public class ModuleListActivity extends ListActivity {
             tv1.setVisibility(View.GONE);
         }
 
-        mListFooterView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
+        mListFooterView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
         getListView().addFooterView(mListFooterView);
-        mListFooterText = (TextView) findViewById(R.id.status);
+        mListFooterText = (TextView) getActivity().findViewById(R.id.status);
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
     }
@@ -221,7 +231,7 @@ public class ModuleListActivity extends ListActivity {
                 // TODO - fix this, this is no longer used
                 Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI, realoffset + "/" + limit);
                 Log.d(LOG_TAG, "Changing cursor:" + newUri.toString());
-                final Cursor cursor = managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
+                final Cursor cursor = getActivity().managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
                 CRMContentObserver observer = new CRMContentObserver(new Handler() {
 
                     @Override
@@ -281,19 +291,48 @@ public class ModuleListActivity extends ListActivity {
      * @param position
      */
     void openDetailScreen(int position) {
-        Intent detailIntent = new Intent(ModuleListActivity.this, ModuleDetailsActivity.class);
-
+       
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
         }
-        Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
-        detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-        detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-        detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+        if (ViewUtil.isTablet(getActivity())) {
+            // We can display everything in-place with fragments.
+            // Have the list highlight this item and show the data.
+            //getListView().setItemChecked(position, true);
 
-        startActivity(detailIntent);
+            // Check what fragment is shown, replace if needed.
+            
+            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+            Log.d(LOG_TAG, details + "");
+            if (details == null || details.getShownIndex() != position) {
+                // Make new fragment to show this selection.
+                Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
+                detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+                detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+                detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+               
+               // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
+                ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(detailIntent);
+                //Log.d(LOG_TAG, "" + mddetails.getShownIndex());
+                // Execute a transaction, replacing any existing
+                // fragment with this one inside the frame.
+               // FragmentTransaction ft = getFragmentManager().beginTransaction();
+               // ft.replace(R.id.fragment_container_module_detail, mddetails);
+               // ft.addToBackStack(null);
+               // ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                //ft.commit();
+            }
+
+        } else {
+            Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);           
+            Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
+            detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+            detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+            detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+            startActivity(detailIntent);
+        }
     }
 
     /**
@@ -312,15 +351,44 @@ public class ModuleListActivity extends ListActivity {
         if (Log.isLoggable(LOG_TAG, Log.DEBUG))
             Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
 
-        Intent editDetailsIntent = new Intent(ModuleListActivity.this, EditDetailsActivity.class);
-        editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-        if (mIntentUri != null)
-            editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
+        ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+        if (details != null) {
+            // We can display everything in-place with fragments.
+            // Have the list highlight this item and show the data.
+            getListView().setItemChecked(position, true);
 
-        editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-        editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+            // Check what fragment is shown, replace if needed.
+            //EditModuleDetailFragment editDetails = (EditModuleDetailFragment) getFragmentManager().findFragmentById(R.id.edit_details_frag);
+            if (details.getShownIndex() != position) {
+                // Make new fragment to show this selection.
+                Intent editDetailsIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
+                editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+                if (mIntentUri != null)
+                    editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
 
-        startActivity(editDetailsIntent);
+                editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+                editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+                
+                //EditModuleDetailFragment editDetails = EditModuleDetailFragment.newInstance(position);
+                ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(editDetailsIntent);
+                // Execute a transaction, replacing any existing
+                // fragment with this one inside the frame.
+               // FragmentTransaction ft = getFragmentManager().beginTransaction();
+                //ft.replace(R.id.fragment_container_module_detail, editDetails);
+               // ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+               // ft.commit();
+            }
+
+        } else {
+            Intent editDetailsIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
+            editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+            if (mIntentUri != null)
+                editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
+
+            editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+            editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+            startActivity(editDetailsIntent);
+        }
     }
 
     /**
@@ -338,12 +406,12 @@ public class ModuleListActivity extends ListActivity {
             Log.d(LOG_TAG, "beanId:" + beanId);
 
         if (mDbHelper == null)
-            mDbHelper = new DatabaseHelper(getBaseContext());
+            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
         mModuleUri = mDbHelper.getModuleUri(mModuleName);
         Uri deleteUri = Uri.withAppendedPath(mModuleUri, cursor.getString(0));
-        getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
-        ServiceHelper.startServiceForDelete(getBaseContext(), deleteUri, mModuleName, beanId);
+        getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
+        ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, beanId);
         // getContentResolver().delete(mModuleUri, SugarCRMContent.RECORD_ID,
         // new String[] {
         // cursor.getString(0) });
@@ -372,12 +440,13 @@ public class ModuleListActivity extends ListActivity {
 
     /** {@inheritDoc} */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
     }
 
     /** {@inheritDoc} */
-    @Override
+    // TODO
+    // @Override
     public boolean onSearchRequested() {
         Bundle appData = new Bundle();
         String[] modules = { mModuleName };
@@ -386,14 +455,15 @@ public class ModuleListActivity extends ListActivity {
         appData.putInt(RestUtilConstants.OFFSET, 0);
         appData.putInt(RestUtilConstants.MAX_RESULTS, 20);
 
-        startSearch(null, false, appData, false);
+        getActivity().startSearch(null, false, appData, false);
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuHelper.onPrepareOptionsMenu(this, menu, mModuleName);
+    // TODO
+    // @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuHelper.onPrepareOptionsMenu(this.getActivity(), menu, mModuleName);
 
         // get the sort options
         // get the LIST projection
@@ -402,7 +472,8 @@ public class ModuleListActivity extends ListActivity {
         Map<String, ModuleField> map = mDbHelper.getModuleFields(mModuleName);
         if (map == null) {
             Log.w(LOG_TAG, "Cannot prepare Options as Map is null for module:" + mModuleName);
-            return false;
+            // TODO return false;
+            return;
         }
         mModuleFieldsChoice = new String[mModuleFields.length];
         for (int i = 0; i < mModuleFields.length; i++) {
@@ -421,15 +492,18 @@ public class ModuleListActivity extends ListActivity {
             menu.findItem(R.id.importContact).setVisible(false);
         }
 
-        return super.onPrepareOptionsMenu(menu);
+        // TODO
+        super.onPrepareOptionsMenu(menu);
+        return;
     }
 
     /** {@inheritDoc} */
-    @Override
+    // TODO
+    // @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the currently selected menu XML resource.
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.list_activity_menu, menu);
 
         return true;
@@ -440,53 +514,58 @@ public class ModuleListActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.home:
-            Intent myIntent = new Intent(ModuleListActivity.this, DashboardActivity.class);
-            ModuleListActivity.this.startActivity(myIntent);
+            Intent myIntent = new Intent(this.getActivity(), DashboardActivity.class);
+            this.startActivity(myIntent);
             return true;
         case R.id.search:
             onSearchRequested();
             return true;
         case R.id.addItem:
-            myIntent = new Intent(ModuleListActivity.this, EditDetailsActivity.class);
+            myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
             myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
             Log.v(LOG_TAG, "intetnURI: " + mIntentUri);
             if (mIntentUri != null)
                 myIntent.setData(mIntentUri);
-            ModuleListActivity.this.startActivity(myIntent);
+            this.startActivity(myIntent);
             return true;
         case R.id.sort:
-            showDialog(DIALOG_SORT_CHOICE);
+            // TODO
+            getActivity().showDialog(DIALOG_SORT_CHOICE);
             return true;
         case R.id.importContact:
-            myIntent = new Intent(ModuleListActivity.this, EditDetailsActivity.class);
+            myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
             myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
             myIntent.putExtra(Util.IMPORT_FLAG, Util.CONTACT_IMPORT_FLAG);
             if (mIntentUri != null)
                 myIntent.setData(mIntentUri);
-            ModuleListActivity.this.startActivity(myIntent);
+            // TODO
+            this.startActivity(myIntent);
             return true;
         }
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
-        super.onPrepareDialog(id, dialog, args);
-    }
+    // TODO
+    // @Override
+    /*
+     * protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+     * super.onPrepareDialog(id, dialog, args); }
+     */
 
     /** {@inheritDoc} */
-    @Override
-    protected void onPrepareDialog(int id, Dialog dialog) {
-        super.onPrepareDialog(id, dialog);
-    }
+    // @Override
+    // TODO
+    /*
+     * protected void onPrepareDialog(int id, Dialog dialog) { super.onPrepareDialog(id, dialog); }
+     */
 
     /** {@inheritDoc} */
-    @Override
+    // @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
         case DIALOG_SORT_CHOICE:
-            Builder builder = new AlertDialog.Builder(this);
+            Builder builder = new AlertDialog.Builder(this.getActivity());
             builder.setIcon(android.R.drawable.ic_dialog_alert);
             builder.setTitle(R.string.sortBy);
 
@@ -512,7 +591,7 @@ public class ModuleListActivity extends ListActivity {
 
         case R.string.delete:
 
-            return new AlertDialog.Builder(ModuleListActivity.this).setTitle(id).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            return new AlertDialog.Builder(this.getActivity()).setTitle(id).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
 
                     deleteItem();
@@ -541,7 +620,7 @@ public class ModuleListActivity extends ListActivity {
         }
 
         if (mDbHelper == null)
-            mDbHelper = new DatabaseHelper(getBaseContext());
+            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
         Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
         if (cursor == null) {
@@ -592,7 +671,7 @@ public class ModuleListActivity extends ListActivity {
 
         case R.string.delete:
             mCurrentSelection = position;
-            showDialog(R.string.delete);
+            getActivity().showDialog(R.string.delete);
             return true;
 
         case R.string.call:
@@ -612,10 +691,10 @@ public class ModuleListActivity extends ListActivity {
         String selection = null;
         if (MODE == Util.ASSIGNED_ITEMS_MODE) {
             // TODO: get the user name from Account Manager
-            String userName = SugarCrmSettings.getUsername(ModuleListActivity.this);
+            String userName = SugarCrmSettings.getUsername(this.getActivity());
             selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
         }
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, sortOrder);
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, sortOrder);
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }
@@ -637,7 +716,7 @@ public class ModuleListActivity extends ListActivity {
         modifiedValues.put(Recent.NAME_2, cursor.getString(3));
         modifiedValues.put(Recent.REF_MODULE_NAME, mModuleName);
         modifiedValues.put(Recent.DELETED, "0");
-        Uri insertResultUri = getApplicationContext().getContentResolver().insert(Recent.CONTENT_URI, modifiedValues);
+        Uri insertResultUri = getActivity().getApplicationContext().getContentResolver().insert(Recent.CONTENT_URI, modifiedValues);
         /*
          * values.put(SugarCRMContent.SUGAR_BEAN_ID, "Sync" + UUID.randomUUID()); Uri
          * insertResultUri = mContext.getContentResolver().insert(mUri, values); // after success

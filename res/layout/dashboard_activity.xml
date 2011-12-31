@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="fill_parent"
-  android:orientation="vertical"
-  android:background="@drawable/bg"
- >
-  <include layout="@layout/header"/>
-  <GridView 
-    android:id="@+id/dashboard"
-    
-    android:layout_width="fill_parent" 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    android:layout_marginLeft="10dip"
-  	android:layout_marginTop="20dip"
-    android:columnWidth="90dip"
-    android:numColumns="auto_fit"
-    android:padding="10dip"
-    android:verticalSpacing="20dip"
-    android:horizontalSpacing="5dip"
-    android:stretchMode="columnWidth"
-    android:gravity="center"
-/>
-</LinearLayout>
+    android:background="@drawable/bg"
+    android:orientation="vertical" >
 
+    <include layout="@layout/header" />
+
+    <GridView
+        android:id="@+id/dashboard"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="20dip"
+        android:columnWidth="90dip"
+        android:gravity="center"
+        android:horizontalSpacing="5dip"
+        android:numColumns="auto_fit"
+        android:padding="10dip"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="20dip" />
+
+</LinearLayout>

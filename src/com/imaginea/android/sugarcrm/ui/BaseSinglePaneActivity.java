@@ -16,7 +16,6 @@
 
 package com.imaginea.android.sugarcrm.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -36,9 +35,6 @@ public abstract class BaseSinglePaneActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singlepane_empty);
         getActivityHelper().setupActionBar(getTitle(), 0);
-
-        final String customTitle = getIntent().getStringExtra(Intent.EXTRA_TITLE);
-        getActivityHelper().setActionBarTitle(customTitle != null ? customTitle : getTitle());
 
         if (savedInstanceState == null) {
             mFragment = onCreatePane();

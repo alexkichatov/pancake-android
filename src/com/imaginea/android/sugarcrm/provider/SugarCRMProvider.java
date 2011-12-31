@@ -389,8 +389,7 @@ public class SugarCRMProvider extends ContentProvider {
             c = db.query(DatabaseHelper.USERS_TABLE_NAME, projection, selection, selectionArgs, null, null, null);
             break;
 
-        case RECENT:
-            Log.e(TAG, "query made for recent");
+        case RECENT:            
             c = db.query(DatabaseHelper.RECENT_TABLE_NAME, projection, selection, selectionArgs, null, null, null);
             break;
 
@@ -825,8 +824,7 @@ public class SugarCRMProvider extends ContentProvider {
             }
             break;
 
-        case RECENT:
-            Log.e(TAG, "insert made for recent");
+        case RECENT:           
             rowId = db.insert(DatabaseHelper.RECENT_TABLE_NAME, "", values);
 
             if (rowId > 0) {
@@ -1009,6 +1007,8 @@ public class SugarCRMProvider extends ContentProvider {
             break;
         case RECENT:
             Log.e(TAG, "delete made for recent");
+            
+            //TODO
             break;
 
         default:
@@ -1750,6 +1750,8 @@ public class SugarCRMProvider extends ContentProvider {
             break;
         case RECENT:
             Log.e(TAG, "update made for recent");
+            
+            //TODO
             count = 0;
             break;
 

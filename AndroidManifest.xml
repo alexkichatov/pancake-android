@@ -12,7 +12,7 @@
           android:xlargeScreens="true"
           android:largeScreens="true"
           android:normalScreens="true"
-          android:smallScreens="true"                   
+          android:smallScreens="true"       
           android:anyDensity="true" />
     
     
@@ -39,66 +39,69 @@
 	<uses-feature android:name="android.hardware.wifi" android:required="false"/>
 	<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   
-    <application android:icon="@drawable/applaunch" 
-    	android:label="@string/appName" 
+    <application android:icon="@drawable/applaunch"
+    	android:label="@string/appName"
 	    android:name="SugarCrmApp"
 	    android:debuggable="true">
         
-        <activity android:name=".DashboardActivity"    
-        	android:label="@string/appName" android:theme="@android:style/Theme.Light.NoTitleBar"  
+        <activity android:name=".DashboardActivity"
+        	android:label="@string/appName" android:theme="@android:style/Theme.Light.NoTitleBar" 
         	android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" /> 
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-		<activity android:name=".ModuleListActivity" 
+		<activity android:name=".ModulesActivity"
 			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
-			<intent-filter>
-				<action android:name="com.imaginea.android.sugarcrm.DEFAULT" />
-			</intent-filter>
+			 <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />                    
+            </intent-filter>
 			<meta-data android:name="android.app.default_searchable"
                android:value=".SearchActivity" />
-		</activity>
-		<!--FIXME: start changes by Jaga  -->
-		<activity android:name=".RecentListActivity" 
+		</activity>		
+		
+		<activity android:name=".RecentModuleActivity" 
 			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
-			<intent-filter>
-				<action android:name="com.imaginea.android.sugarcrm.DEFAULT" />
-			</intent-filter>
+			 <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />                    
+            </intent-filter>
 			<meta-data android:name="android.app.default_searchable"
                android:value=".SearchActivity" />
-		</activity>
-        <!--FIXME: end changes by Jaga  -->
+		</activity>      
         
         <activity android:name=".SugarCrmSettings" android:label="@string/settings"
         	 android:theme="@android:style/Theme.Light">
             <intent-filter>
-                <action android:name="com.imaginea.android.sugarcrm.settings" />                
+                <action android:name="com.imaginea.android.sugarcrm.settings" />           
                 <category android:name="android.intent.category.PREFERENCE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         
-        <activity android:name=".ModuleDetailsActivity" android:label="@string/contactDetails"
-       	 	android:theme="@android:style/Theme.Light.NoTitleBar" 
+        <activity android:name=".ModuleDetailActivity" android:label="@string/contactDetails"
+       	 	android:theme="@android:style/Theme.Light.NoTitleBar"
        	 	android:configChanges="orientation|keyboardHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />                    
             </intent-filter>
         </activity>                
                 
-        <activity android:name=".EditDetailsActivity" android:label="@string/editDetails"
+        <activity android:name=".EditModuleDetailActivity" android:label="@string/editDetails"
        	 	android:theme="@android:style/Theme.Light.NoTitleBar" 
        	 	android:configChanges="orientation|keyboardHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />                    
             </intent-filter>
         </activity>
 	    
 	    <activity android:name=".SearchActivity" android:launchMode="singleTop"
-	    	android:theme="@android:style/Theme.Light.NoTitleBar" 
+	    	android:theme="@android:style/Theme.Light.NoTitleBar"
        	 	android:configChanges="orientation|keyboardHidden">
 	        <intent-filter>
 	            <action android:name="android.intent.action.SEARCH" />
@@ -106,7 +109,7 @@
 	        <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
 	    </activity>
 
-        <activity android:name=".WizardActivity" 
+        <activity android:name=".WizardActivity"
 			android:label="@string/appName"
 			android:theme="@android:style/Theme.Light.NoTitleBar"
 			android:clearTaskOnLaunch="true"
@@ -116,26 +119,44 @@
 				someone who explicitly knows the class name
 			-->
 		</activity>
-		<activity android:name=".WizardAuthActivity" 
+		<activity android:name=".WizardAuthActivity"
 			android:label="@string/appName"
 			android:theme="@android:style/Theme.Light.NoTitleBar"
-			android:clearTaskOnLaunch="true" 
-			android:excludeFromRecents="true">			
+			android:clearTaskOnLaunch="true"
+			android:excludeFromRecents="true">
 		</activity>
-		<activity android:name=".SyncConfigActivity" 
+		<activity android:name=".SyncConfigActivity"
 			android:label="@string/appName"
-			android:theme="@android:style/Theme.Light.NoTitleBar">		
+			android:theme="@android:style/Theme.Light.NoTitleBar">
 			 <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>	
-		</activity>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />           
+            </intent-filter>
+        </activity>
 		
 		<activity android:name=".ModuleSortConfigActivity" 
 			android:label="@string/appName"
 			android:theme="@android:style/Theme.Light.NoTitleBar">		
 			 <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>	
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />         
+            </intent-filter>
+		</activity>
+		
+		<activity android:name=".tab.ModuleDetailsMultiPaneActivity"
+			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			<intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />    
+            </intent-filter>
+		</activity>
+		
+		<activity android:name=".tab.RecentModuleMultiPaneActivity"
+			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			<intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />    
+            </intent-filter>
 		</activity>
 		
         <service android:name=".SugarService" />

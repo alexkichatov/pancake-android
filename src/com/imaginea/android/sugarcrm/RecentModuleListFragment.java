@@ -1,22 +1,19 @@
 package com.imaginea.android.sugarcrm;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -25,7 +22,13 @@ import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
+import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
+import com.imaginea.android.sugarcrm.util.ViewUtil;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * RecentListActivity, lists the view projections for all the Recently accessed records.
@@ -33,7 +36,7 @@ import com.imaginea.android.sugarcrm.util.Util;
  * 
  * @author Jagadeeshwaran K
  */
-public class RecentListActivity extends ListActivity {
+public class RecentModuleListFragment extends ListFragment {
 
     private ListView mListView;
 
@@ -68,19 +71,24 @@ public class RecentListActivity extends ListActivity {
 
     private SugarCrmApp app;
 
-    public final static String LOG_TAG = RecentListActivity.class.getSimpleName();
+    public final static String LOG_TAG = "RecentModuleList";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.common_list, container, false);
+
+    }
 
     /** {@inheritDoc} */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.common_list);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getBaseContext());
-        app = (SugarCrmApp) getApplication();
-
-        Intent intent = getIntent();
+        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+        app = (SugarCrmApp) getActivity().getApplication();
+        Intent intent = getActivity().getIntent();
+        //final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -90,11 +98,11 @@ public class RecentListActivity extends ListActivity {
         // If the list is a list of related items, hide the filterImage and
         // allItems image
         if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
-            findViewById(R.id.filterImage).setVisibility(View.GONE);
-            findViewById(R.id.allItems).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
         }
 
-        TextView tv = (TextView) findViewById(R.id.headerText);
+        TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
         tv.setText(mModuleName);
 
         mListView = getListView();
@@ -112,7 +120,7 @@ public class RecentListActivity extends ListActivity {
         // button code in the layout - 1.6 SDK feature to specify onClick
         mListView.setItemsCanFocus(true);
         mListView.setFocusable(true);
-        mEmpty = findViewById(R.id.empty);
+        mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
         registerForContextMenu(getListView());
 
@@ -130,16 +138,16 @@ public class RecentListActivity extends ListActivity {
         // TODO - optimize this, if we sync up a dataset, then no need to run
         // detail projection
         // here, just do a list projection
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(intent.getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
 
         // CRMContentObserver observer = new CRMContentObserver()
         // cursor.registerContentObserver(observer);
         String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2)
-            mAdapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] {
+            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
                     android.R.id.text1, android.R.id.text2 });
         else
-            mAdapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
+            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
         setListAdapter(mAdapter);
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
@@ -158,11 +166,15 @@ public class RecentListActivity extends ListActivity {
             tv1.setVisibility(View.GONE);
         }
 
-        mListFooterView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
+        mListFooterView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
         getListView().addFooterView(mListFooterView);
-        mListFooterText = (TextView) findViewById(R.id.status);
+        mListFooterText = (TextView) getActivity().findViewById(R.id.status);
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
+        if (ViewUtil.isHoneycombTablet(getActivity()))
+                openDetailScreen(1);
+            
+        
     }
 
     /**
@@ -194,7 +206,7 @@ public class RecentListActivity extends ListActivity {
                 // TODO - fix this, this is no longer used
                 Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI, realoffset + "/" + limit);
                 Log.d(LOG_TAG, "Changing cursor:" + newUri.toString());
-                final Cursor cursor = managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
+                final Cursor cursor = getActivity().managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
                 CRMContentObserver observer = new CRMContentObserver(new Handler() {
 
                     @Override
@@ -252,26 +264,45 @@ public class RecentListActivity extends ListActivity {
      * @param position
      */
     void openDetailScreen(int position) {
-        Intent detailIntent = new Intent(RecentListActivity.this, ModuleDetailsActivity.class);
+        Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
 
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
         }
-        Log.d(LOG_TAG, "rowId:" + cursor.getString(1) + "BEAN_ID:" + cursor.getString(2)
-                                        + "MODULE_NAME:" + cursor.getString(3));
         // use the details available from cursor to open detailed view
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
         detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(2));
         detailIntent.putExtra(RestUtilConstants.MODULE_NAME, cursor.getString(3));
 
-        startActivity(detailIntent);
+        Log.d(LOG_TAG, "rowId:" + cursor.getString(1) + "BEAN_ID:" + cursor.getString(2)
+                                        + "MODULE_NAME:" + cursor.getString(3));
+
+        if (ViewUtil.isTablet(getActivity())) {
+            // We can display everything in-place with fragments.
+            // Have the list highlight this item and show the data.
+            // getListView().setItemChecked(position, true);
+
+            // Check what fragment is shown, replace if needed.
+
+            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+            Log.d(LOG_TAG, details + "");
+            if (details == null || details.getShownIndex() != position) {
+                // Make new fragment to show this selection.
+
+                // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
+                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
+            }
+        } else {
+            startActivity(detailIntent);
+        }
+
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
     }
 
@@ -288,7 +319,7 @@ public class RecentListActivity extends ListActivity {
      *            a {@link android.view.View} object.
      */
     public void showAllItems(View view) {
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }
@@ -302,7 +333,7 @@ public class RecentListActivity extends ListActivity {
      *            a {@link android.view.View} object.
      */
     public void showHome(View view) {
-        Intent homeIntent = new Intent(this, DashboardActivity.class);
+        Intent homeIntent = new Intent(this.getActivity(), DashboardActivity.class);
         startActivity(homeIntent);
     }
 

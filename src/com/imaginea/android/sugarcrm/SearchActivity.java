@@ -61,7 +61,7 @@ public class SearchActivity extends ListActivity {
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // handles a click on a search suggestion; launches activity to show
             // the bean
-            Intent detailIntent = new Intent(this, ModuleDetailsActivity.class);
+            Intent detailIntent = new Intent(this, ModuleDetailActivity.class);
             Log.i(TAG, "view uri - " + intent.getData());
             detailIntent.putExtra(Util.ROW_ID, intent.getData().getLastPathSegment());
             detailIntent.putExtra(RestUtilConstants.MODULE_NAME, Util.ACCOUNTS);
@@ -114,7 +114,7 @@ public class SearchActivity extends ListActivity {
      * @param position
      */
     void openDetailScreen(int position) {
-        Intent detailIntent = new Intent(SearchActivity.this, ModuleDetailsActivity.class);
+        Intent detailIntent = new Intent(SearchActivity.this, ModuleDetailActivity.class);
 
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {

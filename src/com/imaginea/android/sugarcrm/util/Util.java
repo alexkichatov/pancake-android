@@ -253,15 +253,16 @@ public class Util {
 
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null) {
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+           
                 Log.d(LOG_TAG, "network state name:" + networkInfo.getState().name());
                 Log.d(LOG_TAG, "NetworkInfo.State.CONNECTED name:"
-                                                + NetworkInfo.State.CONNECTED.name());
-            }
+                                                + NetworkInfo.State.CONNECTED.name() + " " + networkInfo.isConnected() );
+            
             if (networkInfo.getState().name().equals(NetworkInfo.State.CONNECTED.name())) {
                 networkOn = true;
             }
         }
+        Log.d(LOG_TAG, "");
         return networkOn;
     }
 

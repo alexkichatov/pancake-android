@@ -1,11 +1,5 @@
 package com.imaginea.android.sugarcrm;
 
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -32,18 +27,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 /**
- * ModuleDetailsActivity is used to show details for all modules. Note: Ideally we would have to
- * rename the file, but to preserve CVS history we have chosen not to rename the file. Cannot use
- * CVS rename command as we are still using an old CVS server.
+ * ModuleDetailFragment is used to show details for all modules.
  * 
- * @author vasavi
  */
-public class ModuleDetailsActivity extends Activity {
+public class ModuleDetailFragment extends Fragment {
 
     private String mRowId;
 
@@ -58,6 +56,8 @@ public class ModuleDetailsActivity extends Activity {
     private ViewGroup mDetailsTable;
 
     private String[] mRelationshipModules;
+    
+    private Uri mUri;    
 
     private DatabaseHelper mDbHelper;
 
@@ -71,21 +71,22 @@ public class ModuleDetailsActivity extends Activity {
 
     private ProgressDialog mProgressDialog;
 
-    private static final String LOG_TAG = ModuleDetailsActivity.class.getSimpleName();
+    private static final String LOG_TAG = ModuleDetailFragment.class.getSimpleName();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * Called when the activity is first created.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.account_details, container, false);
+    }
 
-        super.onCreate(savedInstanceState);
+    /** {@inheritDoc} */
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        setContentView(R.layout.account_details);
-
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
+        if (getFragmentManager().findFragmentById(R.id.list_frag) != null)
+            intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mRowId = (String) intent.getStringExtra(Util.ROW_ID);
         mSugarBeanId = (String) intent.getStringExtra(RestUtilConstants.BEAN_ID);
@@ -93,9 +94,11 @@ public class ModuleDetailsActivity extends Activity {
         if (extras != null)
             mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
 
-        mDbHelper = new DatabaseHelper(getBaseContext());
+        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         if (intent.getData() == null) {
-            intent.setData(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId));
+            if (mRowId == null)
+                mRowId = "1";
+            mUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
         }
         mSelectFields = mDbHelper.getModuleProjections(mModuleName);
         // mCursor = getContentResolver().query(getIntent().getData(), mSelectFields, null, null,
@@ -134,9 +137,9 @@ public class ModuleDetailsActivity extends Activity {
      */
     protected void openListScreen(String moduleName) {
         // if (mModuleName.equals("Accounts")) {
-        Intent detailIntent = new Intent(ModuleDetailsActivity.this, ModuleListActivity.class);
+        Intent detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModulesActivity.class);
         if (mDbHelper == null)
-            mDbHelper = new DatabaseHelper(getBaseContext());
+            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         Uri uri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
         uri = Uri.withAppendedPath(uri, moduleName);
         detailIntent.setData(uri);
@@ -150,7 +153,7 @@ public class ModuleDetailsActivity extends Activity {
 
     /** {@inheritDoc} */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) {
             mTask.cancel(true);
@@ -158,10 +161,9 @@ public class ModuleDetailsActivity extends Activity {
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the currently selected menu XML resource.
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.details_activity_menu, menu);
 
         SubMenu relationshipMenu = menu.addSubMenu(1, R.string.related, 0, getString(R.string.related));
@@ -182,8 +184,8 @@ public class ModuleDetailsActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.home:
-            Intent myIntent = new Intent(ModuleDetailsActivity.this, DashboardActivity.class);
-            ModuleDetailsActivity.this.startActivity(myIntent);
+            Intent myIntent = new Intent(ModuleDetailFragment.this.getActivity(), DashboardActivity.class);
+            ModuleDetailFragment.this.startActivity(myIntent);
             return true;
         case R.string.related:
             return true;
@@ -201,7 +203,7 @@ public class ModuleDetailsActivity extends Activity {
         int staticRowsCount;
 
         LoadContentTask() {
-            mDetailsTable = (ViewGroup) findViewById(R.id.accountDetalsTable);
+            mDetailsTable = (ViewGroup) getActivity().findViewById(R.id.accountDetalsTable);
 
             staticRowsCount = mDetailsTable.getChildCount();
         }
@@ -209,10 +211,10 @@ public class ModuleDetailsActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            TextView tv = (TextView) findViewById(R.id.headerText);
+            TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
             tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
 
-            mProgressDialog = ViewUtil.getProgressDialog(ModuleDetailsActivity.this, getString(R.string.loading), true);
+            mProgressDialog = ViewUtil.getProgressDialog(ModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
             mProgressDialog.show();
         }
 
@@ -224,7 +226,9 @@ public class ModuleDetailsActivity extends Activity {
 
             case HEADER:
                 TextView titleView = (TextView) values[2];
-                titleView.setText((String) values[3]);
+                // TODO
+                if (titleView != null)
+                    titleView.setText((String) values[3]);
                 break;
 
             case STATIC_ROW:
@@ -321,7 +325,7 @@ public class ModuleDetailsActivity extends Activity {
         @Override
         protected Object doInBackground(Object... params) {
             try {
-                mCursor = getContentResolver().query(getIntent().getData(), mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
+                mCursor = getActivity().getContentResolver().query(mUri, mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 return Util.FETCH_FAILED;
@@ -365,16 +369,16 @@ public class ModuleDetailsActivity extends Activity {
             String[] detailsProjection = mSelectFields;
 
             if (mDbHelper == null)
-                mDbHelper = new DatabaseHelper(getBaseContext());
+                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
-            TextView textViewForTitle = (TextView) findViewById(R.id.accountName);
+            TextView textViewForTitle = (TextView) getActivity().findViewById(R.id.accountName);
             String title = "";
             List<String> titleFields = Arrays.asList(mDbHelper.getModuleListSelections(mModuleName));
 
             if (!isCancelled())
                 mCursor.moveToFirst();
 
-            LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             List<String> billingAddressGroup = mDbHelper.getBillingAddressGroup();
             List<String> shippingAddressGroup = mDbHelper.getShippingAddressGroup();
@@ -446,7 +450,7 @@ public class ModuleDetailsActivity extends Activity {
                                 // last field in the group
 
                                 value = value + (!TextUtils.isEmpty(tempValue) ? tempValue : "");
-                                label = getBaseContext().getString(R.string.billing_address);
+                                label = getActivity().getBaseContext().getString(R.string.billing_address);
                             } else {
                                 value = value
                                                                 + (!TextUtils.isEmpty(tempValue) ? tempValue
@@ -463,7 +467,7 @@ public class ModuleDetailsActivity extends Activity {
                                 // Last field in the group
 
                                 value = value + (!TextUtils.isEmpty(tempValue) ? tempValue : "");
-                                label = getBaseContext().getString(R.string.shipping_address);
+                                label = getActivity().getBaseContext().getString(R.string.shipping_address);
                             } else {
 
                                 value = value
@@ -486,7 +490,7 @@ public class ModuleDetailsActivity extends Activity {
                                                             + (!TextUtils.isEmpty(tempValue) ? tempValue
                                                                                             + "mins "
                                                                                             : "");
-                            label = getBaseContext().getString(R.string.duration);
+                            label = getActivity().getBaseContext().getString(R.string.duration);
                         }
                     } else {
                         value = tempValue;
@@ -522,7 +526,7 @@ public class ModuleDetailsActivity extends Activity {
 
         @Override
         public void onClick(View widget) {
-            Log.i("ModuleDetailsActivity", "InternalURLSpan onClick");
+            Log.i("ModuleDetailFragment", "InternalURLSpan onClick");
             mListener.onClick(widget);
         }
     }
@@ -557,4 +561,23 @@ public class ModuleDetailsActivity extends Activity {
      * 
      * }
      */
+
+    /**
+     * Create a new instance of ModuleDetailFragment, initialized to show the text at 'index'.
+     */
+    public static ModuleDetailFragment newInstance(int index) {
+        ModuleDetailFragment f = new ModuleDetailFragment();
+
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("index", index);
+        f.setArguments(args);
+
+        return f;
+    }
+
+    public int getShownIndex() {
+        Bundle bundleArgs = getArguments();
+        return bundleArgs != null ? getArguments().getInt("index", 0) : 1;
+    }
 }
