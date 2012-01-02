@@ -33,7 +33,6 @@ import android.widget.TextView;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
-import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
@@ -45,7 +44,6 @@ import java.util.Map.Entry;
 /**
  * ModuleListFragment, lists the view projections for all the modules.
  * 
- * @author chander
  */
 public class ModuleListFragment extends ListFragment {
 
@@ -71,9 +69,6 @@ public class ModuleListFragment extends ListFragment {
 
     private int mCurrentSelection;
 
-    // we don't make this final as we may want to use the sugarCRM value
-    // dynamically, but prevent
-    // others from modiying anyway
     // private static int mMaxResults = 20;
 
     private DatabaseHelper mDbHelper;
@@ -110,13 +105,10 @@ public class ModuleListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // getActivity().setContentView(R.layout.common_list);
-
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         Intent intent = getActivity().getIntent();
-        //final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
+        // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -161,16 +153,13 @@ public class ModuleListFragment extends ListFragment {
         if (intent.getData() == null) {
             intent.setData(mModuleUri);
         }
-        // Perform a managed query. The Activity will handle closing and
-        // requerying the cursor
-        // when needed.
-        // TODO - optimize this, if we sync up a dataset, then no need to run
-        // detail projection
-        // here, just do a list projection
+        /*
+         * Perform a managed query. The Activity will handle closing and requerying the cursor when
+         * needed. TODO - optimize this, if we sync up a dataset, then no need to run detail
+         * projection here, just do a list projection
+         */
         Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
 
-        // CRMContentObserver observer = new CRMContentObserver()
-        // cursor.registerContentObserver(observer);
         String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2)
             mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
@@ -223,7 +212,6 @@ public class ModuleListFragment extends ListFragment {
 
             View v = super.getView(position, convertView, parent);
             int count = getCursor().getCount();
-            Log.d(LOG_TAG, "Get Item" + getItemId(position));
             if (!mBusy && position != 0 && position == count - 1) {
                 mBusy = true;
                 realoffset += count;
@@ -260,7 +248,6 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public String convertToString(Cursor cursor) {
-            Log.i(LOG_TAG, "convertToString : " + cursor.getString(2));
             return cursor.getString(2);
         }
 
@@ -291,46 +278,28 @@ public class ModuleListFragment extends ListFragment {
      * @param position
      */
     void openDetailScreen(int position) {
-       
+
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
         }
+        Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
+        detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+        detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+        detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
         if (ViewUtil.isTablet(getActivity())) {
-            // We can display everything in-place with fragments.
-            // Have the list highlight this item and show the data.
-            //getListView().setItemChecked(position, true);
-
-            // Check what fragment is shown, replace if needed.
-            
+            /*
+             * We can display everything in-place with fragments. /Have the list highlight this item
+             * and show the data. Check what fragment is shown, replace if needed.
+             */
             ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-            Log.d(LOG_TAG, details + "");
             if (details == null || details.getShownIndex() != position) {
                 // Make new fragment to show this selection.
-                Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
-                detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-                detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-                detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-               
-               // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
-                ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(detailIntent);
-                //Log.d(LOG_TAG, "" + mddetails.getShownIndex());
-                // Execute a transaction, replacing any existing
-                // fragment with this one inside the frame.
-               // FragmentTransaction ft = getFragmentManager().beginTransaction();
-               // ft.replace(R.id.fragment_container_module_detail, mddetails);
-               // ft.addToBackStack(null);
-               // ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                //ft.commit();
+                // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
+                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
             }
-
         } else {
-            Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);           
-            Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
-            detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-            detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-            detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
             startActivity(detailIntent);
         }
     }
@@ -347,6 +316,13 @@ public class ModuleListFragment extends ListFragment {
             // For some reason the requested item isn't available, do nothing
             return;
         }
+        Intent editDetailsIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
+        editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+        if (mIntentUri != null)
+            editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
+
+        editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+        editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG))
             Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
@@ -356,37 +332,12 @@ public class ModuleListFragment extends ListFragment {
             // We can display everything in-place with fragments.
             // Have the list highlight this item and show the data.
             getListView().setItemChecked(position, true);
-
             // Check what fragment is shown, replace if needed.
-            //EditModuleDetailFragment editDetails = (EditModuleDetailFragment) getFragmentManager().findFragmentById(R.id.edit_details_frag);
             if (details.getShownIndex() != position) {
                 // Make new fragment to show this selection.
-                Intent editDetailsIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
-                editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-                if (mIntentUri != null)
-                    editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
-
-                editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-                editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-                
-                //EditModuleDetailFragment editDetails = EditModuleDetailFragment.newInstance(position);
-                ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(editDetailsIntent);
-                // Execute a transaction, replacing any existing
-                // fragment with this one inside the frame.
-               // FragmentTransaction ft = getFragmentManager().beginTransaction();
-                //ft.replace(R.id.fragment_container_module_detail, editDetails);
-               // ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-               // ft.commit();
+                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
             }
-
         } else {
-            Intent editDetailsIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
-            editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-            if (mIntentUri != null)
-                editDetailsIntent.setData(Uri.withAppendedPath(mIntentUri, cursor.getString(0)));
-
-            editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-            editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
             startActivity(editDetailsIntent);
         }
     }
@@ -412,12 +363,6 @@ public class ModuleListFragment extends ListFragment {
         Uri deleteUri = Uri.withAppendedPath(mModuleUri, cursor.getString(0));
         getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
         ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, beanId);
-        // getContentResolver().delete(mModuleUri, SugarCRMContent.RECORD_ID,
-        // new String[] {
-        // cursor.getString(0) });
-        // detailIntent.putExtra(RestUtilConstants.ID, cursor.getString(0));
-        // detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-        // startActivity(detailIntent);
     }
 
     private static class DeleteContentObserver extends ContentObserver {
@@ -433,8 +378,7 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            Log.d(LOG_TAG, "Received onCHange");
+            super.onChange(selfChange);           
         }
     }
 
@@ -704,12 +648,7 @@ public class ModuleListFragment extends ListFragment {
         // push the selected record into recent table
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
 
-        String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
-        Log.e(LOG_TAG, "Name1:" + cursor.getString(2));
-        if (moduleSel.length >= 2)
-            Log.e(LOG_TAG, "Name2:" + cursor.getString(3));
         // now insert into recent table
-        Log.e(LOG_TAG, "Inserting:" + cursor.getString(2));
         modifiedValues.put(Recent.ACTUAL_ID, cursor.getInt(0) + "");
         modifiedValues.put(Recent.BEAN_ID, cursor.getString(1));
         modifiedValues.put(Recent.NAME_1, cursor.getString(2));
@@ -717,11 +656,6 @@ public class ModuleListFragment extends ListFragment {
         modifiedValues.put(Recent.REF_MODULE_NAME, mModuleName);
         modifiedValues.put(Recent.DELETED, "0");
         Uri insertResultUri = getActivity().getApplicationContext().getContentResolver().insert(Recent.CONTENT_URI, modifiedValues);
-        /*
-         * values.put(SugarCRMContent.SUGAR_BEAN_ID, "Sync" + UUID.randomUUID()); Uri
-         * insertResultUri = mContext.getContentResolver().insert(mUri, values); // after success
-         * url insertion, we set the updatedRow to 1 so we don't get a // fail msg updatedRows = 1;
-         */
         Log.i(LOG_TAG, "insertResultURi - " + insertResultUri);
 
     }
@@ -737,9 +671,9 @@ public class ModuleListFragment extends ListFragment {
     public void showAssignedItems(View view) {
         MODE = Util.ASSIGNED_ITEMS_MODE;
         // TODO: get the user name from Account Manager
-        String userName = SugarCrmSettings.getUsername(ModuleListActivity.this);
+        String userName = SugarCrmSettings.getUsername(this.getActivity());
         String selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
 
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
@@ -767,10 +701,10 @@ public class ModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showAllItems(View view) {
-        Cursor cursor = managedQuery(getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
-        
+
         TextView mainTextView = (TextView) (mEmpty.findViewById(R.id.mainText));
         if (mAdapter.getCount() == 0) {
             mListView.setVisibility(View.GONE);
@@ -794,7 +728,7 @@ public class ModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showHome(View view) {
-        Intent homeIntent = new Intent(this, DashboardActivity.class);
+        Intent homeIntent = new Intent(getActivity(), DashboardActivity.class);
         startActivity(homeIntent);
     }
 
@@ -824,8 +758,6 @@ public class ModuleListFragment extends ListFragment {
 
         int index = cursor.getColumnIndex(ModuleFields.PHONE_WORK);
         String number = cursor.getString(index);
-        if (Log.isLoggable(LOG_TAG, Log.DEBUG))
-            Log.d(LOG_TAG, "Work number to call:" + number);
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
         startActivity(intent);
     }
@@ -847,8 +779,6 @@ public class ModuleListFragment extends ListFragment {
         // emailAddress
         int index = cursor.getColumnIndex(ModuleFields.EMAIL1);
         String emailAddress = cursor.getString(index);
-        if (Log.isLoggable(LOG_TAG, Log.DEBUG))
-            Log.d(LOG_TAG, "email :" + emailAddress);
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + emailAddress));
         startActivity(intent);
     }
