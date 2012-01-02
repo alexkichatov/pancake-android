@@ -143,9 +143,11 @@ public class EditModuleDetailFragment extends Fragment {
         Log.v(TAG, "mode - " + MODE);
 
         if (intent.getData() == null && MODE == Util.EDIT_ORPHAN_MODE) {
-            intent.setData(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId));
+            mIntentUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+            intent.setData(mIntentUri);
         } else if (intent.getData() == null && MODE == Util.NEW_ORPHAN_MODE) {
-            intent.setData(mDbHelper.getModuleUri(mModuleName));
+            mIntentUri = mDbHelper.getModuleUri(mModuleName);
+            intent.setData(mIntentUri);
         }
 
         mSelectFields = mDbHelper.getModuleProjections(mModuleName);
@@ -164,6 +166,14 @@ public class EditModuleDetailFragment extends Fragment {
         if (importFlag == Util.CONTACT_IMPORT_FLAG) {
             importContact();
         }
+
+        // our xml onClick items no longer work - so have to set these explicitly again- YUCK
+        getActivity().findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveModuleItem(v);
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -453,76 +463,75 @@ public class EditModuleDetailFragment extends Fragment {
                             return false;
                         }
                     });
+                }
 
-                    // set the adapter to auto-suggest
-                    if (!Util.ACCOUNTS.equals(mModuleName)
-                                                    && dynamicFieldName.equals(ModuleFields.ACCOUNT_NAME)) {
-                        // only if the module is directly related to Accounts,
-                        // disable the account name
-                        // field populating it with the corresponding account
-                        // name
-                        if (MODE == Util.NEW_RELATIONSHIP_MODE) {
+                // set the adapter to auto-suggest
+                if (!Util.ACCOUNTS.equals(mModuleName)
+                                                && dynamicFieldName.equals(ModuleFields.ACCOUNT_NAME)) {
+                    /*
+                     * only if the module is directly related to Accounts, disable the account name
+                     * field populating it with the corresponding account name
+                     */
+                    if (MODE == Util.NEW_RELATIONSHIP_MODE) {
 
-                            // get the module name from the URI
-                            String module = mIntentUri.getPathSegments().get(0);
+                        // get the module name from the URI
+                        String module = mIntentUri.getPathSegments().get(0);
 
-                            // only if the module is directly related with the
-                            // Accounts module
-                            if (Util.ACCOUNTS.equals(module)) {
+                        // only if the module is directly related with the
+                        // Accounts module
+                        if (Util.ACCOUNTS.equals(module)) {
 
-                                if (mDbHelper == null)
-                                    mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+                            if (mDbHelper == null)
+                                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
-                                // get the account name using the account row id
-                                // in
-                                // the URI
-                                int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
-                                String selection = AccountsColumns.ID + "=" + accountRowId;
-                                Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
-                                cursor.moveToFirst();
-                                String accountName = cursor.getString(2);
-                                cursor.close();
+                            // get the account name using the account row id
+                            // in
+                            // the URI
+                            int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
+                            String selection = AccountsColumns.ID + "=" + accountRowId;
+                            Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            cursor.moveToFirst();
+                            String accountName = cursor.getString(2);
+                            cursor.close();
 
-                                // pre-populate the field with the account name
-                                // and
-                                // disable it
-                                dynamicValueView.setText(accountName);
-                                dynamicValueView.setEnabled(false);
-                            } else {
-                                // if the module is not directly related to
-                                // Accounts
-                                // module, show the
-                                // auto-suggest instead of pre-populating the
-                                // account name field
-                                dynamicValueView.setAdapter(mAccountAdapter);
-                                dynamicValueView.setOnItemClickListener(new AccountsClickedItemListener());
-                            }
+                            // pre-populate the field with the account name
+                            // and
+                            // disable it
+                            dynamicValueView.setText(accountName);
+                            dynamicValueView.setEnabled(false);
                         } else {
-                            // set the apadter to show the auto-suggest
+                            // if the module is not directly related to
+                            // Accounts
+                            // module, show the
+                            // auto-suggest instead of pre-populating the
+                            // account name field
                             dynamicValueView.setAdapter(mAccountAdapter);
                             dynamicValueView.setOnItemClickListener(new AccountsClickedItemListener());
-
-                            if (MODE == Util.EDIT_ORPHAN_MODE
-                                                            || MODE == Util.EDIT_RELATIONSHIP_MODE)
-                                // store the account name in mAccountName if the
-                                // bean is already related
-                                // to an account
-                                if (!TextUtils.isEmpty(editTextValue)) {
-                                    mAccountName = editTextValue;
-                                }
                         }
-                    } else if (dynamicFieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
+                    } else {
                         // set the apadter to show the auto-suggest
-                        dynamicValueView.setAdapter(mUserAdapter);
-                        dynamicValueView.setOnItemClickListener(new UsersClickedItemListener());
+                        dynamicValueView.setAdapter(mAccountAdapter);
+                        dynamicValueView.setOnItemClickListener(new AccountsClickedItemListener());
 
-                        if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                            // store the user name in mUserName if the bean is
-                            // already assigned to a
-                            // user
+                        if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
+                            // store the account name in mAccountName if the
+                            // bean is already related
+                            // to an account
                             if (!TextUtils.isEmpty(editTextValue)) {
-                                mUserName = editTextValue;
+                                mAccountName = editTextValue;
                             }
+                    }
+                } else if (dynamicFieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
+                    // set the adapter to show the auto-suggest
+                    dynamicValueView.setAdapter(mUserAdapter);
+                    dynamicValueView.setOnItemClickListener(new UsersClickedItemListener());
+
+                    if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                        // store the user name in mUserName if the bean is
+                        // already assigned to a
+                        // user
+                        if (!TextUtils.isEmpty(editTextValue)) {
+                            mUserName = editTextValue;
                         }
                     }
                 }
@@ -694,7 +703,7 @@ public class EditModuleDetailFragment extends Fragment {
         if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
             modifiedValues.put(RestUtilConstants.ID, mSugarBeanId);
 
-        Uri uri = getActivity().getIntent().getData();
+        Uri uri = mIntentUri;
 
         Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
         int rowsCount = 0;
@@ -781,10 +790,17 @@ public class EditModuleDetailFragment extends Fragment {
                             editText.setError(getString(R.string.userNameErrorMsg));
                         }
                     } else {
-                        // if the user just enters some value
-
-                        hasError = true;
-                        editText.setError(getString(R.string.userNameErrorMsg));
+                        // if the editText has been disabled, do not show the
+                        // error
+                        if (editText.isEnabled()) {
+                            /*
+                             * if the user just enters some value without selecting((ViewGroup)
+                             * mDetailsTable.getChildAt(rowsCount)).getChildAt(1) from the
+                             * auto-suggest
+                             */
+                            hasError = true;
+                            editText.setError(getString(R.string.userNameErrorMsg));
+                        }
                     }
                 }
             }
