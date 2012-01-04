@@ -3,7 +3,6 @@ package com.imaginea.android.sugarcrm;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
-import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
@@ -88,7 +86,7 @@ public class RecentModuleListFragment extends ListFragment {
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         Intent intent = getActivity().getIntent();
-        //final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
+        // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -172,9 +170,8 @@ public class RecentModuleListFragment extends ListFragment {
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
         if (ViewUtil.isHoneycombTablet(getActivity()))
-                openDetailScreen(1);
-            
-        
+            openDetailScreen(1);
+
     }
 
     /**
@@ -280,18 +277,16 @@ public class RecentModuleListFragment extends ListFragment {
                                         + "MODULE_NAME:" + cursor.getString(3));
 
         if (ViewUtil.isTablet(getActivity())) {
-            // We can display everything in-place with fragments.
-            // Have the list highlight this item and show the data.
-            // getListView().setItemChecked(position, true);
-
-            // Check what fragment is shown, replace if needed.
+            /*
+             * We can display everything in-place with fragments. Have the list highlight this item
+             * and show the data. getListView().setItemChecked(position, true);
+             * 
+             * Check what fragment is shown, replace if needed.
+             */
 
             ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
             Log.d(LOG_TAG, details + "");
-            if (details == null || details.getShownIndex() != position) {
-                // Make new fragment to show this selection.
-
-                // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
+            if (details == null) {
                 ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
             }
         } else {

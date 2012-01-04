@@ -1081,22 +1081,4 @@ public class EditModuleDetailFragment extends Fragment {
 
         }
     }
-
-    /**
-     * Create a new instance of EditModuleDetailFragment, initialized to show the text at 'index'.
-     */
-    public static EditModuleDetailFragment newInstance(int index) {
-        EditModuleDetailFragment f = new EditModuleDetailFragment();
-
-        // Supply index input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("index", index);
-        f.setArguments(args);
-
-        return f;
-    }
-
-    public int getShownIndex() {
-        return getArguments().getInt("index", 0);
-    }
 }

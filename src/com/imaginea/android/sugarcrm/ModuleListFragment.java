@@ -127,7 +127,7 @@ public class ModuleListFragment extends ListFragment {
         tv.setText(mModuleName);
 
         mListView = getListView();
-        
+
         // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -291,13 +291,11 @@ public class ModuleListFragment extends ListFragment {
         detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
         if (ViewUtil.isTablet(getActivity())) {
             /*
-             * We can display everything in-place with fragments. /Have the list highlight this item
+             * We can display everything in-place with fragments. Have the list highlight this item
              * and show the data. Check what fragment is shown, replace if needed.
              */
             ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-            if (details == null || details.getShownIndex() != position) {
-                // Make new fragment to show this selection.
-                // ModuleDetailFragment mddetails = ModuleDetailFragment.newInstance(position);
+            if (details == null) {
                 ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
             }
         } else {
@@ -330,14 +328,13 @@ public class ModuleListFragment extends ListFragment {
 
         ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
         if (details != null) {
-            // We can display everything in-place with fragments.
-            // Have the list highlight this item and show the data.
+            /*
+             * We can display everything in-place with fragments. Have the list highlight this item
+             * and show the data. Make new fragment to show this selection.
+             */
             getListView().setItemChecked(position, true);
-            // Check what fragment is shown, replace if needed.
-            if (details.getShownIndex() != position) {
-                // Make new fragment to show this selection.
-                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
-            }
+            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
+
         } else {
             startActivity(editDetailsIntent);
         }
@@ -379,7 +376,7 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void onChange(boolean selfChange) {
-            super.onChange(selfChange);           
+            super.onChange(selfChange);
         }
     }
 
@@ -722,20 +719,20 @@ public class ModuleListFragment extends ListFragment {
     /**
      * <p>
      * show Home Screen
-     * </p> 
+     * </p>
      * 
      * @param view
      *            a {@link android.view.View} object.
      */
     public void showHome(View view) {
-    	showHome();
+        showHome();
     }
 
     private void showHome() {
         Intent homeIntent = new Intent(getActivity(), DashboardActivity.class);
         startActivity(homeIntent);
     }
-    
+
     private String getSortOrder() {
         String sortOrder = null;
         Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
