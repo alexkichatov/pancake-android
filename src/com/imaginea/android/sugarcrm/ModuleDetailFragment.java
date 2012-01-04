@@ -255,9 +255,9 @@ public class ModuleDetailFragment extends Fragment {
                             public void onClick(View v) {
                                 Log.i(LOG_TAG, "trying to locate - " + value);
                                 Uri uri = Uri.parse("geo:0,0?q=" + URLEncoder.encode(value));
-                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                                 intent.setData(uri);
-                                startActivity(intent);
+                                startActivity(Intent.createChooser(intent, getString(R.string.showAddressMsg)));
                             }
                         }), 0, value.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -299,9 +299,9 @@ public class ModuleDetailFragment extends Fragment {
                             public void onClick(View v) {
                                 Log.i(LOG_TAG, "trying to locate - " + value2);
                                 Uri uri = Uri.parse("geo:0,0?q=" + URLEncoder.encode(value2));
-                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                                 intent.setData(uri);
-                                startActivity(intent);
+                                startActivity(Intent.createChooser(intent, getString(R.string.showAddressMsg)));
                             }
                         }), 0, value2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 

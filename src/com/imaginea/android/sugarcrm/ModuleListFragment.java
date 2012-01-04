@@ -115,9 +115,10 @@ public class ModuleListFragment extends ListFragment {
             mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
         }
 
+        mIntentUri = intent.getData();
         // If the list is a list of related items, hide the filterImage and
         // allItems image
-        if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
+        if (mIntentUri != null && mIntentUri.getPathSegments().size() >= 3) {
             getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
             getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
         }
@@ -126,8 +127,7 @@ public class ModuleListFragment extends ListFragment {
         tv.setText(mModuleName);
 
         mListView = getListView();
-
-        mIntentUri = intent.getData();
+        
         // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -150,15 +150,16 @@ public class ModuleListFragment extends ListFragment {
         }
 
         mModuleUri = mDbHelper.getModuleUri(mModuleName);
-        if (intent.getData() == null) {
+        if (mIntentUri == null) {
             intent.setData(mModuleUri);
+            mIntentUri = mModuleUri;
         }
         /*
          * Perform a managed query. The Activity will handle closing and requerying the cursor when
          * needed. TODO - optimize this, if we sync up a dataset, then no need to run detail
          * projection here, just do a list projection
          */
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
 
         String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2)
@@ -458,14 +459,13 @@ public class ModuleListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.home:
-            Intent myIntent = new Intent(this.getActivity(), DashboardActivity.class);
-            this.startActivity(myIntent);
+            showHome();
             return true;
         case R.id.search:
             onSearchRequested();
             return true;
         case R.id.addItem:
-            myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
+            Intent myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
             myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
             Log.v(LOG_TAG, "intetnURI: " + mIntentUri);
             if (mIntentUri != null)
@@ -638,7 +638,7 @@ public class ModuleListFragment extends ListFragment {
             String userName = SugarCrmSettings.getUsername(this.getActivity());
             selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
         }
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, sortOrder);
+        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), selection, null, sortOrder);
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }
@@ -673,7 +673,7 @@ public class ModuleListFragment extends ListFragment {
         // TODO: get the user name from Account Manager
         String userName = SugarCrmSettings.getUsername(this.getActivity());
         String selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
 
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
@@ -701,7 +701,7 @@ public class ModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showAllItems(View view) {
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
 
@@ -721,17 +721,21 @@ public class ModuleListFragment extends ListFragment {
 
     /**
      * <p>
-     * showHome
-     * </p>
+     * show Home Screen
+     * </p> 
      * 
      * @param view
      *            a {@link android.view.View} object.
      */
     public void showHome(View view) {
+    	showHome();
+    }
+
+    private void showHome() {
         Intent homeIntent = new Intent(getActivity(), DashboardActivity.class);
         startActivity(homeIntent);
     }
-
+    
     private String getSortOrder() {
         String sortOrder = null;
         Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
@@ -780,6 +784,6 @@ public class ModuleListFragment extends ListFragment {
         int index = cursor.getColumnIndex(ModuleFields.EMAIL1);
         String emailAddress = cursor.getString(index);
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + emailAddress));
-        startActivity(intent);
+        startActivity(Intent.createChooser(intent, getActivity().getString(R.string.email)));
     }
 }
