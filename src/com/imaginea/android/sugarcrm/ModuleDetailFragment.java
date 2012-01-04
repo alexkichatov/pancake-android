@@ -56,8 +56,8 @@ public class ModuleDetailFragment extends Fragment {
     private ViewGroup mDetailsTable;
 
     private String[] mRelationshipModules;
-    
-    private Uri mUri;    
+
+    private Uri mUri;
 
     private DatabaseHelper mDbHelper;
 
@@ -101,7 +101,8 @@ public class ModuleDetailFragment extends Fragment {
             mUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
         }
         mSelectFields = mDbHelper.getModuleProjections(mModuleName);
-        // mCursor = getContentResolver().query(getIntent().getData(), mSelectFields, null, null,
+        // mCursor = getContentResolver().query(getIntent().getData(),
+        // mSelectFields, null, null,
         // mDbHelper.getModuleSortOrder(mModuleName));
         // startManagingCursor(mCursor);
         // setContents();
@@ -109,9 +110,11 @@ public class ModuleDetailFragment extends Fragment {
         mRelationshipModules = mDbHelper.getModuleRelationshipItems(mModuleName);
 
         // ListView listView = (ListView) findViewById(android.R.id.list);
-        // listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        // {
         // @Override
-        // public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
+        // public void onItemClick(AdapterView<?> arg0, View view, int position,
+        // long id) {
         // if (Log.isLoggable(LOG_TAG, Log.INFO)) {
         // Log.i(LOG_TAG, "clicked on " + mRelationshipModules[position]);
         // }
@@ -147,7 +150,8 @@ public class ModuleDetailFragment extends Fragment {
         detailIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
         startActivity(detailIntent);
         // } else {
-        // Toast.makeText(this, "Not yet supported!", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Not yet supported!",
+        // Toast.LENGTH_SHORT).show();
         // }
     }
 
@@ -388,7 +392,8 @@ public class ModuleDetailFragment extends Fragment {
             Map<String, ModuleField> fieldNameVsModuleField = mDbHelper.getModuleFields(mModuleName);
             Map<String, String> fieldsExcludedForDetails = mDbHelper.getFieldsExcludedForDetails();
 
-            // LinearLayout tableRow = (LinearLayout)inflater.inflate(R.layout.table_row, null);
+            // LinearLayout tableRow =
+            // (LinearLayout)inflater.inflate(R.layout.table_row, null);
 
             int rowsCount = 0;
             for (int i = 0; i < detailsProjection.length; i++) {
@@ -418,7 +423,8 @@ public class ModuleDetailFragment extends Fragment {
                     ViewGroup tableRow;
                     TextView textViewForLabel;
                     TextView textViewForValue;
-                    // first two columns in the detail projection are ROW_ID and BEAN_ID
+                    // first two columns in the detail projection are ROW_ID and
+                    // BEAN_ID
                     if (staticRowsCount > rowsCount) {
                         tableRow = (ViewGroup) mDetailsTable.getChildAt(rowsCount);
                         textViewForLabel = (TextView) tableRow.getChildAt(0);
@@ -438,7 +444,8 @@ public class ModuleDetailFragment extends Fragment {
 
                     String label = moduleField.getLabel();
 
-                    // check for the billing and shipping address groups only if the module is
+                    // check for the billing and shipping address groups only if
+                    // the module is
                     // 'Accounts'
                     if (Util.ACCOUNTS.equals(mModuleName)) {
                         if (billingAddressGroup.contains(fieldName)) {
@@ -529,55 +536,5 @@ public class ModuleDetailFragment extends Fragment {
             Log.i("ModuleDetailFragment", "InternalURLSpan onClick");
             mListener.onClick(widget);
         }
-    }
-
-    /*
-     * private class RelationshipAdapter extends BaseAdapter {
-     * 
-     * private Context mContext;
-     * 
-     * private String[] relationships;
-     * 
-     * private LayoutInflater mInflater;
-     * 
-     * public RelationshipAdapter(Context context) { mContext = context; mInflater =
-     * (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); }
-     * 
-     * public void setRelationshipArray(String[] relationshipArray) { relationships =
-     * relationshipArray; }
-     * 
-     * @Override public int getCount() { return relationships.length; }
-     * 
-     * @Override public Object getItem(int position) { return relationships[position]; }
-     * 
-     * @Override public long getItemId(int position) { return position; }
-     * 
-     * @Override public View getView(int position, View convertView, ViewGroup parent) { View layout
-     * = mInflater.inflate(R.layout.contact_listitem, null); TextView tv = ((TextView)
-     * layout.findViewById(android.R.id.text1)); tv.setText(relationships[position]); // TODO:
-     * either set the correct images or remove the image
-     * tv.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.contacts),
-     * null, null, null); return layout; }
-     * 
-     * }
-     */
-
-    /**
-     * Create a new instance of ModuleDetailFragment, initialized to show the text at 'index'.
-     */
-    public static ModuleDetailFragment newInstance(int index) {
-        ModuleDetailFragment f = new ModuleDetailFragment();
-
-        // Supply index input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("index", index);
-        f.setArguments(args);
-
-        return f;
-    }
-
-    public int getShownIndex() {
-        Bundle bundleArgs = getArguments();
-        return bundleArgs != null ? getArguments().getInt("index", 0) : 1;
-    }
+    }  
 }
