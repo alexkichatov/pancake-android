@@ -83,7 +83,17 @@ import com.imaginea.android.sugarcrm.ModuleFields;
  * <p>
  * RestUtil class.
  * </p>
+ * Utility class for handling Sugar CRM Rest API calls.
  * 
+ * TODO: Error Handling Note: The API has different set of ids for error and error messages and has
+ * not been consistent when last attempted.
+ * <p>
+ * Session id Issue:
+ * </p>
+ * The session id expirations need to be handled and propagated back, but is currently handled in
+ * SugarCrmApp.getSessionId based on a fixed time for renewing the session. If this fixed time is
+ * not enough then the "Invalid session Ids" care not propagated back, so we keep the time low for
+ * the time being.
  */
 public class RestUtil {
 

@@ -97,7 +97,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
             ContentValues values = new ContentValues();
             String updatedBeanId = null;
             // Check network is on
-            if (netOn) {
+            if (netOn || sessionId == null) {
 
                 switch (mCommand) {
                 case Util.INSERT:

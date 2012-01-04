@@ -6,7 +6,13 @@ import java.util.Map;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.imaginea.android.sugarcrm.util.RestUtil;
+import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
@@ -27,7 +33,11 @@ public class SugarCrmApp extends Application {
      */
     private String mSessionId;
 
+    private long mLastLoginTime = 0;
+
     private Map<String, Map<String, String>> moduleSortOrder = new HashMap<String, Map<String, String>>();
+
+    private static final String LOG_TAG = SugarCrmApp.class.getSimpleName();
 
     /**
      * <p>
@@ -37,6 +47,23 @@ public class SugarCrmApp extends Application {
      * @return a {@link java.lang.String} object.
      */
     public String getSessionId() {
+        long currentTime = SystemClock.currentThreadTimeMillis();
+
+        if (mSessionId == null || currentTime - mLastLoginTime > 30000) {
+            final String userName = SugarCrmSettings.getUsername(this).toString();
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            String url = pref.getString(Util.PREF_REST_URL, this.getString(R.string.defaultUrl));
+            Account account = getAccount(userName);
+            String password = AccountManager.get(this).getPassword(account);
+            mLastLoginTime = currentTime;
+            try {
+                mSessionId = RestUtil.loginToSugarCRM(url, account.name, password);
+            } catch (SugarCrmException se) {
+                Log.e(LOG_TAG, se.getMessage(), se);
+            } catch (Exception ex) {
+                Log.e(LOG_TAG, ex.getMessage(), ex);
+            }
+        }
         return mSessionId;
     }
 
