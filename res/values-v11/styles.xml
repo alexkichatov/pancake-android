@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="Theme.Pancake" parent="android:style/Theme.Light.NoTitleBar"></style>
+
+    <style name="Theme.Pancake.Settings" parent="android:style/Theme.Light"></style>
+
+</resources>
