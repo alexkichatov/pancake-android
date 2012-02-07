@@ -3,10 +3,10 @@ package com.imaginea.android.sugarcrm;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,10 +29,10 @@ public class DashboardFragment extends Fragment {
     private List<String> mModuleNames;
 
     private DatabaseHelper mDbHelper;
-
+             
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View root = inflater.inflate(R.layout.dashboard_fragment, container, false);
         return root;
     }
 
@@ -42,25 +42,30 @@ public class DashboardFragment extends Fragment {
         ViewGroup root = (ViewGroup) fragView.findViewById(R.id.dashboard);
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         mModuleNames = mDbHelper.getModuleList();
-        mModuleNames.add(getString(R.string.settings));
-        mModuleNames.add(getString(R.string.recent));
+        //mModuleNames.add(getString(R.string.settings));
+       // mModuleNames.add(getString(R.string.recent));
         Collections.sort(mModuleNames);
         // ViewGroup dashboardLayout = (ViewGroup)root.findViewById(R.id.dashboard);
 
         for (Iterator<String> iterator = mModuleNames.iterator(); iterator.hasNext();) {
-            View view = LayoutInflater.from(getActivity().getBaseContext()).inflate(R.layout.dashboard_item, null, false);
+            //View view = LayoutInflater.from(getActivity().getBaseContext()).inflate(R.layout.dashboard_item, null, false);
+            Button view = (Button)LayoutInflater.from(getActivity().getBaseContext()).inflate(R.layout.dashboard_item, null, false);
             String moduleName = (String) iterator.next();
-            ImageView iv = (ImageView) view.findViewById(R.id.moduleImage);
-            iv.setImageResource(mDbHelper.getModuleIcon(moduleName));
-            iv.setTag(moduleName);
-            TextView tv = (TextView) view.findViewById(R.id.moduleName);
-            tv.setText(moduleName);
+            view.setText(moduleName);
+            view.setCompoundDrawablesWithIntrinsicBounds(0, mDbHelper.getModuleIcon(moduleName), 0, 0);
+            //Button b = new Button(getActivity());
+            //b.set
+            //ImageView iv = (ImageView) view.findViewById(R.id.moduleImage);
+           // iv.setImageResource(mDbHelper.getModuleIcon(moduleName));
+           // iv.setTag(moduleName);
+           // TextView tv = (TextView) view.findViewById(R.id.moduleName);
+           // tv.setText(moduleName);
             view.setTag(moduleName);
             view.setClickable(true);
             root.addView(view);
         }
         // the image view click action is defined in the DashboardActivity
-        root.setActivated(true);
+        //root.setActivated(true);
     }
 
     /** {@inheritDoc} */
@@ -69,10 +74,9 @@ public class DashboardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void clickModule(View view) {
+    public void viewModuleList(View view) {
         Intent myIntent;
         String moduleName = (String) view.getTag();
-        Log.d("onClick moduleName message", moduleName);
         if (ViewUtil.isHoneycombTablet(getActivity().getBaseContext())) {
             myIntent = new Intent(DashboardFragment.this.getActivity(), ModuleDetailsMultiPaneActivity.class);
 
@@ -84,7 +88,13 @@ public class DashboardFragment extends Fragment {
             ((BaseSinglePaneActivity) getActivity()).openActivityOrFragment(myIntent);
         } else {
             myIntent = new Intent(DashboardFragment.this.getActivity(), ModulesActivity.class);
-            this.getActivity().startActivity(myIntent);
+            myIntent.putExtra(Util.ROW_ID, "1");
+            // myIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
+            myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
+            // this.getActivity().startActivity(myIntent);
+            ((BaseSinglePaneActivity) getActivity()).openActivityOrFragment(myIntent);
         }
     }
+    
+    
 }

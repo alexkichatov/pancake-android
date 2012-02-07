@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.tab.RecentModuleMultiPaneActivity;
+import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
@@ -32,15 +35,29 @@ import java.util.List;
  * 
  * @author Vasavi
  */
-public class DashboardActivity extends Activity {
+public class DashboardActivity extends BaseSinglePaneActivity {
 
-    private GridView mDashboard;
+    // private GridView mDashboard;
 
     private List<String> mModuleNames;
 
     private DatabaseHelper mDbHelper;
 
     private ProgressDialog mProgressDialog;
+
+    @Override
+    protected Fragment onCreatePane() {
+        Fragment fragment = new DashboardFragment();
+        
+        return fragment;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        //showDashboard();
+        getActivityHelper().setupHomeActivity();
+    }
 
     /**
      * {@inheritDoc}
@@ -50,58 +67,47 @@ public class DashboardActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // setContentView(R.layout.dashboard_activity);
 
         mDbHelper = new DatabaseHelper(this);
 
         Class wizardActivity = WizardDetector.getClass(getBaseContext());
         startActivityForResult(new Intent(this, wizardActivity), Util.LOGIN_REQUEST_CODE);
 
-        setContentView(R.layout.dashboard_activity);
-        TextView tv = (TextView) findViewById(R.id.headerText);
-        tv.setText(R.string.home);
-        mDashboard = (GridView) findViewById(R.id.dashboard);
-
-        mDashboard.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                mProgressDialog = ViewUtil.getProgressDialog(DashboardActivity.this, getString(R.string.loading), false);
-                mProgressDialog.show();
-
-                // invoke the corresponding activity when the item in the
-                // GridView is clicked
-                Intent myIntent;
-                String moduleName = mModuleNames.get(position);
-                if (moduleName.equals(getString(R.string.settings))) {
-                    myIntent = new Intent(DashboardActivity.this, SugarCrmSettings.class);
-                } else if (moduleName.equals(getString(R.string.recent))) {
-                    // TODO
-                    if (ViewUtil.isHoneycombTablet(getBaseContext())) {
-                        myIntent = new Intent(DashboardActivity.this, RecentModuleMultiPaneActivity.class);
-                    } else {
-                        myIntent = new Intent(DashboardActivity.this, RecentModuleActivity.class);
-                    }
-                } else {
-                    // TODO
-                    if (ViewUtil.isHoneycombTablet(getBaseContext())) {
-                        myIntent = new Intent(DashboardActivity.this, ModuleDetailsMultiPaneActivity.class);
-
-                        myIntent.putExtra(Util.ROW_ID, "1");
-                        // myIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-                        myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
-
-                        // ModuleDetailFragment mddetails =
-                        // ModuleDetailFragment.newInstance(position);
-                        // ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(detailIntent);
-                    } else {
-                        myIntent = new Intent(DashboardActivity.this, ModulesActivity.class);
-                    }
-                }
-
-                myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleNames.get(position));
-                DashboardActivity.this.startActivity(myIntent);
-            }
-        });
+        // super.onCreate(savedInstanceState);
+        // TextView tv = (TextView) findViewById(R.id.headerText);
+        // tv.setText(R.string.home);
+        /*
+         * mDashboard = (GridView) findViewById(R.id.dashboard);
+         * 
+         * mDashboard.setOnItemClickListener(new OnItemClickListener() { public void
+         * onItemClick(AdapterView<?> parent, View v, int position, long id) {
+         * 
+         * mProgressDialog = ViewUtil.getProgressDialog(DashboardActivity.this,
+         * getString(R.string.loading), false); mProgressDialog.show();
+         * 
+         * // invoke the corresponding activity when the item in the // GridView is clicked Intent
+         * myIntent; String moduleName = mModuleNames.get(position); if
+         * (moduleName.equals(getString(R.string.settings))) { myIntent = new
+         * Intent(DashboardActivity.this, SugarCrmSettings.class); } else if
+         * (moduleName.equals(getString(R.string.recent))) { // TODO if
+         * (ViewUtil.isHoneycombTablet(getBaseContext())) { myIntent = new
+         * Intent(DashboardActivity.this, RecentModuleMultiPaneActivity.class); } else { myIntent =
+         * new Intent(DashboardActivity.this, RecentModuleActivity.class); } } else { // TODO if
+         * (ViewUtil.isHoneycombTablet(getBaseContext())) { myIntent = new
+         * Intent(DashboardActivity.this, ModuleDetailsMultiPaneActivity.class);
+         * 
+         * myIntent.putExtra(Util.ROW_ID, "1"); // myIntent.putExtra(RestUtilConstants.BEAN_ID,
+         * cursor.getString(1)); myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
+         * 
+         * // ModuleDetailFragment mddetails = // ModuleDetailFragment.newInstance(position); //
+         * ((BaseMultiPaneActivity)getActivity()).openActivityOrFragment(detailIntent); } else {
+         * myIntent = new Intent(DashboardActivity.this, ModulesActivity.class); } }
+         * 
+         * myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleNames.get(position));
+         * DashboardActivity.this.startActivity(myIntent); } });
+         */
     }
 
     /** {@inheritDoc} */
@@ -118,7 +124,7 @@ public class DashboardActivity extends Activity {
     /** {@inheritDoc} */
     @Override
     protected void onResume() {
-        super.onResume();
+        super.onResume();       
     }
 
     /** {@inheritDoc} */
@@ -137,6 +143,7 @@ public class DashboardActivity extends Activity {
                 if (syncScreenCheck == 0L) {
                     startActivityForResult(new Intent(this, SyncConfigActivity.class), Util.SYNC_DATA_REQUEST_CODE);
                 } else
+                    //setContentView(R.layout.dashboard_activity);
                     showDashboard();
             }
             break;
@@ -144,6 +151,7 @@ public class DashboardActivity extends Activity {
         case Util.SYNC_DATA_REQUEST_CODE:
             // whatever is the result code, we take the user to dashboard
             // we have the module list after the login, so get them and store
+            // setContentView(R.layout.dashboard_activity);
             showDashboard();
             break;
         default:
@@ -152,14 +160,53 @@ public class DashboardActivity extends Activity {
     }
 
     void showDashboard() {
-        mModuleNames = mDbHelper.getModuleList();
-        mModuleNames.add(getString(R.string.settings));
-        mModuleNames.add(getString(R.string.recent));
-        Collections.sort(mModuleNames);
-        mDashboard.setAdapter(new AppsAdapter(this));
+        /*
+         * mModuleNames = mDbHelper.getModuleList(); mModuleNames.add(getString(R.string.settings));
+         * mModuleNames.add(getString(R.string.recent)); Collections.sort(mModuleNames);
+         * mDashboard.setAdapter(new AppsAdapter(this));
+         */
+        // setContentView(R.layout.dashboard_activity);
+        Log.d("DashbooardActivity", "show dashboard called");
+        ViewGroup root = (ViewGroup) findViewById(R.id.home);
+        //root.setActivated(true);
+        root.requestLayout();
+        
+       // DashboardFragment moduleDetailFragment = (DashboardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_dashboard);
+        //moduleDetailFragment.setArguments(intentToFragmentArguments(getIntent()));
+
     }
 
-    public class AppsAdapter extends BaseAdapter {
+    public void viewModuleList(View view) {
+        Intent myIntent;
+        String moduleName = (String) view.getTag();
+        Log.d("onClick moduleName message", moduleName);
+        if (moduleName.equals(getString(R.string.settings))) {
+            myIntent = new Intent(DashboardActivity.this, SugarCrmSettings.class);
+        } else if (moduleName.equals(getString(R.string.recent))) {
+            // TODO
+            if (ViewUtil.isHoneycombTablet(getBaseContext())) {
+                myIntent = new Intent(DashboardActivity.this, RecentModuleMultiPaneActivity.class);
+            } else {
+                myIntent = new Intent(DashboardActivity.this, RecentModuleActivity.class);
+            }
+        } else {
+            if (ViewUtil.isHoneycombTablet(getBaseContext())) {
+                myIntent = new Intent(this, ModuleDetailsMultiPaneActivity.class);
+
+                myIntent.putExtra(Util.ROW_ID, "1");
+                // myIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));                
+                // ModuleDetailFragment mddetails =
+                // ModuleDetailFragment.newInstance(position);
+               // ((BaseSinglePaneActivity) this).openActivityOrFragment(myIntent);
+            } else {
+                myIntent = new Intent(this, ModulesActivity.class);               
+            }
+        }
+        myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
+        DashboardActivity.this.startActivity(myIntent);
+    }
+
+    /*public class AppsAdapter extends BaseAdapter {
         private Context mContext;
 
         public AppsAdapter(Context context) {
@@ -196,6 +243,5 @@ public class DashboardActivity extends Activity {
         public final long getItemId(int position) {
             return 0;
         }
-
-    }
+    }*/
 }
