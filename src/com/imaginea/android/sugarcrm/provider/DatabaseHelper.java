@@ -190,9 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleIcons.put(Util.OPPORTUNITIES, R.drawable.opportunity);
         moduleIcons.put(Util.CASES, R.drawable.cases);
         moduleIcons.put(Util.CALLS, R.drawable.calls);
-        moduleIcons.put(Util.MEETINGS, R.drawable.meeting);
-        // TODO: as of now, there is no icon for campaigns
-        // moduleIcons.put(Util.CAMPAIGNS, R.drawable.campaings);
+        moduleIcons.put(Util.MEETINGS, R.drawable.meeting);       
+        moduleIcons.put(Util.CAMPAIGNS, R.drawable.campaigns);
         moduleIcons.put("Settings", R.drawable.settings);
         // moduleIcons.put("Recent");
 
