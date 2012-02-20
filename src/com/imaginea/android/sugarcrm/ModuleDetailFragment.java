@@ -216,7 +216,9 @@ public class ModuleDetailFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-            tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
+            // TODO - cleanup
+            if (tv != null)
+                tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
 
             mProgressDialog = ViewUtil.getProgressDialog(ModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
             mProgressDialog.show();
@@ -348,7 +350,11 @@ public class ModuleDetailFragment extends Fragment {
         protected void onPostExecute(Object result) {
             super.onPostExecute(result);
 
-            setContents();
+            if (mCursor.getCount() > 0)
+                setContents();
+            else {
+
+            }
             // close the cursor irrespective of the result
             if (mCursor != null && !mCursor.isClosed())
                 mCursor.close();
@@ -536,5 +542,5 @@ public class ModuleDetailFragment extends Fragment {
             Log.i("ModuleDetailFragment", "InternalURLSpan onClick");
             mListener.onClick(widget);
         }
-    }  
+    }
 }
