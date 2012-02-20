@@ -33,6 +33,7 @@ import android.widget.TextView;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
+import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
@@ -107,8 +108,8 @@ public class ModuleListFragment extends ListFragment {
 
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
-        Intent intent = getActivity().getIntent();
-        // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
+       //Intent intent = getActivity().getIntent();
+         final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -131,8 +132,7 @@ public class ModuleListFragment extends ListFragment {
         // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-                Log.e(LOG_TAG, "item clicked");
+            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {                
                 addToRecent(position);
                 openDetailScreen(position);
             }
@@ -282,7 +282,8 @@ public class ModuleListFragment extends ListFragment {
 
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {
-            // For some reason the requested item isn't available, do nothing
+            // For some reason the requested item isn't available, do nothing            
+            Log.w(LOG_TAG, "openDetailScreen, Cursor is null for " + position);
             return;
         }
         Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
@@ -293,11 +294,11 @@ public class ModuleListFragment extends ListFragment {
             /*
              * We can display everything in-place with fragments. Have the list highlight this item
              * and show the data. Check what fragment is shown, replace if needed.
-             */
-            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-            if (details == null) {
-                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
-            }
+             */            
+            //ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+            // Log.d("onClick list item", "details is null");
+            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
+
         } else {
             startActivity(detailIntent);
         }
