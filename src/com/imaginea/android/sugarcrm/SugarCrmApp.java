@@ -54,14 +54,16 @@ public class SugarCrmApp extends Application {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
             String url = pref.getString(Util.PREF_REST_URL, this.getString(R.string.defaultUrl));
             Account account = getAccount(userName);
-            String password = AccountManager.get(this).getPassword(account);
-            mLastLoginTime = currentTime;
-            try {
-                mSessionId = RestUtil.loginToSugarCRM(url, account.name, password);
-            } catch (SugarCrmException se) {
-                Log.e(LOG_TAG, se.getMessage(), se);
-            } catch (Exception ex) {
-                Log.e(LOG_TAG, ex.getMessage(), ex);
+            if (account != null) {
+                String password = AccountManager.get(this).getPassword(account);
+                mLastLoginTime = currentTime;
+                try {
+                    mSessionId = RestUtil.loginToSugarCRM(url, account.name, password);
+                } catch (SugarCrmException se) {
+                    Log.e(LOG_TAG, se.getMessage(), se);
+                } catch (Exception ex) {
+                    Log.e(LOG_TAG, ex.getMessage(), ex);
+                }
             }
         }
         return mSessionId;
