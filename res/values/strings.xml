@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Application name -->
-    <string name="appName">iCRM- Android</string>
+    <string name="appName">Pancake</string>
     <string name="appProviderDesc">Provider for Accounts, Contacts, Leads,
 		Opportunities and other modules of Sugar CRM</string>
     <string name="home">Home</string>
