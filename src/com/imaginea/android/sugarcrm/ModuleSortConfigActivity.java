@@ -57,6 +57,7 @@ public class ModuleSortConfigActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // Setup layout
+        setTheme(android.R.style.Theme_Holo_Dialog);
         setContentView(R.layout.module_sort_config);
         mHeaderTextView = (TextView) findViewById(R.id.headerText);
         mHeaderTextView.setText(R.string.sortSettings);
