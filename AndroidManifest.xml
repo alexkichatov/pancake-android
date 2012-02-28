@@ -45,7 +45,7 @@
 	    android:debuggable="true">
         
         <activity android:name=".DashboardActivity"
-        	android:label="@string/appName" android:theme="@android:style/Theme.Light.NoTitleBar" 
+        	android:label="@string/appName" android:theme="@style/Theme.Pancake"
         	android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,7 +54,7 @@
         </activity>
         
 		<activity android:name=".ModulesActivity"
-			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
 			 <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />                    
@@ -64,7 +64,7 @@
 		</activity>		
 		
 		<activity android:name=".RecentModuleActivity" 
-			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
 			 <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />                    
@@ -74,7 +74,7 @@
 		</activity>      
         
         <activity android:name=".SugarCrmSettings" android:label="@string/settings"
-        	 android:theme="@android:style/Theme.Light">
+        	 android:theme="@style/Theme.Pancake.Settings">
             <intent-filter>
                 <action android:name="com.imaginea.android.sugarcrm.settings" />           
                 <category android:name="android.intent.category.PREFERENCE" />
@@ -83,7 +83,7 @@
         </activity>
         
         <activity android:name=".ModuleDetailActivity" android:label="@string/contactDetails"
-       	 	android:theme="@android:style/Theme.Light.NoTitleBar"
+       	 	android:theme="@style/Theme.Pancake"
        	 	android:configChanges="orientation|keyboardHidden">
              <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -92,7 +92,7 @@
         </activity>                
                 
         <activity android:name=".EditModuleDetailActivity" android:label="@string/editDetails"
-       	 	android:theme="@android:style/Theme.Light.NoTitleBar" 
+       	 	android:theme="@style/Theme.Pancake" 
        	 	android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
@@ -101,7 +101,7 @@
         </activity>
 	    
 	    <activity android:name=".SearchActivity" android:launchMode="singleTop"
-	    	android:theme="@android:style/Theme.Light.NoTitleBar"
+	    	android:theme="@style/Theme.Pancake"
        	 	android:configChanges="orientation|keyboardHidden">
 	        <intent-filter>
 	            <action android:name="android.intent.action.SEARCH" />
@@ -111,7 +111,7 @@
 
         <activity android:name=".WizardActivity"
 			android:label="@string/appName"
-			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:theme="@style/Theme.Pancake"
 			android:clearTaskOnLaunch="true"
 			android:excludeFromRecents="true">
 			<!--
@@ -121,13 +121,13 @@
 		</activity>
 		<activity android:name=".WizardAuthActivity"
 			android:label="@string/appName"
-			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:theme="@style/Theme.Pancake"
 			android:clearTaskOnLaunch="true"
 			android:excludeFromRecents="true">
 		</activity>
 		<activity android:name=".SyncConfigActivity"
 			android:label="@string/appName"
-			android:theme="@android:style/Theme.Light.NoTitleBar">
+			android:theme="@style/Theme.Pancake">
 			 <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />           
@@ -136,7 +136,7 @@
 		
 		<activity android:name=".ModuleSortConfigActivity" 
 			android:label="@string/appName"
-			android:theme="@android:style/Theme.Light.NoTitleBar">		
+			android:theme="@style/Theme.Pancake">		
 			 <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />         
@@ -144,7 +144,7 @@
 		</activity>
 		
 		<activity android:name=".tab.ModuleDetailsMultiPaneActivity"
-			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
 			<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />    
@@ -152,7 +152,7 @@
 		</activity>
 		
 		<activity android:name=".tab.RecentModuleMultiPaneActivity"
-			   android:label="@string/appName" android:theme="@android:style/Theme.Black.NoTitleBar">
+			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
 			<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />    
