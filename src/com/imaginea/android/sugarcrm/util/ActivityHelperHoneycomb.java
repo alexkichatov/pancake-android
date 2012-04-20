@@ -67,8 +67,9 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
             mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
                                             | ActionBar.DISPLAY_SHOW_TITLE);
         } else {
-            mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_USE_LOGO
-                                            | ActionBar.DISPLAY_SHOW_TITLE);
+            //TODO
+           /// mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_USE_LOGO
+            //                                | ActionBar.DISPLAY_SHOW_TITLE);
         }
     }
 
