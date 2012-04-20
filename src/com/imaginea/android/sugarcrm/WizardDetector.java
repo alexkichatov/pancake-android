@@ -5,6 +5,8 @@ import android.os.Build;
 
 /**
  * VersionedWizardDetector, is solely present to make the Account login work on both 1.6 and 2.0
+ *  
+ * @deprecated
  */
 public abstract class WizardDetector {
     /**
