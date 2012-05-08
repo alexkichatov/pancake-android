@@ -337,4 +337,23 @@ public class Util {
         nm.notify(0, n);
         return id;
     }
+    
+    public static synchronized int notify(Context context, String packageName, Class clazz, String title, String message) {
+		NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		ComponentName comp = new ComponentName(packageName, clazz.getSimpleName());
+	    Intent intent = new Intent().setComponent(comp);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
+		Notification n = new Notification(android.R.drawable.stat_notify_sync, message, System.currentTimeMillis());
+		n.setLatestEventInfo(context, title, message, pendingIntent);
+		n.flags = Notification.FLAG_AUTO_CANCEL;
+		n.defaults |= Notification.DEFAULT_SOUND;
+		int id = getId();
+		nm.notify(id, n);
+		return id;
+	}
+    
+    public static synchronized void notificationCancel(Context context, int id) {
+    	NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    	nm.cancel(id);
+    }
 }
