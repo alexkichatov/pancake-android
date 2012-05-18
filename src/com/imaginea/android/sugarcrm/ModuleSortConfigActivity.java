@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -78,7 +79,7 @@ public class ModuleSortConfigActivity extends Activity {
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, moduleNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mModuleNameSpinner.setAdapter(adapter);
-
+        mModuleNameSpinner.setBackgroundColor(Color.GRAY);
         // disable the fieldname spinner until the user selects the module
         mFieldNameSpinner.setEnabled(false);
 
@@ -90,6 +91,7 @@ public class ModuleSortConfigActivity extends Activity {
                 getString(R.string.ascending), getString(R.string.descending) });
         mSortOrderSpinner.setAdapter(adapter);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSortOrderSpinner.setBackgroundColor(Color.GRAY);
         // disable the sortOrder spinner until the user selects the fieldName
         mSortOrderSpinner.setEnabled(false);
 
@@ -124,6 +126,7 @@ public class ModuleSortConfigActivity extends Activity {
                 ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getBaseContext(), android.R.layout.simple_spinner_item, moduleFieldsChoice);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mFieldNameSpinner.setAdapter(adapter);
+                mFieldNameSpinner.setBackgroundColor(Color.GRAY);
                 mFieldNameSpinner.setEnabled(true);
             }
 
