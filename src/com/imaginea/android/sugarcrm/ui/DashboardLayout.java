@@ -99,40 +99,40 @@ public class DashboardLayout extends ViewGroup {
         int hSpace = 0;
         int vSpace = 0;
 
-        int cols = 1;
-        int rows;
+        int cols;
+        int rows = height/mMaxChildHeight;
 
-        while (true) {
-            rows = (visibleCount - 1) / cols + 1;
-
+       // while (true) {
+            //rows = (visibleCount - 1) / cols + 1;
+        	cols = (visibleCount - 1) / rows + 1;
             hSpace = ((width - mMaxChildWidth * cols) / (cols + 1));
             vSpace = ((height - mMaxChildHeight * rows) / (rows + 1));
 
-            spaceDifference = Math.abs(vSpace - hSpace);
-            if (rows * cols != visibleCount) {
-                spaceDifference *= UNEVEN_GRID_PENALTY_MULTIPLIER;
-            }
+            //spaceDifference = Math.abs(vSpace - hSpace);
+            //if (rows * cols != visibleCount) {
+            //    spaceDifference *= UNEVEN_GRID_PENALTY_MULTIPLIER;
+            //}
 
-            if (spaceDifference < bestSpaceDifference) {
+            //if (spaceDifference < bestSpaceDifference) {
                 // Found a better whitespace squareness/ratio
-                bestSpaceDifference = spaceDifference;
+            //    bestSpaceDifference = spaceDifference;
 
                 // If we found a better whitespace squareness and there's only 1 row, this is
                 // the best we can do.
-                if (rows == 1) {
-                    break;
-                }
-            } else {
-                // This is a worse whitespace ratio, use the previous value of cols and exit.
-                --cols;
-                rows = (visibleCount - 1) / cols + 1;
-                hSpace = ((width - mMaxChildWidth * cols) / (cols + 1));
-                vSpace = ((height - mMaxChildHeight * rows) / (rows + 1));
-                break;
-            }
+             //   if (rows == 1) {
+              //      break;
+             //   }
+          //  } else {
+           //     // This is a worse whitespace ratio, use the previous value of cols and exit.
+             //   --cols;
+            //    rows = (visibleCount - 1) / cols + 1;
+            //    hSpace = ((width - mMaxChildWidth * cols) / (cols + 1));
+            //    vSpace = ((height - mMaxChildHeight * rows) / (rows + 1));
+           //     break;
+           // }
 
-            ++cols;
-        }
+           // ++cols;
+       // }
 
         // Lay out children based on calculated best-fit number of rows and cols.
 
