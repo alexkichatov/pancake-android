@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -51,8 +54,15 @@ public class SyncConfigActivity extends Activity {
         super.onCreate(savedInstanceState);
         // Setup layout
         setContentView(R.layout.sync_config);
-        mHeaderTextView = (TextView) findViewById(R.id.headerText);
-        mHeaderTextView.setText(R.string.syncSettings);
+        final CustomActionbar actionBar = (CustomActionbar) findViewById(R.id.custom_actionbar);
+        
+        
+        final Action homeAction = new IntentAction(this, new Intent(this, DashboardActivity.class), R.drawable.home);
+        actionBar.setHomeAction(homeAction);       
+        actionBar.setTitle(getString(R.string.syncSettings));
+        
+        //mHeaderTextView = (TextView) findViewById(R.id.headerText);
+        //mHeaderTextView.setText(R.string.syncSettings);
         // mTitleTextView = (TextView) findViewById(R.id.title);
         mStartDateButton = (Button) findViewById(R.id.start_date);
         mEndDateButton = (Button) findViewById(R.id.end_date);
@@ -65,8 +75,8 @@ public class SyncConfigActivity extends Activity {
         mStartTime.setTime(startTime);
         mEndTime = new Date();
         mEndTime.setTime(endTime);
-        setDate(mStartDateButton, mStartTime);
-        setDate(mEndDateButton, mEndTime);
+        //setDate(mStartDateButton, mStartTime);
+        //setDate(mEndDateButton, mEndTime);
         populateWhen();
 
         SugarCrmApp app = (SugarCrmApp) getApplication();
@@ -115,6 +125,7 @@ public class SyncConfigActivity extends Activity {
         SugarCrmApp app = (SugarCrmApp) getApplication();
         final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this).toString();
         ContentResolver.cancelSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY);
+        this.finish();
     }
 
     /**
@@ -161,14 +172,19 @@ public class SyncConfigActivity extends Activity {
             long endMillis;
             if (mView == mStartDateButton) {
                 // The start date was changed.
-                long duartion = endDate.getTime() - startDate.getTime();
+                //long duartion = endDate.getTime() - startDate.getTime();
                 calendar.set(year, month, monthDay);
                 startMillis = calendar.getTimeInMillis();
-                endMillis = startMillis + duartion;
+                //endMillis = startMillis + duartion;
+                endMillis = endDate.getTime();
                 long curTime = System.currentTimeMillis();
                 // see to that the endDate does not exceed the current date
                 if (endMillis > curTime) {
                     endMillis = curTime;
+                }
+                
+                if(startMillis > endMillis) {
+                	startMillis = endMillis;
                 }
 
             } else {
@@ -184,8 +200,9 @@ public class SyncConfigActivity extends Activity {
                 }
 
                 // Do not allow an event to have an end time before the start time.
-                if (endDate.before(startDate)) {
-                    endDate.setTime(startMillis);
+                if (startMillis > endMillis) {
+                    //endDate.setTime(startMillis);
+                	endMillis = startMillis;
                 }
 
             }

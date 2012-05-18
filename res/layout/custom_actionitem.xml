@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="45dip">
+<View
+	    android:id="@+id/actionbar_homeseperator"
+        android:layout_width="1dp"
+        android:layout_height="41dip"
+        android:background="#c4c4c4"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
+	<ImageButton
+	    android:layout_toRightOf="@id/actionbar_homeseperator"
+	    android:id="@+id/actionbar_item"
+	    android:layout_width="35dip"
+		android:layout_height="fill_parent"
+		android:layout_gravity="center_vertical"
+		android:background="@drawable/actionbar_btn"		 
+	    android:visibility="visible"	    
+	 />	
+</RelativeLayout>

@@ -32,4 +32,9 @@
     <color name="block_column_1">#ff0fabff</color>
     <color name="block_column_2">#ffdf1831</color>
     <color name="block_column_3">#ff009939</color>
+    
+    <color name="actionbar_background_start">#96cdfc</color>
+    <color name="actionbar_background_end">#439eef</color>
+    <color name="actionbar_background_item_pressed_start">#23c5f1</color>
+    <color name="actionbar_background_item_pressed_end">#23c5f1</color>
 </resources>

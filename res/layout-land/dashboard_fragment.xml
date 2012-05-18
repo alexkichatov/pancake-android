@@ -3,7 +3,12 @@
     android:layout_height="fill_parent" 
     android:orientation="vertical"
     android:id="@+id/home">
-	<include layout="@layout/header" />
+	<!--  <include layout="@layout/header" /> -->
+	<com.imaginea.android.sugarcrm.CustomActionbar
+        android:id="@+id/custom_actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+	 />
     <com.imaginea.android.sugarcrm.ui.DashboardLayout
         android:id="@+id/dashboard"
         android:layout_width="fill_parent"

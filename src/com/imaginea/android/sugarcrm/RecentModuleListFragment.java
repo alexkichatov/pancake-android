@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
@@ -95,13 +97,19 @@ public class RecentModuleListFragment extends ListFragment {
 
         // If the list is a list of related items, hide the filterImage and
         // allItems image
-        if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
-            getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
-            getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
-        }
+       // if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
+        //    getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
+       //     getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
+       // }
 
-        TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-        tv.setText(mModuleName);
+        //TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+        //tv.setText(mModuleName);
+        final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
+        actionBar.setTitle(mModuleName);
+        
+        final Action homeAction = new IntentAction(RecentModuleListFragment.this.getActivity(),
+				 new Intent(RecentModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+        actionBar.setHomeAction(homeAction);
 
         mListView = getListView();
 
@@ -120,15 +128,16 @@ public class RecentModuleListFragment extends ListFragment {
         mListView.setFocusable(true);
         mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
-        registerForContextMenu(getListView());
+        //registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
         }
 
         mModuleUri = mDbHelper.getModuleUri(mModuleName);
-        if (intent.getData() == null) {
+        if (mIntentUri == null) {
             intent.setData(mModuleUri);
+            mIntentUri = mModuleUri;
         }
         // Perform a managed query. The Activity will handle closing and
         // requerying the cursor
@@ -154,7 +163,7 @@ public class RecentModuleListFragment extends ListFragment {
 
         if (mAdapter.getCount() == 0) {
             mListView.setVisibility(View.GONE);
-            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
             tv1.setVisibility(View.VISIBLE);
             if (mIntentUri != null) {
                 tv1.setText("No " + mModuleName + " found");
@@ -170,7 +179,7 @@ public class RecentModuleListFragment extends ListFragment {
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
         if (ViewUtil.isHoneycombTablet(getActivity()))
-            openDetailScreen(1);
+            openDetailScreen(0);
 
     }
 
@@ -272,7 +281,7 @@ public class RecentModuleListFragment extends ListFragment {
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
         detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(2));
         detailIntent.putExtra(RestUtilConstants.MODULE_NAME, cursor.getString(3));
-
+        detailIntent.putExtra("Recent", true);
         Log.d(LOG_TAG, "rowId:" + cursor.getString(1) + "BEAN_ID:" + cursor.getString(2)
                                         + "MODULE_NAME:" + cursor.getString(3));
 
@@ -284,11 +293,11 @@ public class RecentModuleListFragment extends ListFragment {
              * Check what fragment is shown, replace if needed.
              */
 
-            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-            Log.d(LOG_TAG, details + "");
-            if (details == null) {
+            //ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+           // Log.d(LOG_TAG, details + "");
+            //if (details == null) {
                 ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
-            }
+           // }
         } else {
             startActivity(detailIntent);
         }

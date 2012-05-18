@@ -19,7 +19,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +27,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
@@ -100,11 +103,15 @@ public class EditModuleDetailFragment extends Fragment {
     private ProgressDialog mProgressDialog;
 
     private boolean hasError;
+    
+    private RelativeLayout mParent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.edit_details, container, false);
+    	mParent = (RelativeLayout)inflater.inflate(R.layout.edit_details, container, false);
+    	
+    	return mParent;
     }
 
     /** {@inheritDoc} */
@@ -166,14 +173,28 @@ public class EditModuleDetailFragment extends Fragment {
         if (importFlag == Util.CONTACT_IMPORT_FLAG) {
             importContact();
         }
-
+        
+        final CustomActionbar actionBar = (CustomActionbar) mParent.getChildAt(0);
+        if (!ViewUtil.isTablet(getActivity())) {       
+	        final Action homeAction = new IntentAction(EditModuleDetailFragment.this.getActivity(),
+					 new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+	        actionBar.setHomeAction(homeAction);
+	        actionBar.addActionItem(new SaveAction());
+        }
+        else {               
+        	
+        	actionBar.addActionItem(new SaveAction());
+        	if(MODE != Util.NEW_ORPHAN_MODE)
+        		actionBar.addActionItem(new DiscardAction());
+        }
+        
         // our xml onClick items no longer work - so have to set these explicitly again- YUCK
-        getActivity().findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
+       /* getActivity().findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveModuleItem(v);
             }
-        });
+        });*/
     }
 
     /** {@inheritDoc} */
@@ -227,11 +248,12 @@ public class EditModuleDetailFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+            //TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+            final CustomActionbar tv = (CustomActionbar) mParent.getChildAt(0);
             if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                tv.setText(String.format(getString(R.string.editDetailsHeader), mModuleName));
+                tv.setTitle(String.format(getString(R.string.editDetailsHeader), mModuleName));
             } else if (MODE == Util.NEW_ORPHAN_MODE || MODE == Util.NEW_RELATIONSHIP_MODE) {
-                tv.setText(String.format(getString(R.string.newDetailsHeader), mModuleName));
+                tv.setTitle(String.format(getString(R.string.newDetailsHeader), mModuleName));
             }
 
             mAccountCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
@@ -586,7 +608,8 @@ public class EditModuleDetailFragment extends Fragment {
                 break;
             case Util.FETCH_SUCCESS:
                 // set visibility for the SAVE button
-                getActivity().findViewById(R.id.save).setVisibility(View.VISIBLE);
+            	LinearLayout parent = (LinearLayout) getActivity().findViewById(R.id.actionbar_items);
+            	parent.getChildAt(0).setVisibility(View.VISIBLE);
                 break;
             default:
             }
@@ -804,7 +827,10 @@ public class EditModuleDetailFragment extends Fragment {
                     }
                 }
             }
-
+            if(rowsCount == 0 && fieldValue.isEmpty())
+            {
+            	hasError = true;
+            }
             // add the fieldName : fieldValue in the ContentValues
             modifiedValues.put(fieldName, editText.getText().toString());
             rowsCount++;
@@ -827,6 +853,7 @@ public class EditModuleDetailFragment extends Fragment {
             // finish();
         } else {
             ViewUtil.makeToast(getActivity().getBaseContext(), R.string.validationErrorMsg);
+            hasError=false;
             mProgressDialog.cancel();
         }
         ViewUtil.dismissVirtualKeyboard(getActivity().getBaseContext(), v);
@@ -912,6 +939,7 @@ public class EditModuleDetailFragment extends Fragment {
     /** {@inheritDoc} */
     // @Override
     // TODO
+    /*
     public boolean onCreateOptionsMenu(Menu menu) {
         // Hold on to this
         // Inflate the currently selected menu XML resource.
@@ -921,14 +949,14 @@ public class EditModuleDetailFragment extends Fragment {
         item.setAlphabeticShortcut('s');
         return true;
     }
-
+*/
     /** {@inheritDoc} */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.save:
+        /*case R.id.save:
             saveModuleItem(getActivity().getCurrentFocus());
-            return true;
+            return true;*/
         default:
             return true;
         }
@@ -951,7 +979,10 @@ public class EditModuleDetailFragment extends Fragment {
                     Log.d(TAG, "Display Status");
                 mProgressDialog.cancel();
                 ViewUtil.makeToast(getActivity().getBaseContext(), (String) message.obj);
-                getActivity().finish();
+                if(ViewUtil.isTablet(getActivity()))
+                	getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
+                else
+                	getActivity().finish();                	
                 break;
             }
         }
@@ -1081,4 +1112,32 @@ public class EditModuleDetailFragment extends Fragment {
 
         }
     }
+    
+    private class SaveAction extends AbstractAction {
+        
+        public SaveAction() {
+            super(R.drawable.save);
+        }
+
+        @Override
+        public void performAction(View view) {
+        	saveModuleItem(getActivity().getCurrentFocus());            
+        }
+    }
+    
+    private class DiscardAction extends AbstractAction {
+
+		public DiscardAction() {
+			super(R.drawable.delete);			
+		}
+    	
+		@Override
+        public void performAction(View view) {
+			getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
+			ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
+	        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+	        
+		}
+    }
+    
 }

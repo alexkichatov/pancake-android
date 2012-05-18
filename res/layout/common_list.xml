@@ -6,7 +6,11 @@
     android:background="@android:color/white"
     android:orientation="vertical" >
 
-    <include layout="@layout/list_header" />
+   <com.imaginea.android.sugarcrm.CustomActionbar
+        android:id="@+id/custom_actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+	 />
 
     <ListView
         android:id="@android:id/list"

@@ -4,15 +4,20 @@
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent"    
     android:paddingBottom="30dip">
+    <com.imaginea.android.sugarcrm.CustomActionbar
+        android:id="@+id/custom_actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+	 />
 	<!-- include android:id="@+id/header" layout="@layout/header"/-->
-    <TextView android:id="@+id/accountName"
+  <!--  <TextView android:id="@+id/accountName"
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent"	
-		style="@style/header_2_text_label"/>
+		style="@style/header_2_text_label"/>-->
     <ScrollView 
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent"
-		android:layout_below="@id/accountName"
+		android:layout_below="@id/custom_actionbar"
 		android:scrollbarAlwaysDrawHorizontalTrack="true"
 		android:scrollbars="horizontal|vertical"
 		>
