@@ -18,6 +18,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -38,6 +39,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
@@ -287,11 +289,11 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         // boolean rememberPwd = ((CheckBox)
         // flipper.findViewById(R.id.loginRememberPwd)).isChecked();
 
-        TextView tv = (TextView) flipper.findViewById(R.id.loginStatusMsg);
+        loginStatusMsg = (TextView) flipper.findViewById(R.id.loginStatusMsg);
         String msg = "";
         if (TextUtils.isEmpty(usr) || TextUtils.isEmpty(pwd)) {
             msg = getString(R.string.validFieldMsg) + "username and password.\n";
-            tv.setText(msg);
+            loginStatusMsg.setText(msg);
         } else {
             mAuthTask = new AuthenticationTask();
             mAuthTask.execute(usr, pwd); // rememberPwd);
@@ -381,6 +383,26 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         private boolean hasExceptions = false;
 
         private String sceDesc;
+        
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.connecting), false);
+            mProgressDialog.setOnCancelListener(new OnCancelListener() {               
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                	mUrlTask.cancel(true);
+                	Toast.makeText(WizardAuthActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                }
+            });
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                	mProgressDialog.cancel();
+                }
+            });
+            mProgressDialog.show();
+        }
 
         @Override
         protected Object doInBackground(Object... urls) {
@@ -402,6 +424,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         protected void onPostExecute(Object restUrl) {
             super.onPostExecute(restUrl);
+            
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+            
             if (isCancelled())
                 return;
 
@@ -539,7 +565,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
             if (hasExceptions) {
                 // if (wizardState != Util.URL_USER_PWD_AVAILABLE) {
-                loginStatusMsg.setText(sceDesc);
+            	loginStatusMsg.setText(sceDesc);
                 mProgressDialog.cancel();
                 // }
                 // else {
