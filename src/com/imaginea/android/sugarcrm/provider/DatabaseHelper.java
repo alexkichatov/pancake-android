@@ -192,8 +192,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleIcons.put(Util.CALLS, R.drawable.calls);
         moduleIcons.put(Util.MEETINGS, R.drawable.meeting);       
         moduleIcons.put(Util.CAMPAIGNS, R.drawable.campaigns);
-        moduleIcons.put("Settings", R.drawable.settings);
-        // moduleIcons.put("Recent");
+        //moduleIcons.put("Settings", R.drawable.settings1);
+         moduleIcons.put("Recent", R.drawable.recent);
 
         // Module Projections
         moduleProjections.put(Util.ACCOUNTS, Accounts.DETAILS_PROJECTION);
