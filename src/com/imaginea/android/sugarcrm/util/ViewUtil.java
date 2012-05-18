@@ -135,7 +135,7 @@ public class ViewUtil {
     public static void dismissVirtualKeyboard(Context context, View view) {
 
         InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        // if(inputManager.isActive(view))
+        if(inputManager.isActive(view))
         inputManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
         // inputManager.showSoftInput(ourCanvasInstance, 0);
         // inputManager.hideSoftInputFromInputMethod(this, 0);
