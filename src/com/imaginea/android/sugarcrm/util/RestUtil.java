@@ -150,7 +150,7 @@ public class RestUtil {
         Map<String, Object> data = new LinkedHashMap<String, Object>();
         data.put(SESSION, sessionId);
         data.put(MODULE_NAME, moduleName);
-        data.put(QUERY, query != null ? query : "");
+        data.put(QUERY, query != null ? query.toLowerCase() : "");
         data.put(ORDER_BY, orderBy != null ? orderBy : "");
         data.put(OFFSET, offset != null ? offset : "");
         data.put(SELECT_FIELDS, (selectFields != null && selectFields.length != 0) ? new JSONArray(Arrays.asList(selectFields))
