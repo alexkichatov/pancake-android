@@ -63,13 +63,15 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
         super.setupHomeActivity();
         // NOTE: there needs to be a content view set before this is called, so this method
         // should be called in onPostCreate.
+        ActionBar actionBar = mActivity.getActionBar();
         if (ViewUtil.isTablet(mActivity)) {
+        	if(actionBar != null)
             mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
                                             | ActionBar.DISPLAY_SHOW_TITLE);
         } else {
-            //TODO
-           /// mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_USE_LOGO
-            //                                | ActionBar.DISPLAY_SHOW_TITLE);
+            if(actionBar!=null)
+                mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_USE_LOGO
+                                           | ActionBar.DISPLAY_SHOW_TITLE);
         }
     }
 
