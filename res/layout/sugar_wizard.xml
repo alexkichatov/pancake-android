@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:background="@drawable/bg">
-	<include layout="@layout/header"/>
+	android:background="@android:color/white">
+	<include layout="@layout/header" android:id="@+id/header" />
+	<include layout="@layout/logo" android:id="@+id/logo" android:layout_below="@id/header" android:layout_centerInParent="true"/>
 	<ViewFlipper
 		android:id="@+id/wizardFlipper"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_weight="1">
-		
+		android:layout_weight="1"
+		android:layout_below="@id/logo"
+		android:layout_centerInParent="true">		
 	</ViewFlipper>
 		
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:padding="5dip">
+		android:padding="5dip"
+		android:layout_below="@id/wizardFlipper"
+		android:layout_centerInParent="true">
 		
 		<Button
 			android:id="@+id/actionPrev"
@@ -43,5 +47,5 @@
 	
 	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
 

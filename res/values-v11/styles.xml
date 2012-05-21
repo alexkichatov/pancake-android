@@ -3,5 +3,27 @@
     <style name="Theme.Pancake" parent="android:style/Theme.Light.NoTitleBar"></style>
 
     <style name="Theme.Pancake.Settings" parent="android:style/Theme.Light"></style>
+    <style name="text_label">
 
+        <!--
+			item
+			name="android:textAppearance">?android:attr/textAppearanceSmall</item
+        -->
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginLeft">30dip</item>
+        <item name="android:layout_marginRight">30dip</item>
+        <item name="android:layout_marginTop">10dip</item>
+        <item name="android:paddingLeft">1dip</item>
+        <item name="android:paddingRight">1dip</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+	<style name="edit_text_layout">
+        <item name="android:minWidth">250dip</item>
+        <item name="android:layout_marginLeft">30dip</item>
+        <item name="android:layout_marginRight">30dip</item>
+        <item name="android:capitalize">none</item>
+        <item name="android:autoText">false</item>
+    </style>
 </resources>
