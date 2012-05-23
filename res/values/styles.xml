@@ -36,7 +36,7 @@
 			item
 			name="android:textAppearance">?android:attr/textAppearanceSmall</item
         -->
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">@dimen/deatailscreen_textsize</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginLeft">10dip</item>
         <item name="android:layout_marginRight">1dip</item>

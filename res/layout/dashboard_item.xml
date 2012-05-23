@@ -4,4 +4,5 @@
     style="@style/DashboardButton"
     android:drawableTop="@drawable/account"
     android:text="@string/accounts"
+    android:textSize="@dimen/dashboarditem_textsize"
     android:onClick="viewModuleList" />

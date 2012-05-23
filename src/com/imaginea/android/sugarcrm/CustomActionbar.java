@@ -3,7 +3,6 @@ package com.imaginea.android.sugarcrm;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.opengl.Visibility;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -60,6 +59,7 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
     }
 	
 	public void setTitle(CharSequence title) {
+		mTextView.setVisibility(View.VISIBLE);
 		mTextView.setText(title);
     }
 
@@ -183,12 +183,13 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
                 mPopupWindow.setFocusable(true);
                 mPopupWindow.setOutsideTouchable(true);
                 mPopupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-        	    int f = mPopupView.getChildCount();
+        	    int mChildCount = mPopupView.getChildCount();
+        	    
         	    //mPopupWindow.update(mPopupView, 150, 50*mPopupView.getChildCount());
-        	    mPopupWindow.setHeight(48*f);
+        	    mPopupWindow.setHeight((getResources().getInteger(R.integer.actionbar_popupheight))*mChildCount);
                 mPopupWindow.update();
         		//mPopupWindow.showAtLocation(mActionItemsView, Gravity.TOP, 0, 0);
-        	    mPopupWindow.showAsDropDown(mActionItemsView, 0,0);
+        	    mPopupWindow.showAsDropDown(mActionItemsView, getResources().getInteger(R.integer.actionbar_dropdownoffset),0);
             } else {
             	mPopupWindow.dismiss();
             }
