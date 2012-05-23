@@ -392,10 +392,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                 	mUrlTask.cancel(true);
-                	Toast.makeText(WizardAuthActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                	Toast.makeText(WizardAuthActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
                 }
             });
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                 	mProgressDialog.cancel();

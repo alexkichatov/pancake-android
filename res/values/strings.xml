@@ -55,6 +55,7 @@
     <string name="finish">Finish</string>
     <string name="next">Next</string>
     <string name="urlDesc">Example: %s</string>
+    <string name="cancelled">Cancelled</string>
 
     <!-- Details Screen Context Menu -->
     <string name="options">Options</string>
