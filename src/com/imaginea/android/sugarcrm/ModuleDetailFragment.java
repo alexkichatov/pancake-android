@@ -1,7 +1,10 @@
 package com.imaginea.android.sugarcrm;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -9,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -635,21 +639,8 @@ public class ModuleDetailFragment extends Fragment {
 	    @Override
 	    public void performAction(View view) {
 	    	
-	        if (mDbHelper == null)
-	            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-
-	        mUri = mDbHelper.getModuleUri(mModuleName);
-	        Uri deleteUri = Uri.withAppendedPath(mUri, mRowId);
-	        getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
-	        ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
-	        if(ViewUtil.isTablet(getActivity()))
-	        {
-	        	getActivity().getSupportFragmentManager().beginTransaction().remove(ModuleDetailFragment.this).commit();
-	        	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
-	        	getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-	        }
-	        else	        	
-	        	ModuleDetailFragment.this.getActivity().finish();
+	    	DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
+            newFragment.show(getFragmentManager(), "dialog");
 	    }
 	}
 	
@@ -679,6 +670,47 @@ public class ModuleDetailFragment extends Fragment {
         @Override
         public void performAction(View view) {
         	openListScreen(this.getTitle());
+        }
+    }
+	
+	public class MyYesNoAlertDialogFragment extends DialogFragment {
+    	
+    	public MyYesNoAlertDialogFragment newInstance(int title) {
+    		MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {            
+            
+            return new AlertDialog.Builder(this.getActivity())
+            		.setTitle(R.string.delete)
+            		.setMessage(R.string.deleteAlert)
+            		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	if (mDbHelper == null)
+        	            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+
+        	        Uri deleteUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+        	        getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
+        	        ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
+        	        if(ViewUtil.isTablet(getActivity()))
+        	        {
+        	        	getActivity().getSupportFragmentManager().beginTransaction().remove(ModuleDetailFragment.this).commit();
+        	        	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
+        	        	getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+        	        }
+        	        else	        	
+        	        	ModuleDetailFragment.this.getActivity().finish();
+
+                }
+            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            }).create();
         }
     }
 	

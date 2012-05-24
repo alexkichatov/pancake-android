@@ -145,7 +145,7 @@ public class ModuleListFragment extends ListFragment {
         
         if (mIntentUri == null || mIntentUri.getPathSegments().size() < 3) {
 	        actionBar.addActionItem(new IntentAction(ModuleListFragment.this.getActivity(), AddAction(), R.drawable.add));
-	        actionBar.addActionItem(new SerchAction());
+	        actionBar.addActionItem(new SearchAction());
 	        actionBar.addActionItem(new SortAction());
 	        actionBar.addActionItem(new SyncAction());        
         	actionBar.addActionItem(new ShowAllAction());
@@ -174,7 +174,7 @@ public class ModuleListFragment extends ListFragment {
         mListView.setFocusable(true);
         mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
-       // registerForContextMenu(getListView());
+        registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
@@ -668,7 +668,9 @@ public class ModuleListFragment extends ListFragment {
 
         case R.string.delete:
             mCurrentSelection = position;
-            getActivity().showDialog(R.string.delete);
+            //getActivity().showDialog(R.string.delete);
+            DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
+            newFragment.show(getFragmentManager(), "dialog");
             return true;
 
         case R.string.call:
@@ -902,9 +904,9 @@ public class ModuleListFragment extends ListFragment {
 		return myIntent;
     }
     
-    private class SerchAction extends AbstractAction {
+    private class SearchAction extends AbstractAction {
         
-        public SerchAction() {
+        public SearchAction() {
             super(R.drawable.search);
         }
 
@@ -1008,5 +1010,39 @@ public class ModuleListFragment extends ListFragment {
 	    	showAssignedItems(view);
 	    }
 	}
-	
+
+private class MyYesNoAlertDialogFragment extends DialogFragment {
+    	
+    	public MyYesNoAlertDialogFragment newInstance(int title) {
+    		MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {            
+            
+            return new AlertDialog.Builder(this.getActivity())
+            		.setTitle(R.string.delete)
+            		.setMessage(R.string.deleteAlert)
+            		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	
+                	deleteItem();
+        	        if(ViewUtil.isTablet(getActivity()))
+        	        {
+        	        	ModuleDetailFragment fragment = (ModuleDetailFragment) getActivity().getSupportFragmentManager().findFragmentByTag("module_detail");
+        	        	getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        	        	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
+        	        	getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+        	        }
+                }
+            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            }).create();
+        }
+    }
 }

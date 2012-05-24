@@ -979,8 +979,11 @@ public class EditModuleDetailFragment extends Fragment {
                     Log.d(TAG, "Display Status");
                 mProgressDialog.cancel();
                 ViewUtil.makeToast(getActivity().getBaseContext(), (String) message.obj);
-                if(ViewUtil.isTablet(getActivity()))
+                if(ViewUtil.isTablet(getActivity()) && MODE != Util.NEW_ORPHAN_MODE) {
                 	getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
+                	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
+        	        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+                }              
                 else
                 	getActivity().finish();                	
                 break;

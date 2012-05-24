@@ -286,18 +286,7 @@ public class RecentModuleListFragment extends ListFragment {
                                         + "MODULE_NAME:" + cursor.getString(3));
 
         if (ViewUtil.isTablet(getActivity())) {
-            /*
-             * We can display everything in-place with fragments. Have the list highlight this item
-             * and show the data. getListView().setItemChecked(position, true);
-             * 
-             * Check what fragment is shown, replace if needed.
-             */
-
-            //ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-           // Log.d(LOG_TAG, details + "");
-            //if (details == null) {
-                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
-           // }
+            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
         } else {
             startActivity(detailIntent);
         }
