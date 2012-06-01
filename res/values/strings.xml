@@ -94,6 +94,7 @@
     <string name="importContact">Import Contact</string>
     <string name="deleteAlert">Are you sure you want to delete?</string>
     <string name="syncSuccess">Sync Successful</string>
+    <string name="syncing">Syncing &#8230;</string>
     <string name="syncFailed">Sync Failed</string>
     <string name="syncMessage">Synced %d records</string>
     <string name="sort">Sort</string>

@@ -40,6 +40,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private final Context mContext;
 
     private Date mLastUpdated;
+    
+    private int mNotiId = -1;
 
     private static final String LOG_TAG = "SyncAdapter";
 
@@ -99,7 +101,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             // TODO run this list through our local DB and see if any changes have happened and sync
             // those modules and module fields
-
+            if(!(syncType == Util.SYNC_MODULE_META_DATA || syncType==Util.SYNC_ALL_META_DATA)) {
+	            if(mNotiId != -1)
+	            	Util.notificationCancel(mContext, mNotiId);
+	            
+	            mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.appName, 
+															R.string.appName, mContext.getString(R.string.syncing));
+            }
             switch (syncType) {
 
             case Util.SYNC_MODULE_META_DATA:
@@ -151,6 +159,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 syncAllModulesData(account, extras, authority, sessionId, syncResult);
                 break;
             }
+            
+            
 
         } catch (final ParseException e) {
             syncResult.stats.numParseExceptions++;
@@ -198,7 +208,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // do not use sync result status to notify, notify module specific comprehensive stats
         mContext.getApplicationContext();
         String msg = mContext.getString(R.string.syncMessage);
-        Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, String.format(msg, SugarSyncManager.mTotalRecords));
+        if(mNotiId != -1)
+        	Util.notificationCancel(mContext, mNotiId);
+        
+        mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, 
+        												R.string.syncSuccess, String.format(msg, moduleList.size()));
     }
 
     /**
@@ -228,6 +242,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
          */
         Log.i(LOG_TAG, "Syncing Outgoing Module Data:" + moduleName);
         SugarSyncManager.syncOutgoingModuleData(mContext, account.name, sessionId, moduleName, syncResult);
+        
+        if(Util.SYNC_MODULE_DATA == extras.getInt(Util.SYNC_TYPE)) {
+        	if(mNotiId != -1)
+            	Util.notificationCancel(mContext, mNotiId);
+            
+        	mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, 
+            												R.string.syncSuccess, moduleName+" "+mContext.getString(R.string.module));
+        }
+        	
     }
 
     /** {@inheritDoc} */
