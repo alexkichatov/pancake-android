@@ -297,7 +297,7 @@ public final class SugarCRMContent {
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = ModuleFields.NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = ModuleFields.LAST_NAME + " ASC";
 
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, FIRST_NAME, LAST_NAME,
                 CREATED_BY_NAME };
