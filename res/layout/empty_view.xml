@@ -5,6 +5,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent" 
 	android:gravity="center"
+	android:background="@drawable/bg"
 	android:visibility="gone">
 	<ProgressBar android:id="@+id/progress"
 		android:layout_height="wrap_content" 

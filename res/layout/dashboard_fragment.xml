@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg" 
     android:orientation="vertical"
     android:layout_weight="1"
     android:id="@+id/home"
@@ -12,7 +13,7 @@
 	 />
     <com.imaginea.android.sugarcrm.ui.DashboardLayout
         android:id="@+id/dashboard"
-        android:layout_width="fill_parent"
+        android:layout_width="fill_parent"        
         android:layout_height="fill_parent" 
         android:layout_marginTop="30dip"
         android:layout_marginBottom="30dip">

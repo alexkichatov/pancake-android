@@ -3,6 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" 
     android:orientation="vertical"
+    android:background="@drawable/bg"
     android:layout_weight="1">
 	<com.imaginea.android.sugarcrm.CustomActionbar
         android:id="@+id/custom_actionbar"
