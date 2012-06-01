@@ -70,6 +70,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -147,6 +148,7 @@ public class RestUtil {
                                     Map<String, List<String>> linkNameToFieldsArray,
                                     String maxResults, String deleted) throws SugarCrmException {
 
+        String response = null;
         Map<String, Object> data = new LinkedHashMap<String, Object>();
         data.put(SESSION, sessionId);
         data.put(MODULE_NAME, moduleName);
@@ -183,14 +185,17 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
-            if (res.getEntity() == null) {
+            response = EntityUtils.toString(res.getEntity());
+            if (response == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
                 throw new SugarCrmException("FAILED TO CONNECT!");
             }
-            SugarBean[] beans = new SBParser(EntityUtils.toString(res.getEntity()).toString()).getSugarBeans();
+            SugarBean[] beans = new SBParser(response).getSugarBeans();
             return beans;
         } catch (JSONException jo) {
+            Log.e(LOG_TAG, "response is : " + response);
             throw new SugarCrmException(JSON_EXCEPTION, jo.getMessage());
         } catch (IOException ioe) {
             throw new SugarCrmException(ioe.getMessage(), ioe.getMessage());
@@ -255,6 +260,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -326,6 +332,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -378,6 +385,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -439,6 +447,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -507,6 +516,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -610,6 +620,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.i(LOG_TAG, "FAILED TO CONNECT!");
@@ -697,6 +708,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -775,6 +787,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -838,6 +851,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
@@ -893,7 +907,7 @@ public class RestUtil {
 
             reqLogin.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Log.i(LOG_TAG, EntityUtils.toString(reqLogin.getEntity()));
-
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             // Send POST request
             HttpResponse resLogin = httpClient.execute(reqLogin);
 
@@ -944,8 +958,9 @@ public class RestUtil {
             nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
             nameValuePairs.add(new BasicNameValuePair(REST_DATA, data.toString()));
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
+            
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
 
             if (res.getEntity() == null) {
@@ -1017,6 +1032,7 @@ public class RestUtil {
                 Log.d(LOG_TAG, EntityUtils.toString(req.getEntity()));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
 
             if (res.getEntity() == null) {
@@ -1064,6 +1080,7 @@ public class RestUtil {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
                 Log.e(LOG_TAG, "FAILED TO CONNECT!");
