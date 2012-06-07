@@ -132,5 +132,9 @@
     <string name="loading">Loading &#8230;</string>
     <string name="showAddressMsg">Show Map</string>
     
+    <string name="info">Info</string>
+    <string name="syncMsg">Sync started. Please check notification bar for sync progress.</string>
+    
+    
 
 </resources>
