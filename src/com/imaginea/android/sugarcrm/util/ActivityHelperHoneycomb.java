@@ -65,13 +65,14 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
         // should be called in onPostCreate.
         ActionBar actionBar = mActivity.getActionBar();
         if (ViewUtil.isTablet(mActivity)) {
-        	if(mActivity.getActionBar() != null)
-            mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
-                                            | ActionBar.DISPLAY_SHOW_TITLE);
+            if (mActivity.getActionBar() != null)
+                mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
+                                                | ActionBar.DISPLAY_SHOW_TITLE);
         } else {
-            if(actionBar!=null)
-                mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_USE_LOGO
-                                           | ActionBar.DISPLAY_SHOW_TITLE);
+            // TODO
+            // / mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO,
+            // ActionBar.DISPLAY_USE_LOGO
+            // | ActionBar.DISPLAY_SHOW_TITLE);
         }
     }
 

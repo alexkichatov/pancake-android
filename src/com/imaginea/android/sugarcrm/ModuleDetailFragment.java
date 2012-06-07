@@ -82,9 +82,9 @@ public class ModuleDetailFragment extends Fragment {
     private static final int DYNAMIC_ROW = 3;
 
     private ProgressDialog mProgressDialog;
-    
+
     private CustomActionbar actionBar;
-    
+
     private RelativeLayout mParent;
 
     private static final String LOG_TAG = ModuleDetailFragment.class.getSimpleName();
@@ -92,7 +92,7 @@ public class ModuleDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-    	mParent = (RelativeLayout) inflater.inflate(R.layout.account_details, container, false);
+        mParent = (RelativeLayout) inflater.inflate(R.layout.account_details, container, false);
         return mParent;
     }
 
@@ -108,7 +108,7 @@ public class ModuleDetailFragment extends Fragment {
         mRowId = (String) intent.getStringExtra(Util.ROW_ID);
         mSugarBeanId = (String) intent.getStringExtra(RestUtilConstants.BEAN_ID);
         boolean bRecent = (boolean) intent.getBooleanExtra("Recent", false);
-        boolean bRelation = (boolean)intent.getBooleanExtra("Relation", false);
+        boolean bRelation = (boolean) intent.getBooleanExtra("Relation", false);
         mModuleName = "Contacts";
         if (extras != null)
             mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
@@ -118,9 +118,8 @@ public class ModuleDetailFragment extends Fragment {
             if (mRowId == null)
                 mRowId = "1";
             mUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
-        }
-        else
-        	mUri = intent.getData();
+        } else
+            mUri = intent.getData();
         mSelectFields = mDbHelper.getModuleProjections(mModuleName);
         // mCursor = getContentResolver().query(getIntent().getData(),
         // mSelectFields, null, null,
@@ -147,25 +146,24 @@ public class ModuleDetailFragment extends Fragment {
          * RelationshipAdapter adapter = new RelationshipAdapter(this);
          * adapter.setRelationshipArray(mRelationshipModules); listView.setAdapter(adapter);
          */
-        //actionBar = (CustomActionbar) ModuleDetailFragment.this.getActivity().findViewById(R.id.custom_actionbar);
-        if(mSugarBeanId != null)
-        {
-        	actionBar = (CustomActionbar) mParent.getChildAt(0);
-        	if (!ViewUtil.isTablet(getActivity())) {        	
-        		final Action homeAction = new IntentAction(ModuleDetailFragment.this.getActivity(),
-        				new Intent(ModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
-        		actionBar.setHomeAction(homeAction);
-        	}
-	        if(!bRecent && !bRelation) {
-	        	actionBar.addActionItem(new EditAction());
-	            actionBar.addActionItem(new DeleteAction());
-	            if(mRelationshipModules.length > 0) {
-	            	actionBar.addActionItem(new IntentAction(ModuleDetailFragment.this.getActivity(), null, R.drawable.relation));
-	            	for(String mModule : mRelationshipModules) {
-	            		actionBar.addActionItem(new RelationAction(mModule));
-	            	}            	
-	            }
-	        }
+        // actionBar = (CustomActionbar)
+        // ModuleDetailFragment.this.getActivity().findViewById(R.id.custom_actionbar);
+        if (mSugarBeanId != null) {
+            actionBar = (CustomActionbar) mParent.getChildAt(0);
+            if (!ViewUtil.isTablet(getActivity())) {
+                final Action homeAction = new IntentAction(ModuleDetailFragment.this.getActivity(), new Intent(ModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+                actionBar.setHomeAction(homeAction);
+            }
+            if (!bRecent && !bRelation) {
+                actionBar.addActionItem(new EditAction());
+                actionBar.addActionItem(new DeleteAction());
+                if (mRelationshipModules.length > 0) {
+                    actionBar.addActionItem(new IntentAction(ModuleDetailFragment.this.getActivity(), null, R.drawable.relation));
+                    for (String mModule : mRelationshipModules) {
+                        actionBar.addActionItem(new RelationAction(mModule));
+                    }
+                }
+            }
         }
         mTask = new LoadContentTask();
         mTask.execute(null, null, null);
@@ -180,24 +178,24 @@ public class ModuleDetailFragment extends Fragment {
      *            a {@link java.lang.String} object.
      */
     protected void openListScreen(String moduleName) {
-    	Intent detailIntent;
+        Intent detailIntent;
         // if (mModuleName.equals("Accounts")) {
-        //Intent detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModulesActivity.class);
-    	if (ViewUtil.isTablet(getActivity())) {
-    		detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModuleDetailsMultiPaneActivity.class);
-    		detailIntent.putExtra(Util.ROW_ID, mRowId);
-    		detailIntent.putExtra("Relation", true);
-        } 
-    	else {    		
-    		detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModulesActivity.class);    	
-    	}
-    	if (mDbHelper == null)
+        // Intent detailIntent = new Intent(ModuleDetailFragment.this.getActivity(),
+        // ModulesActivity.class);
+        if (ViewUtil.isTablet(getActivity())) {
+            detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModuleDetailsMultiPaneActivity.class);
+            detailIntent.putExtra(Util.ROW_ID, mRowId);
+            detailIntent.putExtra("Relation", true);
+        } else {
+            detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModulesActivity.class);
+        }
+        if (mDbHelper == null)
             mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-    	Uri uri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
-    	uri = Uri.withAppendedPath(uri, moduleName);
-    	detailIntent.setData(uri);        	    	
-    	detailIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
-    	detailIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
+        Uri uri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+        uri = Uri.withAppendedPath(uri, moduleName);
+        detailIntent.setData(uri);
+        detailIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
+        detailIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
         startActivity(detailIntent);
         // } else {
         // Toast.makeText(this, "Not yet supported!",
@@ -265,12 +263,12 @@ public class ModuleDetailFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+            // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
             // TODO - cleanup
-            //if (tv != null)
-            //    tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
-            //if(actionBar != null)
-           // actionBar.setTitle(String.format(getString(R.string.detailsHeader), mModuleName));
+            // if (tv != null)
+            // tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
+            // if(actionBar != null)
+            // actionBar.setTitle(String.format(getString(R.string.detailsHeader), mModuleName));
 
             mProgressDialog = ViewUtil.getProgressDialog(ModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
             mProgressDialog.show();
@@ -283,11 +281,11 @@ public class ModuleDetailFragment extends Fragment {
             switch ((Integer) values[0]) {
 
             case HEADER:
-                //TextView titleView = (TextView) values[2];
+                // TextView titleView = (TextView) values[2];
                 // TODO
-                //if (titleView != null)
-                    //titleView.setText((String) values[3]);
-                	actionBar.setTitle((String) values[3]);
+                // if (titleView != null)
+                // titleView.setText((String) values[3]);
+                actionBar.setTitle((String) values[3]);
                 break;
 
             case STATIC_ROW:
@@ -404,9 +402,8 @@ public class ModuleDetailFragment extends Fragment {
             super.onPostExecute(result);
 
             if (mCursor != null && mCursor.getCount() > 0 && mSugarBeanId != null) {
-            	setContents();
-            }
-            else {
+                setContents();
+            } else {
 
             }
             // close the cursor irrespective of the result
@@ -598,53 +595,53 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
-	private class EditAction extends AbstractAction {
-	        
-	        public EditAction() {
-	            super(R.drawable.edit);
-	        }
-	
-	        @Override
-	        public void performAction(View view) {
-	        	 
-        		Intent editDetailsIntent = new Intent(ModuleDetailFragment.this.getActivity(), EditModuleDetailActivity.class);
-	            editDetailsIntent.putExtra(Util.ROW_ID, mRowId);
-	             if (mUri != null)
-	                 editDetailsIntent.setData(mUri);
+    private class EditAction extends AbstractAction {
 
-	             editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
-	             editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+        public EditAction() {
+            super(R.drawable.edit);
+        }
 
-	             ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-	             if (details != null) {
-	                 /*
-	                  * We can display everything in-place with fragments. Have the list highlight this item
-	                  * and show the data. Make new fragment to show this selection.
-	                  */
-	                 //getListView().setItemChecked(position, true);
-	                 ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
+        @Override
+        public void performAction(View view) {
 
-	             } else {
-	                 startActivity(editDetailsIntent);
-	             }           
-	        }
-	    }
+            Intent editDetailsIntent = new Intent(ModuleDetailFragment.this.getActivity(), EditModuleDetailActivity.class);
+            editDetailsIntent.putExtra(Util.ROW_ID, mRowId);
+            if (mUri != null)
+                editDetailsIntent.setData(mUri);
 
-	private class DeleteAction extends AbstractAction {
-	    
-	    public DeleteAction() {
-	        super(R.drawable.delete);
-	    }
-	
-	    @Override
-	    public void performAction(View view) {
-	    	
-	    	DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
-            newFragment.show(getFragmentManager(), "dialog");
-	    }
-	}
-	
-	private static class DeleteContentObserver extends ContentObserver {
+            editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
+            editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+
+            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+            if (details != null) {
+                /*
+                 * We can display everything in-place with fragments. Have the list highlight this
+                 * item and show the data. Make new fragment to show this selection.
+                 */
+                // getListView().setItemChecked(position, true);
+                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
+
+            } else {
+                startActivity(editDetailsIntent);
+            }
+        }
+    }
+
+    private class DeleteAction extends AbstractAction {
+
+        public DeleteAction() {
+            super(R.drawable.delete);
+        }
+
+        @Override
+        public void performAction(View view) {
+
+            DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
+            newFragment.show(getFragmentManager(), "YesNoAlertDialog");
+        }
+    }
+
+    private static class DeleteContentObserver extends ContentObserver {
 
         public DeleteContentObserver(Handler handler) {
             super(handler);
@@ -660,23 +657,23 @@ public class ModuleDetailFragment extends Fragment {
             super.onChange(selfChange);
         }
     }
-	
-	private class RelationAction extends AbstractAction {
-        
+
+    private class RelationAction extends AbstractAction {
+
         public RelationAction(String title) {
             super(R.drawable.relation, title);
         }
 
         @Override
         public void performAction(View view) {
-        	openListScreen(this.getTitle());
+            openListScreen(this.getTitle());
         }
     }
-	
-	public class MyYesNoAlertDialogFragment extends DialogFragment {
-    	
-    	public MyYesNoAlertDialogFragment newInstance(int title) {
-    		MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
+
+    public class MyYesNoAlertDialogFragment extends DialogFragment {
+
+        public MyYesNoAlertDialogFragment newInstance(int title) {
+            MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
             Bundle args = new Bundle();
             args.putInt("title", title);
             frag.setArguments(args);
@@ -684,27 +681,22 @@ public class ModuleDetailFragment extends Fragment {
         }
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {            
-            
-            return new AlertDialog.Builder(this.getActivity())
-            		.setTitle(R.string.delete)
-            		.setMessage(R.string.deleteAlert)
-            		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                	if (mDbHelper == null)
-        	            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        	        Uri deleteUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
-        	        getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
-        	        ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
-        	        if(ViewUtil.isTablet(getActivity()))
-        	        {
-        	        	getActivity().getSupportFragmentManager().beginTransaction().remove(ModuleDetailFragment.this).commit();
-        	        	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
-        	        	getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-        	        }
-        	        else	        	
-        	        	ModuleDetailFragment.this.getActivity().finish();
+            return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.delete).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    if (mDbHelper == null)
+                        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+
+                    Uri deleteUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+                    getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
+                    ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
+                    if (ViewUtil.isTablet(getActivity())) {
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(ModuleDetailFragment.this).commit();
+                        ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+                    } else
+                        ModuleDetailFragment.this.getActivity().finish();
 
                 }
             }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -713,5 +705,5 @@ public class ModuleDetailFragment extends Fragment {
             }).create();
         }
     }
-	
+
 }

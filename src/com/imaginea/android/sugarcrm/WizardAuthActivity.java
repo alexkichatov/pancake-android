@@ -1,14 +1,5 @@
 package com.imaginea.android.sugarcrm;
 
-import java.io.IOException;
-import java.util.concurrent.Semaphore;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -47,6 +38,15 @@ import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 /**
  * WizardAuthActivity, same as Wizard Activity, but with account manager integration works only with
@@ -120,7 +120,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         setContentView(R.layout.splash);
 
         app = (SugarCrmApp) getApplication();
-       // if (!TextUtils.isEmpty(app.getSessionId())) {
+        // if (!TextUtils.isEmpty(app.getSessionId())) {
         if (!TextUtils.isEmpty("")) {
             setResult(RESULT_OK);
             finish();
@@ -383,22 +383,22 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         private boolean hasExceptions = false;
 
         private String sceDesc;
-        
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.connecting), false);
-            mProgressDialog.setOnCancelListener(new OnCancelListener() {               
+            mProgressDialog.setOnCancelListener(new OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                	mUrlTask.cancel(true);
-                	Toast.makeText(WizardAuthActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
+                    mUrlTask.cancel(true);
+                    Toast.makeText(WizardAuthActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
                 }
             });
             mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                	mProgressDialog.cancel();
+                    mProgressDialog.cancel();
                 }
             });
             mProgressDialog.show();
@@ -424,10 +424,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         protected void onPostExecute(Object restUrl) {
             super.onPostExecute(restUrl);
-            
+
             mProgressDialog.dismiss();
             mProgressDialog = null;
-            
+
             if (isCancelled())
                 return;
 
@@ -565,7 +565,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
             if (hasExceptions) {
                 // if (wizardState != Util.URL_USER_PWD_AVAILABLE) {
-            	loginStatusMsg.setText(sceDesc);
+                loginStatusMsg.setText(sceDesc);
                 mProgressDialog.cancel();
                 // }
                 // else {

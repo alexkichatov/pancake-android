@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.Util;
@@ -78,11 +77,11 @@ public class SearchActivity extends ListActivity {
             getIntent().setData(moduleUri);
         }
 
-        //TextView tv = (TextView) findViewById(R.id.headerText);
+        // TextView tv = (TextView) findViewById(R.id.headerText);
         final CustomActionbar tv = (CustomActionbar) findViewById(R.id.custom_actionbar);
         tv.setTitle(mModuleName + getString(R.string.searchResultsHeaderText));
-        //findViewById(R.id.filterImage).setVisibility(View.GONE);
-        //findViewById(R.id.allItems).setVisibility(View.GONE);
+        // findViewById(R.id.filterImage).setVisibility(View.GONE);
+        // findViewById(R.id.allItems).setVisibility(View.GONE);
 
         Cursor cursor = managedQuery(getIntent().getData(), dbHelper.getModuleProjections(mModuleName), dbHelper.getModuleSelection(mModuleName, query), null, null);
 

@@ -97,18 +97,17 @@ public class RecentModuleListFragment extends ListFragment {
 
         // If the list is a list of related items, hide the filterImage and
         // allItems image
-       // if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
-        //    getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
-       //     getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
-       // }
+        // if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
+        // getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
+        // getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
+        // }
 
-        //TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-        //tv.setText(mModuleName);
+        // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+        // tv.setText(mModuleName);
         final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
         actionBar.setTitle(mModuleName);
-        
-        final Action homeAction = new IntentAction(RecentModuleListFragment.this.getActivity(),
-				 new Intent(RecentModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+
+        final Action homeAction = new IntentAction(RecentModuleListFragment.this.getActivity(), new Intent(RecentModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
         actionBar.setHomeAction(homeAction);
 
         mListView = getListView();
@@ -128,7 +127,7 @@ public class RecentModuleListFragment extends ListFragment {
         mListView.setFocusable(true);
         mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
-        //registerForContextMenu(getListView());
+        // registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);

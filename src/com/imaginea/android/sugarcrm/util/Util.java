@@ -1,9 +1,5 @@
 package com.imaginea.android.sugarcrm.util;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -14,6 +10,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Common utilties and constants required by everyone
@@ -253,11 +253,11 @@ public class Util {
 
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null) {
-           
-                Log.d(LOG_TAG, "network state name:" + networkInfo.getState().name());
-                Log.d(LOG_TAG, "NetworkInfo.State.CONNECTED name:"
-                                                + NetworkInfo.State.CONNECTED.name() + " " + networkInfo.isConnected() );
-            
+
+            Log.d(LOG_TAG, "network state name:" + networkInfo.getState().name());
+            Log.d(LOG_TAG, "NetworkInfo.State.CONNECTED name:" + NetworkInfo.State.CONNECTED.name()
+                                            + " " + networkInfo.isConnected());
+
             if (networkInfo.getState().name().equals(NetworkInfo.State.CONNECTED.name())) {
                 networkOn = true;
             }
@@ -336,10 +336,10 @@ public class Util {
         int id = getId();
         nm.notify(0, n);
         return id;
-    }    
-    
+    }
+
     public static synchronized void notificationCancel(Context context, int id) {
-    	NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-    	nm.cancel(id);
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(id);
     }
 }

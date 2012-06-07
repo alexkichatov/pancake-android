@@ -1,11 +1,5 @@
 package com.imaginea.android.sugarcrm.sync;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.http.ParseException;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -27,6 +21,12 @@ import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
+import org.apache.http.ParseException;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 /**
  * SyncAdapter implementation for syncing sugarcrm modules on the server to sugar crm provider and
  * vice versa.
@@ -40,7 +40,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private final Context mContext;
 
     private Date mLastUpdated;
-    
+
     private int mNotiId = -1;
 
     private static final String LOG_TAG = "SyncAdapter";
@@ -101,12 +101,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             // TODO run this list through our local DB and see if any changes have happened and sync
             // those modules and module fields
-            if(!(syncType == Util.SYNC_MODULE_META_DATA || syncType==Util.SYNC_ALL_META_DATA)) {
-	            if(mNotiId != -1)
-	            	Util.notificationCancel(mContext, mNotiId);
-	            
-	            mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.appName, 
-															R.string.appName, mContext.getString(R.string.syncing));
+            if (!(syncType == Util.SYNC_MODULE_META_DATA || syncType == Util.SYNC_ALL_META_DATA)) {
+                if (mNotiId != -1)
+                    Util.notificationCancel(mContext, mNotiId);
+
+                mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.appName, R.string.appName, mContext.getString(R.string.syncing));
             }
             switch (syncType) {
 
@@ -159,8 +158,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 syncAllModulesData(account, extras, authority, sessionId, syncResult);
                 break;
             }
-            
-            
 
         } catch (final ParseException e) {
             syncResult.stats.numParseExceptions++;
@@ -208,11 +205,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // do not use sync result status to notify, notify module specific comprehensive stats
         mContext.getApplicationContext();
         String msg = mContext.getString(R.string.syncMessage);
-        if(mNotiId != -1)
-        	Util.notificationCancel(mContext, mNotiId);
-        
-        mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, 
-        												R.string.syncSuccess, String.format(msg, moduleList.size()));
+        if (mNotiId != -1)
+            Util.notificationCancel(mContext, mNotiId);
+
+        mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, String.format(msg, moduleList.size()));
     }
 
     /**
@@ -242,15 +238,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
          */
         Log.i(LOG_TAG, "Syncing Outgoing Module Data:" + moduleName);
         SugarSyncManager.syncOutgoingModuleData(mContext, account.name, sessionId, moduleName, syncResult);
-        
-        if(Util.SYNC_MODULE_DATA == extras.getInt(Util.SYNC_TYPE)) {
-        	if(mNotiId != -1)
-            	Util.notificationCancel(mContext, mNotiId);
-            
-        	mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, 
-            												R.string.syncSuccess, moduleName+" "+mContext.getString(R.string.module));
+
+        if (Util.SYNC_MODULE_DATA == extras.getInt(Util.SYNC_TYPE)) {
+            if (mNotiId != -1)
+                Util.notificationCancel(mContext, mNotiId);
+
+            mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, moduleName
+                                            + " " + mContext.getString(R.string.module));
         }
-        	
+
     }
 
     /** {@inheritDoc} */

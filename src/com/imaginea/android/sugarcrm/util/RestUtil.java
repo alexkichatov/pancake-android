@@ -55,13 +55,9 @@ import static com.imaginea.android.sugarcrm.RestUtilConstants.SET_RELATIONSHIPS;
 import static com.imaginea.android.sugarcrm.RestUtilConstants.USER_AUTH;
 import static com.imaginea.android.sugarcrm.RestUtilConstants.USER_NAME;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import android.util.Log;
+
+import com.imaginea.android.sugarcrm.ModuleFields;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -76,9 +72,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
-import com.imaginea.android.sugarcrm.ModuleFields;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * <p>
@@ -958,7 +958,7 @@ public class RestUtil {
             nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
             nameValuePairs.add(new BasicNameValuePair(REST_DATA, data.toString()));
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            
+
             // Send POST request
             httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             HttpResponse res = httpClient.execute(req);

@@ -34,11 +34,14 @@ import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import com.imaginea.android.sugarcrm.CustomActionbar.*;
+
+import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
-import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
+import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
@@ -96,7 +99,7 @@ public class ModuleListFragment extends ListFragment {
     private String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
 
     private SugarCrmApp app;
-    
+
     private boolean bRelationItem = true;
 
     public final static String LOG_TAG = ModuleListFragment.class.getSimpleName();
@@ -116,7 +119,7 @@ public class ModuleListFragment extends ListFragment {
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         Intent intent = getActivity().getIntent();
-        
+
         // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
@@ -127,43 +130,37 @@ public class ModuleListFragment extends ListFragment {
         mIntentUri = intent.getData();
         // If the list is a list of related items, hide the filterImage and
         // allItems image
-       // if (mIntentUri != null && mIntentUri.getPathSegments().size() >= 3) {
-            //getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
-            //getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
-        	
-      //  }
+        // if (mIntentUri != null && mIntentUri.getPathSegments().size() >= 3) {
+        // getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
+        // getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
 
-        //TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-        //tv.setText(mModuleName);
+        // }
+
+        // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
+        // tv.setText(mModuleName);
         final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
-        
-        
-        final Action homeAction = new IntentAction(ModuleListFragment.this.getActivity(),
-				 new Intent(ModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
-        actionBar.setHomeAction(homeAction);       
+
+        final Action homeAction = new IntentAction(ModuleListFragment.this.getActivity(), new Intent(ModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+        actionBar.setHomeAction(homeAction);
         actionBar.setTitle(mModuleName);
-        
+
         if (mIntentUri == null || mIntentUri.getPathSegments().size() < 3) {
-	        actionBar.addActionItem(new IntentAction(ModuleListFragment.this.getActivity(), AddAction(), R.drawable.add));
-	        actionBar.addActionItem(new SearchAction());
-	        actionBar.addActionItem(new SortAction());
-	        actionBar.addActionItem(new SyncAction());        
-        	actionBar.addActionItem(new ShowAllAction());
-        	actionBar.addActionItem(new ShowAssignedAction());
-        	
-        	bRelationItem = false;
+            actionBar.addActionItem(new IntentAction(ModuleListFragment.this.getActivity(), AddAction(), R.drawable.add));
+            actionBar.addActionItem(new SearchAction());
+            actionBar.addActionItem(new SortAction());
+            actionBar.addActionItem(new SyncAction());
+            actionBar.addActionItem(new ShowAllAction());
+            actionBar.addActionItem(new ShowAssignedAction());
+
+            bRelationItem = false;
         }
-                    	
-        
-        
-        
-        
+
         mListView = getListView();
 
         // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {                
+            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
                 addToRecent(position);
                 openDetailScreen(position);
             }
@@ -221,7 +218,7 @@ public class ModuleListFragment extends ListFragment {
         mListFooterText = (TextView) getActivity().findViewById(R.id.status);
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
-        
+
         // get the sort options
         // get the LIST projection
         mModuleFields = mDbHelper.getModuleListSelections(mModuleName);
@@ -336,7 +333,7 @@ public class ModuleListFragment extends ListFragment {
 
         Cursor cursor = (Cursor) getListAdapter().getItem(position);
         if (cursor == null) {
-            // For some reason the requested item isn't available, do nothing            
+            // For some reason the requested item isn't available, do nothing
             Log.w(LOG_TAG, "openDetailScreen, Cursor is null for " + position);
             return;
         }
@@ -349,8 +346,9 @@ public class ModuleListFragment extends ListFragment {
             /*
              * We can display everything in-place with fragments. Have the list highlight this item
              * and show the data. Check what fragment is shown, replace if needed.
-             */            
-            //ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+             */
+            // ModuleDetailFragment details = (ModuleDetailFragment)
+            // getFragmentManager().findFragmentByTag("module_detail");
             // Log.d("onClick list item", "details is null");
             ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
 
@@ -668,7 +666,7 @@ public class ModuleListFragment extends ListFragment {
 
         case R.string.delete:
             mCurrentSelection = position;
-            //getActivity().showDialog(R.string.delete);
+            // getActivity().showDialog(R.string.delete);
             DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
             newFragment.show(getFragmentManager(), "dialog");
             return true;
@@ -745,12 +743,12 @@ public class ModuleListFragment extends ListFragment {
             mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
             mainTextView.setVisibility(View.GONE);
         }
-        
-        if(ViewUtil.isTablet(getActivity())) {
-        	Intent myIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
+
+        if (ViewUtil.isTablet(getActivity())) {
+            Intent myIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
             myIntent.putExtra(Util.ROW_ID, "1");
-            myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);	              
-            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(myIntent);    		
+            myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(myIntent);
         }
     }
 
@@ -790,7 +788,7 @@ public class ModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showHome(View view) {
-        //showHome();
+        // showHome();
     }
 
     private void showHome() {
@@ -848,13 +846,16 @@ public class ModuleListFragment extends ListFragment {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + emailAddress));
         startActivity(Intent.createChooser(intent, getActivity().getString(R.string.email)));
     }
-    
+
     // Task to sync individual module
     class ModuleSyncTask extends AsyncTask<Object, Object, Object> {
-        
-    	boolean hasExceptions = false;
+
+        boolean hasExceptions = false;
+
         SharedPreferences prefs;
+
         ProgressDialog mProgressDialog;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -865,7 +866,7 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         protected Object doInBackground(Object... args) {
-           startModuleSync();
+            startModuleSync();
             return true;
         }
 
@@ -878,10 +879,10 @@ public class ModuleListFragment extends ListFragment {
         protected void onPostExecute(Object sessionId) {
             super.onPostExecute(sessionId);
             if (isCancelled())
-            	return;
-            
-                mProgressDialog.cancel();
-                mProgressDialog = null;
+                return;
+
+            mProgressDialog.cancel();
+            mProgressDialog = null;
         }
 
         private void startModuleSync() {
@@ -895,30 +896,28 @@ public class ModuleListFragment extends ListFragment {
             ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
         }
     }
-    
-    
-    
-    private Intent AddAction() {    	
-    	Intent myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
+
+    private Intent AddAction() {
+        Intent myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
         myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-		return myIntent;
+        return myIntent;
     }
-    
+
     private class SearchAction extends AbstractAction {
-        
+
         public SearchAction() {
             super(R.drawable.search);
         }
 
         @Override
         public void performAction(View view) {
-        	onSearchRequested();            
+            onSearchRequested();
         }
     }
-    
+
     public class MyAlertDialogFragment extends DialogFragment {
-    	
-    	public MyAlertDialogFragment newInstance(int title) {
+
+        public MyAlertDialogFragment newInstance(int title) {
             MyAlertDialogFragment frag = new MyAlertDialogFragment();
             Bundle args = new Bundle();
             args.putInt("title", title);
@@ -930,91 +929,82 @@ public class ModuleListFragment extends ListFragment {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
             mSortColumnIndex = 0;
-            
-            return new AlertDialog.Builder(getActivity())
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle(title)
-                    .setSingleChoiceItems(mModuleFieldsChoice, 0, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            mSortColumnIndex = whichButton;
-                        }
-                    	}
-                    )
-                    .setPositiveButton(R.string.ascending,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            	String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
-                                sortList(sortOrder);
-                            }
-                        }
-                    )
-                    
-                    .setNegativeButton(R.string.descending,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //((FragmentAlertDialog)getActivity()).doNegativeClick();
-                                String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
-                                sortList(sortOrder);
-                            }
-                        }
-                    )
-                    .create();
+
+            return new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title).setSingleChoiceItems(mModuleFieldsChoice, 0, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    mSortColumnIndex = whichButton;
+                }
+            }).setPositiveButton(R.string.ascending, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
+                    sortList(sortOrder);
+                }
+            })
+
+            .setNegativeButton(R.string.descending, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // ((FragmentAlertDialog)getActivity()).doNegativeClick();
+                    String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
+                    sortList(sortOrder);
+                }
+            }).create();
         }
     }
-	private class SortAction extends AbstractAction {
-	        
+
+    private class SortAction extends AbstractAction {
+
         public SortAction() {
             super(R.drawable.more, "Sort");
         }
 
         @Override
         public void performAction(View view) {
-        	DialogFragment newFragment = new MyAlertDialogFragment().newInstance(R.string.sortBy);
+            DialogFragment newFragment = new MyAlertDialogFragment().newInstance(R.string.sortBy);
             newFragment.show(getFragmentManager(), "dialog");
         }
     }
-	
-	private class SyncAction extends AbstractAction {
-        
+
+    private class SyncAction extends AbstractAction {
+
         public SyncAction() {
             super(R.drawable.more, "Sync");
         }
 
         @Override
         public void performAction(View view) {
-        	ModuleSyncTask mAuthTask = new ModuleSyncTask();
-             mAuthTask.execute();
+            ModuleSyncTask mAuthTask = new ModuleSyncTask();
+            mAuthTask.execute();
         }
-	}
-	
-	private class ShowAllAction extends AbstractAction {
-	        
-	        public ShowAllAction() {
-	            super(R.drawable.more, "All");
-	        }
-	
-	        @Override
-	        public void performAction(View view) {
-	        	showAllItems(view);
-	        }
     }
 
-	private class ShowAssignedAction extends AbstractAction {
-	    
-	    public ShowAssignedAction() {
-	        super(R.drawable.more, "Assigned");
-	    }
-	
-	    @Override
-	    public void performAction(View view) {	    	
-	    	showAssignedItems(view);
-	    }
-	}
+    private class ShowAllAction extends AbstractAction {
 
-private class MyYesNoAlertDialogFragment extends DialogFragment {
-    	
-    	public MyYesNoAlertDialogFragment newInstance(int title) {
-    		MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
+        public ShowAllAction() {
+            super(R.drawable.more, "All");
+        }
+
+        @Override
+        public void performAction(View view) {
+            showAllItems(view);
+        }
+    }
+
+    private class ShowAssignedAction extends AbstractAction {
+
+        public ShowAssignedAction() {
+            super(R.drawable.more, "Assigned");
+        }
+
+        @Override
+        public void performAction(View view) {
+            showAssignedItems(view);
+        }
+    }
+
+    private class MyYesNoAlertDialogFragment extends DialogFragment {
+
+        public MyYesNoAlertDialogFragment newInstance(int title) {
+            MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
             Bundle args = new Bundle();
             args.putInt("title", title);
             frag.setArguments(args);
@@ -1022,22 +1012,18 @@ private class MyYesNoAlertDialogFragment extends DialogFragment {
         }
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {            
-            
-            return new AlertDialog.Builder(this.getActivity())
-            		.setTitle(R.string.delete)
-            		.setMessage(R.string.deleteAlert)
-            		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.delete).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	
-                	deleteItem();
-        	        if(ViewUtil.isTablet(getActivity()))
-        	        {
-        	        	ModuleDetailFragment fragment = (ModuleDetailFragment) getActivity().getSupportFragmentManager().findFragmentByTag("module_detail");
-        	        	getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-        	        	ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();	            
-        	        	getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-        	        }
+
+                    deleteItem();
+                    if (ViewUtil.isTablet(getActivity())) {
+                        ModuleDetailFragment fragment = (ModuleDetailFragment) getActivity().getSupportFragmentManager().findFragmentByTag("module_detail");
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                        ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+                    }
                 }
             }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
