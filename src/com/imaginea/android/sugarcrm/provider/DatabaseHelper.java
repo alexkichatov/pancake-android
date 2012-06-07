@@ -1,19 +1,5 @@
 package com.imaginea.android.sugarcrm.provider;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -71,6 +57,20 @@ import com.imaginea.android.sugarcrm.util.ModuleFieldBean;
 import com.imaginea.android.sugarcrm.util.SugarBean;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * This class helps open, create, and upgrade the database file.
@@ -190,10 +190,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleIcons.put(Util.OPPORTUNITIES, R.drawable.opportunity);
         moduleIcons.put(Util.CASES, R.drawable.cases);
         moduleIcons.put(Util.CALLS, R.drawable.calls);
-        moduleIcons.put(Util.MEETINGS, R.drawable.meeting);       
+        moduleIcons.put(Util.MEETINGS, R.drawable.meeting);
         moduleIcons.put(Util.CAMPAIGNS, R.drawable.campaigns);
-        //moduleIcons.put("Settings", R.drawable.settings1);
-         moduleIcons.put("Recent", R.drawable.recent);
+        // moduleIcons.put("Settings", R.drawable.settings1);
+        moduleIcons.put(Util.RECENT, R.drawable.recent);
 
         // Module Projections
         moduleProjections.put(Util.ACCOUNTS, Accounts.DETAILS_PROJECTION);
@@ -527,13 +527,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dropSyncTable(db);
         dropRecentTable(db);
     }
-    
+
     private static void createAlarmsTable(SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ALARM_TABLE_NAME + " (" + AlarmColumns.ID+ " INTEGER,"
-                                        +  AlarmColumns.ALARM_STATE + " INTEGER" + ");");
+        db.execSQL("CREATE TABLE " + ALARM_TABLE_NAME + " (" + AlarmColumns.ID + " INTEGER,"
+                                        + AlarmColumns.ALARM_STATE + " INTEGER" + ");");
     }
-
 
     private static void createRecentTable(SQLiteDatabase db) {
 
@@ -1404,15 +1403,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void setUserModules(List<String> moduleNames) throws SugarCrmException {
         boolean hasFailed = false;
         SQLiteDatabase db = getWritableDatabase();
-        
+
         try {
-            //TODO: This has to be removed and is only added to fix the DB insertion issue, 
+            // TODO: This has to be removed and is only added to fix the DB insertion issue,
             int numOfUserModulesDeleted = db.delete(MODULES_TABLE_NAME, null, null);
             Log.d(TAG, "number of user modules deleted: " + numOfUserModulesDeleted);
         } catch (SQLException sqlex) {
             // IGNORE even if it fails
         }
-        
+
         db.beginTransaction();
 
         HashSet<String> moduleNamesSet = new HashSet<String>(moduleNames);
