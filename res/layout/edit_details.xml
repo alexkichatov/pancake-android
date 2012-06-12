@@ -12,17 +12,17 @@
         android:layout_height="wrap_content"
 	 />
 
-    <TextView
+  <!--  <TextView
         android:id="@+id/accountName"
         style="@style/header_2_text_label"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/custom_actionbar" />
+        android:layout_below="@id/custom_actionbar" /> -->
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/accountName"
+        android:layout_below="@id/custom_actionbar"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:scrollbars="horizontal|vertical" >
         
