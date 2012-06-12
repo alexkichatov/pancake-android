@@ -34,6 +34,7 @@ import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
@@ -972,8 +973,12 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void performAction(View view) {
-            ModuleSyncTask mAuthTask = new ModuleSyncTask();
-            mAuthTask.execute();
+        	if(!Util.isNetworkOn(ModuleListFragment.this.getActivity().getBaseContext())) {
+        		Toast.makeText(ModuleListFragment.this.getActivity(), "Network Data Unavilable", Toast.LENGTH_SHORT).show();
+        	} else {
+        		ModuleSyncTask mAuthTask = new ModuleSyncTask();
+        		mAuthTask.execute();
+        	}
         }
     }
 
