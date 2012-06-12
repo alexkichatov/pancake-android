@@ -74,6 +74,8 @@ public class Util {
     public static final String PREF_USERNAME = "usr";
 
     public static final String PREF_PASSWORD = "pwd";
+    
+    public static final String PREF_STATUS = "prefStatus";
 
     public static final String PREF_ALARM_STATE = "alarm";
 

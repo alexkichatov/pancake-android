@@ -141,9 +141,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             Account userAccount = getAccount(usr);
-
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WizardAuthActivity.this);
+            boolean bStatus = prefs.getBoolean(Util.STATUS, false);
             // if the REST url is not available
-            if (TextUtils.isEmpty(restUrl) || userAccount == null) {
+            if (TextUtils.isEmpty(restUrl) || userAccount == null || !bStatus) {
                 // TODO: must be connected to the network to configure the REST URL
                 Log.i(LOG_TAG, "REST URL is not available!");
                 wizardState = Util.URL_NOT_AVAILABLE;
@@ -158,7 +159,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 this.updateButtons(wizardState);
             } else {
                 // if the username is not available
-                if (TextUtils.isEmpty(usr) || userAccount == null) {
+                if (TextUtils.isEmpty(usr) || userAccount == null || !bStatus) {
                     // TODO: must be connected to the network to configure the SugarCRM account
                     Log.i(LOG_TAG, "REST URL is available but not the username!");
                     wizardState = Util.URL_AVAILABLE;
@@ -519,6 +520,12 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             String url = SugarCrmSettings.getSugarRestUrl(getBaseContext());
 
             String sessionId = null;
+            if(!(Util.isNetworkOn(getBaseContext()))) {
+            	wizardState = Util.OFFLINE_MODE;
+            	hasExceptions = true;
+            	setResult(RESULT_OK);
+                finish();
+            }
 
             try {
                 sessionId = RestUtil.loginToSugarCRM(url, usr, mPassword);
@@ -564,8 +571,8 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 return;
 
             if (hasExceptions) {
-                // if (wizardState != Util.URL_USER_PWD_AVAILABLE) {
-                loginStatusMsg.setText(sceDesc);
+                if (loginStatusMsg != null)
+            		loginStatusMsg.setText(sceDesc);
                 mProgressDialog.cancel();
                 // }
                 // else {
@@ -589,6 +596,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
                 Editor editor = prefs.edit();
                 editor.putString(Util.PREF_USERNAME, usr);
+                editor.putBoolean(Util.STATUS, true);
                 editor.commit();
 
                 if (wizardState != Util.URL_USER_PWD_AVAILABLE) {

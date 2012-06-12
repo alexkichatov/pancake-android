@@ -491,6 +491,7 @@ public class WizardActivity extends Activity {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(WizardActivity.this);
                 Editor editor = sp.edit();
                 editor.putString(Util.PREF_USERNAME, usr);
+                editor.putBoolean(Util.STATUS, true);
                 editor.commit();
 
                 if (wizardState != Util.URL_USER_PWD_AVAILABLE) {
