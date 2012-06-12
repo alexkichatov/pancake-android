@@ -211,7 +211,15 @@ public class ModuleDetailFragment extends Fragment {
             mTask.cancel(true);
         }
     }
-
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+		 if (mTask != null && mTask.getStatus() != AsyncTask.Status.RUNNING) {
+			 mTask = new LoadContentTask();
+	         mTask.execute(null, null, null);
+		 }    	 
+    }
     /** {@inheritDoc} */
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the currently selected menu XML resource.
