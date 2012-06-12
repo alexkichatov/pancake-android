@@ -128,6 +128,7 @@ public class SearchActivity extends ListActivity {
             Log.d(TAG, "beanId:" + cursor.getString(1) + " rowId: " + cursor.getString(0));
         }
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+        detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
         detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
         startActivity(detailIntent);
     }
