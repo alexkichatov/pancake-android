@@ -54,6 +54,7 @@ import static com.imaginea.android.sugarcrm.RestUtilConstants.SET_RELATIONSHIP;
 import static com.imaginea.android.sugarcrm.RestUtilConstants.SET_RELATIONSHIPS;
 import static com.imaginea.android.sugarcrm.RestUtilConstants.USER_AUTH;
 import static com.imaginea.android.sugarcrm.RestUtilConstants.USER_NAME;
+import static com.imaginea.android.sugarcrm.RestUtilConstants.SEAMLESS_LOGIN;
 
 import android.util.Log;
 
@@ -1101,6 +1102,57 @@ public class RestUtil {
         }
 
         return version;
+    }
+    
+    /**
+     * Perform a seamless login. This is used internally during the sync process.
+     * 
+     * @param String $session -- Session ID returned by a previous call to login.
+     * 
+     * @return 1 -- integer - if the session was authenticated
+     * 
+     * @return 0 -- integer - if the session could not be authenticated
+     * 
+     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
+     *             if any.
+     */
+    public static int seamlessLogin(String url, String sessionId) throws SugarCrmException {
+        
+        int isValid = 0;
+        
+        Map<String, Object> data = new LinkedHashMap<String, Object>();
+        data.put(SESSION, sessionId);
+        
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost req = new HttpPost(url);
+            
+            String restData = org.json.simple.JSONValue.toJSONString(data);
+            
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair(METHOD, SEAMLESS_LOGIN));
+            nameValuePairs.add(new BasicNameValuePair(INPUT_TYPE, JSON));
+            nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
+            nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData.toString()));
+            req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            // Send POST request
+            httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
+            HttpResponse res = httpClient.execute(req);
+            if (res.getEntity() == null) {
+                Log.e(LOG_TAG, "FAILED TO CONNECT!");
+                throw new SugarCrmException("FAILED TO CONNECT!");
+            }
+            
+            String response = EntityUtils.toString(res.getEntity()).toString();
+            isValid = Integer.parseInt(response);
+            
+            } catch (IOException ioe) {
+                throw new SugarCrmException(ioe.getMessage());
+            }
+
+        return isValid;
     }
 
 }

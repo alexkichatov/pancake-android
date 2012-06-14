@@ -95,8 +95,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String url = pref.getString(Util.PREF_REST_URL, mContext.getString(R.string.defaultUrl));
             SugarCrmApp app = ((SugarCrmApp) SugarCrmApp.app);
             String sessionId = app != null ? app.getSessionId() : null;
-            if (sessionId == null) {
-                sessionId = RestUtil.loginToSugarCRM(url, account.name, password);
+            if (RestUtil.seamlessLogin(url, sessionId) == 0) {
+                    sessionId = RestUtil.loginToSugarCRM(url, account.name, password);
+                    app.setSessionId(sessionId);
             }
 
             // TODO run this list through our local DB and see if any changes have happened and sync

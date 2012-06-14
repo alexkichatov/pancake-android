@@ -54,6 +54,8 @@ public interface RestUtilConstants {
     public static final String SEARCH_BY_MODULE = "search_by_module";
 
     public static final String GET_SERVER_INFO = "get_server_info";
+    
+    public static final String SEAMLESS_LOGIN  = "seamless_login";
 
     public static final String GET_USER_ID = "get_user_id";
 
