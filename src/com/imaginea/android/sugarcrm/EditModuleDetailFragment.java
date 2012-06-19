@@ -824,9 +824,9 @@ public class EditModuleDetailFragment extends Fragment {
                     }
                 }
             }
-            if (rowsCount == 0 && fieldValue.isEmpty()) {
+            /*if (rowsCount == 0 && fieldValue.isEmpty()) {
                 hasError = true;
-            }
+            }*/
             // add the fieldName : fieldValue in the ContentValues
             modifiedValues.put(fieldName, editText.getText().toString());
             rowsCount++;

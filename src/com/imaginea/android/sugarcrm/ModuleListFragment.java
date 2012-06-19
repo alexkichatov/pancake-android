@@ -48,6 +48,7 @@ import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -90,6 +91,8 @@ public class ModuleListFragment extends ListFragment {
     private String[] mModuleFields;
 
     private String[] mModuleFieldsChoice;
+    
+    private Map<String, String> fieldMap = new HashMap<String, String>();
 
     private int mSortColumnIndex;
 
@@ -234,12 +237,15 @@ public class ModuleListFragment extends ListFragment {
         for (int i = 0; i < mModuleFields.length; i++) {
             // add the module field label to be displayed in the choice menu
             ModuleField modField = map.get(mModuleFields[i]);
-            if (modField != null)
+            if (modField != null) {
                 mModuleFieldsChoice[i] = modField.getLabel();
-            else
+                // fieldMap: label vs name
+                fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
+            } else
                 mModuleFieldsChoice[i] = "";
             if (mModuleFieldsChoice[i].indexOf(":") > 0) {
                 mModuleFieldsChoice[i] = mModuleFieldsChoice[i].substring(0, mModuleFieldsChoice[i].length() - 1);
+                fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
             }
         }
     }
@@ -930,14 +936,27 @@ public class ModuleListFragment extends ListFragment {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
             mSortColumnIndex = 0;
-
-            return new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title).setSingleChoiceItems(mModuleFieldsChoice, 0, new DialogInterface.OnClickListener() {
+            
+            Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
+            if(sortOrderMap != null) {
+                for (Entry<String, String> entry : sortOrderMap.entrySet()) {
+                    for (mSortColumnIndex = 0; mSortColumnIndex < mModuleFieldsChoice.length;) {
+                        if(fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]).equals(entry.getKey()))
+                            break;
+                        mSortColumnIndex++;
+                    }                    
+                }        
+            }
+            if(mSortColumnIndex == mModuleFieldsChoice.length)
+                mSortColumnIndex = 0;
+            return new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title).setSingleChoiceItems(mModuleFieldsChoice, mSortColumnIndex, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     mSortColumnIndex = whichButton;
                 }
             }).setPositiveButton(R.string.ascending, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
+                    app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "ASC");
                     sortList(sortOrder);
                 }
             })
@@ -946,6 +965,7 @@ public class ModuleListFragment extends ListFragment {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // ((FragmentAlertDialog)getActivity()).doNegativeClick();
                     String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
+                    app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "DESC");
                     sortList(sortOrder);
                 }
             }).create();

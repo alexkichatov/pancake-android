@@ -19,6 +19,7 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * <p>
@@ -53,6 +54,7 @@ public class ModuleSortConfigActivity extends Activity {
     private SugarCrmApp app;
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +62,8 @@ public class ModuleSortConfigActivity extends Activity {
         // Setup layout
         setTheme(android.R.style.Theme_Holo_Dialog);
         setContentView(R.layout.module_sort_config);
-        mHeaderTextView = (TextView) findViewById(R.id.headerText);
-        mHeaderTextView.setText(R.string.sortSettings);
+       // mHeaderTextView = (TextView) findViewById(R.id.headerText);
+       // mHeaderTextView.setText(R.string.sortSettings);
 
         mDbHelper = new DatabaseHelper(this);
         app = (SugarCrmApp) getApplication();
@@ -128,6 +130,14 @@ public class ModuleSortConfigActivity extends Activity {
                 mFieldNameSpinner.setAdapter(adapter);
                 mFieldNameSpinner.setBackgroundColor(Color.GRAY);
                 mFieldNameSpinner.setEnabled(true);
+                
+                Map<String, String> sortOrderMap = app.getModuleSortOrder(moduleName);
+                if(sortOrderMap != null) {
+                    for (Entry<String, String> entry : sortOrderMap.entrySet()) {
+                        mFieldNameSpinner.setSelection(((ArrayAdapter<CharSequence>)mFieldNameSpinner.getAdapter()).getPosition(entry.getKey()));
+                        mSortOrderSpinner.setSelection(((ArrayAdapter<CharSequence>)mSortOrderSpinner.getAdapter()).getPosition(entry.getValue()));
+                    }        
+                }
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
