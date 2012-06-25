@@ -134,7 +134,6 @@
     
     <string name="info">Info</string>
     <string name="syncMsg">Sync started. Please check notification bar for sync progress.</string>
-    
-    
+    <string name="networkUnavailable">Network Data Unavailable</string>    
 
 </resources>

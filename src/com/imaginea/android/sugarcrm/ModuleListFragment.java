@@ -79,6 +79,8 @@ public class ModuleListFragment extends ListFragment {
     private Uri mIntentUri;
 
     private int mCurrentSelection;
+    
+    private ModuleSyncTask mSyncTask;
 
     // private static int mMaxResults = 20;
 
@@ -445,6 +447,10 @@ public class ModuleListFragment extends ListFragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.i(LOG_TAG, "onPause");
+        if (mSyncTask != null && mSyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mSyncTask.cancel(true);
+            }
     }
 
     /** {@inheritDoc} */
@@ -994,10 +1000,10 @@ public class ModuleListFragment extends ListFragment {
         @Override
         public void performAction(View view) {
         	if(!Util.isNetworkOn(ModuleListFragment.this.getActivity().getBaseContext())) {
-        		Toast.makeText(ModuleListFragment.this.getActivity(), "Network Data Unavilable", Toast.LENGTH_SHORT).show();
+        		Toast.makeText(ModuleListFragment.this.getActivity(), R.string.networkUnavailable, Toast.LENGTH_SHORT).show();
         	} else {
-        		ModuleSyncTask mAuthTask = new ModuleSyncTask();
-        		mAuthTask.execute();
+        	    mSyncTask = new ModuleSyncTask();
+        		mSyncTask.execute();
         	}
         }
     }

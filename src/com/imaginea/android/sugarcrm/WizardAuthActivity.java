@@ -543,6 +543,9 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     // TODO - note , we need a mechanism to release the lock incase the metadata
                     // sync never happens, or its gets killed.
                     // resultWait.acquire();
+                    while(!prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
             } catch (SugarCrmException sce) {
@@ -550,11 +553,11 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 sceDesc = sce.getDescription();
                 Log.e(LOG_TAG, sceDesc, sce);
             }
-            // catch (InterruptedException ie) {
-            // hasExceptions = true;
-            // sceDesc = ie.getMessage();
-            // Log.e(LOG_TAG, ie.getMessage(), ie);
-            // }
+            catch (InterruptedException ie) {
+                hasExceptions = true;
+                sceDesc = ie.getMessage();
+                Log.e(LOG_TAG, ie.getMessage(), ie);
+            }
             // test Account manager code
             return sessionId;
         }
