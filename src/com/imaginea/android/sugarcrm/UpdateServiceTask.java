@@ -99,9 +99,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
             ContentValues values = new ContentValues();
             String updatedBeanId = null;
             // Check network is on
-            if (netOn || sessionId == null) {
-                
-                if (RestUtil.seamlessLogin(url, sessionId) == 0) {
+            if (netOn) {                
+                if ((sessionId == null) || (RestUtil.seamlessLogin(url, sessionId) == 0)) {
                     String userName = SugarCrmSettings.getUsername(mContext);
                     Account account = ((SugarCrmApp) SugarCrmApp.app).getAccount(userName);
                     sessionId = RestUtil.loginToSugarCRM(url, userName, AccountManager.get(mContext).getPassword(account));

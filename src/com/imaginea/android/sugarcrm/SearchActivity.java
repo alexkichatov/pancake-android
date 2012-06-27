@@ -14,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -79,6 +81,8 @@ public class SearchActivity extends ListActivity {
 
         // TextView tv = (TextView) findViewById(R.id.headerText);
         final CustomActionbar tv = (CustomActionbar) findViewById(R.id.custom_actionbar);
+        final Action homeAction = new IntentAction(this, new Intent(this, DashboardActivity.class), R.drawable.home);
+        tv.setHomeAction(homeAction);
         tv.setTitle(mModuleName + getString(R.string.searchResultsHeaderText));
         // findViewById(R.id.filterImage).setVisibility(View.GONE);
         // findViewById(R.id.allItems).setVisibility(View.GONE);

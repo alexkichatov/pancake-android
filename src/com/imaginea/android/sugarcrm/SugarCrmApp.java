@@ -49,7 +49,7 @@ public class SugarCrmApp extends Application {
     public String getSessionId() {
         long currentTime = SystemClock.currentThreadTimeMillis();
 
-        if (mSessionId == null || currentTime - mLastLoginTime > 30000) {
+        if (Util.isNetworkOn(this) && (mSessionId == null || currentTime - mLastLoginTime > 30000)) {
             final String userName = SugarCrmSettings.getUsername(this).toString();
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
             String url = pref.getString(Util.PREF_REST_URL, this.getString(R.string.defaultUrl));
