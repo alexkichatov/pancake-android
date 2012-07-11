@@ -177,7 +177,7 @@ public class RecentModuleListFragment extends ListFragment {
         mListFooterText = (TextView) getActivity().findViewById(R.id.status);
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
-        if (ViewUtil.isHoneycombTablet(getActivity()))
+        if (ViewUtil.isHoneycombTablet(getActivity()) && mAdapter.getCount() != 0)
             openDetailScreen(0);
 
     }

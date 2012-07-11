@@ -619,19 +619,21 @@ public class ModuleDetailFragment extends Fragment {
 
             editDetailsIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
             editDetailsIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-
-            ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-            if (details != null) {
-                /*
+            
+            startActivity(editDetailsIntent);
+            
+           /* ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+            //if (details != null) {
+                *
                  * We can display everything in-place with fragments. Have the list highlight this
                  * item and show the data. Make new fragment to show this selection.
-                 */
+                 *
                 // getListView().setItemChecked(position, true);
-                ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
+               // ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
 
-            } else {
+            //} else {
                 startActivity(editDetailsIntent);
-            }
+           // }*/
         }
     }
 

@@ -180,10 +180,10 @@ public class EditModuleDetailFragment extends Fragment {
             actionBar.setHomeAction(homeAction);
             actionBar.addActionItem(new SaveAction());
         } else {
-
+            
             actionBar.addActionItem(new SaveAction());
-            if (MODE != Util.NEW_ORPHAN_MODE)
-                actionBar.addActionItem(new DiscardAction());
+            //if (MODE != Util.NEW_ORPHAN_MODE)
+            //    actionBar.addActionItem(new DiscardAction());
         }
 
         // our xml onClick items no longer work - so have to set these explicitly again- YUCK
@@ -970,11 +970,11 @@ public class EditModuleDetailFragment extends Fragment {
                     Log.d(TAG, "Display Status");
                 mProgressDialog.cancel();
                 ViewUtil.makeToast(getActivity().getBaseContext(), (String) message.obj);
-                if (ViewUtil.isTablet(getActivity()) && MODE != Util.NEW_ORPHAN_MODE) {
+               /* if (ViewUtil.isTablet(getActivity()) && MODE != Util.NEW_ORPHAN_MODE) {
                     getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
                     ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
                     getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-                } else
+                } else*/
                     getActivity().finish();
                 break;
             }
@@ -1116,21 +1116,7 @@ public class EditModuleDetailFragment extends Fragment {
         public void performAction(View view) {
             saveModuleItem(getActivity().getCurrentFocus());
         }
-    }
-
-    private class DiscardAction extends AbstractAction {
-
-        public DiscardAction() {
-            super(R.drawable.delete);
-        }
-
-        @Override
-        public void performAction(View view) {
-            getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
-            ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
-            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-
-        }
-    }
+    }  
+    
 
 }

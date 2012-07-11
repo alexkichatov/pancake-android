@@ -388,19 +388,21 @@ public class ModuleListFragment extends ListFragment {
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG))
             Log.d(LOG_TAG, "beanId:" + cursor.getString(1));
-
-        ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
-        if (details != null) {
-            /*
+        
+        startActivity(editDetailsIntent);
+        
+        /*ModuleDetailFragment details = (ModuleDetailFragment) getFragmentManager().findFragmentByTag("module_detail");
+        //if (details != null) {
+            *
              * We can display everything in-place with fragments. Have the list highlight this item
              * and show the data. Make new fragment to show this selection.
-             */
-            getListView().setItemChecked(position, true);
-            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
+             *
+          //  getListView().setItemChecked(position, true);
+         //   ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(editDetailsIntent);
 
-        } else {
+        //} else {
             startActivity(editDetailsIntent);
-        }
+       // }*/
     }
 
     /**
@@ -774,6 +776,8 @@ public class ModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showAllItems(View view) {
+        
+        MODE = Util.LIST_MODE;
         Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();

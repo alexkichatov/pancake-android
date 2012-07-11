@@ -31,8 +31,7 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity {
             moduleDetailFragment = new ModuleDetailFragment();
             moduleDetailFragment.setArguments(intentToFragmentArguments(getIntent()));
 
-            // getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail,
-            // moduleDetailFragment, "module_detail").commit();
+             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
         }
     }
 

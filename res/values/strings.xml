@@ -62,6 +62,7 @@
     <string name="view">View</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="discard">Discard</string>
     <string name="call">Call</string>
     <string name="email">Email</string>
 
@@ -93,6 +94,7 @@
     <string name="save">Save</string>
     <string name="importContact">Import Contact</string>
     <string name="deleteAlert">Are you sure you want to delete?</string>
+    <string name="discardAlert">Are you sure you want to discard changes?</string>
     <string name="syncSuccess">Sync Successful</string>
     <string name="syncing">Syncing &#8230;</string>
     <string name="syncFailed">Sync Failed</string>

@@ -1,7 +1,11 @@
 package com.imaginea.android.sugarcrm;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 
 import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
 
@@ -21,4 +25,27 @@ public class EditModuleDetailActivity extends BaseSinglePaneActivity {
         super.onPostCreate(savedInstanceState);
         getActivityHelper().setupSubActivity();
     }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            this.showDialog(R.string.discard);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    
+   public Dialog onCreateDialog(int id) {
+
+       return new AlertDialog.Builder(this).setTitle(id).setMessage(R.string.discardAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int whichButton) {
+               finish(); 
+           }
+       }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int whichButton) {
+
+           }
+       }).create();
+   }
 }
