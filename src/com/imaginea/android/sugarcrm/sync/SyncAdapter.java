@@ -39,8 +39,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private final Context mContext;
 
-    private Date mLastUpdated;
-
     private int mNotiId = -1;
 
     private static final String LOG_TAG = "SyncAdapter";
@@ -201,8 +199,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             syncModuleData(account, extras, authority, sessionId, moduleName, syncResult);
         }
 
-        // update the last synced date.
-        mLastUpdated = new Date();
+        new Date();
         // do not use sync result status to notify, notify module specific comprehensive stats
         mContext.getApplicationContext();
         String msg = mContext.getString(R.string.syncMessage);

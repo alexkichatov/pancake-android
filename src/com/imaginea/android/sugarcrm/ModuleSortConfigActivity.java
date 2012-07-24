@@ -10,8 +10,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
-
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
@@ -32,8 +30,6 @@ public class ModuleSortConfigActivity extends Activity {
     private final String TAG = ModuleSortConfigActivity.class.getSimpleName();
 
     private DatabaseHelper mDbHelper;
-
-    private TextView mHeaderTextView;
 
     private Spinner mModuleNameSpinner;
 

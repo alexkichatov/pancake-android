@@ -1,25 +1,14 @@
 package com.imaginea.android.sugarcrm;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.tab.RecentModuleMultiPaneActivity;
@@ -27,7 +16,6 @@ import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,8 +26,6 @@ import java.util.List;
 public class DashboardActivity extends BaseSinglePaneActivity {
 
     // private GridView mDashboard;
-
-    private List<String> mModuleNames;
 
     private DatabaseHelper mDbHelper;
 

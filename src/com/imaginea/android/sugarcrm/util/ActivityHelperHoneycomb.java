@@ -27,8 +27,6 @@ import android.view.MenuItem;
  * Honeycomb tablets. It thus requires API level 11.
  */
 public class ActivityHelperHoneycomb extends ActivityHelper {
-    private Menu mOptionsMenu;
-
     protected ActivityHelperHoneycomb(Activity activity) {
         super(activity);
     }
@@ -41,7 +39,6 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mOptionsMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -61,9 +58,7 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
     @Override
     public void setupHomeActivity() {
         super.setupHomeActivity();
-        // NOTE: there needs to be a content view set before this is called, so this method
-        // should be called in onPostCreate.
-        ActionBar actionBar = mActivity.getActionBar();
+        /*mActivity.getActionBar();
         if (ViewUtil.isTablet(mActivity)) {
             if (mActivity.getActionBar() != null)
                 mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
@@ -73,7 +68,7 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
             // / mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO,
             // ActionBar.DISPLAY_USE_LOGO
             // | ActionBar.DISPLAY_SHOW_TITLE);
-        }
+        }*/
     }
 
     /** {@inheritDoc} */
@@ -82,7 +77,7 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
         super.setupSubActivity();
         // NOTE: there needs to be a content view set before this is called, so this method
         // should be called in onPostCreate.
-        ActionBar actionBar = mActivity.getActionBar();
+       /* ActionBar actionBar = mActivity.getActionBar();
         if (ViewUtil.isTablet(mActivity)) {
 
             if (actionBar != null)
@@ -94,6 +89,6 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
             if (actionBar != null)
                 actionBar.setDisplayOptions(0, ActionBar.DISPLAY_HOME_AS_UP
                                                 | ActionBar.DISPLAY_USE_LOGO);
-        }
+        }*/
     }
 }
