@@ -1,9 +1,12 @@
 package com.imaginea.android.sugarcrm;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -31,8 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.ModuleDetailFragment.MyYesNoAlertDialogFragment;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
@@ -175,16 +178,9 @@ public class EditModuleDetailFragment extends Fragment {
         }
 
         final CustomActionbar actionBar = (CustomActionbar) mParent.getChildAt(0);
-        if (!ViewUtil.isTablet(getActivity())) {
-            final Action homeAction = new IntentAction(EditModuleDetailFragment.this.getActivity(), new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
-            actionBar.setHomeAction(homeAction);
-            actionBar.addActionItem(new SaveAction());
-        } else {
-            
-            actionBar.addActionItem(new SaveAction());
-            //if (MODE != Util.NEW_ORPHAN_MODE)
-            //    actionBar.addActionItem(new DiscardAction());
-        }
+        //final Action homeAction = new IntentAction(EditModuleDetailFragment.this.getActivity(), new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+        actionBar.setHomeAction(new HomeAction());
+        actionBar.addActionItem(new SaveAction());       
 
         // our xml onClick items no longer work - so have to set these explicitly again- YUCK
         /*
@@ -1118,5 +1114,42 @@ public class EditModuleDetailFragment extends Fragment {
         }
     }  
     
+    private class HomeAction extends AbstractAction {
+
+        public HomeAction() {
+            super(R.drawable.home);
+        }
+
+        @Override
+        public void performAction(View view) {            
+            DialogFragment newFragment = new HomeYesNoAlertDialogFragment().newInstance(R.string.discard);
+            newFragment.show(getFragmentManager(), "HomeYesNoAlertDialog");
+        }
+    }
+    
+    public class HomeYesNoAlertDialogFragment extends DialogFragment {
+
+        public HomeYesNoAlertDialogFragment newInstance(int title) {
+            HomeYesNoAlertDialogFragment frag = new HomeYesNoAlertDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.discard).setMessage(R.string.discardAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    Intent intent = new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class);
+                    startActivity(intent);
+                }
+            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            }).create();
+        }
+    }
 
 }
