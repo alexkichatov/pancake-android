@@ -39,7 +39,6 @@ import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
-import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
