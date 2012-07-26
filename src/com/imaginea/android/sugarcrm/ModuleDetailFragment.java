@@ -3,6 +3,7 @@ package com.imaginea.android.sugarcrm;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -700,6 +701,11 @@ public class ModuleDetailFragment extends Fragment {
                     Uri deleteUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
                     getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
                     ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
+                    
+                    ContentValues values = new ContentValues();
+                    values.put(ModuleFields.DELETED, Util.DELETED_ITEM);
+                    getActivity().getBaseContext().getContentResolver().update(deleteUri, values, null, null);
+                    
                     if (ViewUtil.isTablet(getActivity())) {
                         getActivity().getSupportFragmentManager().beginTransaction().remove(ModuleDetailFragment.this).commit();
                         ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();

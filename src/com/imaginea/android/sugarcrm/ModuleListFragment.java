@@ -426,7 +426,11 @@ public class ModuleListFragment extends ListFragment {
         Uri deleteUri = Uri.withAppendedPath(mModuleUri, cursor.getString(0));
         getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
         ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, beanId);
-    }
+        ContentValues values = new ContentValues();
+        values.put(ModuleFields.DELETED, Util.DELETED_ITEM);
+        getActivity().getBaseContext().getContentResolver().update(deleteUri, values, null, null);
+        
+    }     
 
     private static class DeleteContentObserver extends ContentObserver {
 
