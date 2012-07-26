@@ -4,7 +4,6 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -46,7 +45,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
-import java.util.concurrent.Semaphore;
 
 /**
  * WizardAuthActivity, same as Wizard Activity, but with account manager integration works only with
@@ -102,8 +100,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     private LayoutInflater mInflater;
 
     private int wizardState;
-
-    private Menu mMenu;
 
     private ProgressDialog mProgressDialog;
 
@@ -315,7 +311,9 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         super.onPause();
         Log.i(LOG_TAG, "onPause");
         if (mAuthTask != null && mAuthTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mAuthTask.cancel(true);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WizardAuthActivity.this);
+            if(!prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false))
+                mAuthTask.cancel(true);
         }
     }
 
@@ -388,7 +386,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.connecting), false);
+            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.connecting), true);
             mProgressDialog.setOnCancelListener(new OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
@@ -487,7 +485,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
         private String sceDesc;
 
-        private Semaphore resultWait = new Semaphore(0);
+        //private Semaphore resultWait = new Semaphore(0);
 
         SharedPreferences prefs;
 
@@ -497,7 +495,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             prefs = PreferenceManager.getDefaultSharedPreferences(WizardAuthActivity.this);
-            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.authenticatingMsg), true);
+            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.authenticatingMsg), false);
             mProgressDialog.show();
         }
 
@@ -570,7 +568,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         protected void onPostExecute(Object sessionId) {
             super.onPostExecute(sessionId);
-            if (isCancelled())
+            if (isCancelled() && !prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false))
                 return;
 
             if (hasExceptions) {
@@ -616,8 +614,8 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         public void onStatusChanged(int which) {
             Log.d(LOG_TAG, "onStatusChanged:" + which);
-            Log.d(LOG_TAG, "unlockThread:release lock permits available:"
-                                            + resultWait.availablePermits());
+            //Log.d(LOG_TAG, "unlockThread:release lock permits available:"
+             //                               + resultWait.availablePermits());
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             boolean metaDataSyncCompleted = pref.getBoolean(Util.SYNC_METADATA_COMPLETED, false);
             if (metaDataSyncCompleted) {
@@ -646,7 +644,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         }
     }
 
-    // Not using this anywhere
+    /* Not using this anywhere
     private void showAlertDialog() {
         final String usr = SugarCrmSettings.getUsername(WizardAuthActivity.this).toString();
 
@@ -660,23 +658,17 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
         final AlertDialog loginDialog = new AlertDialog.Builder(WizardAuthActivity.this).setTitle(R.string.password).setView(loginView).setPositiveButton(R.string.signIn, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                /* User clicked OK so do some stuff */
-                EditText etPwd = ((EditText) loginView.findViewById(R.id.loginPassword));
-                // boolean rememberPwd = ((CheckBox)
-                // loginView.findViewById(R.id.loginRememberPwd)).isChecked();
-                // mAuthTask = new AuthenticationTask();
-                // mAuthTask.execute(usr, etPwd.getText().toString(), rememberPwd);
             }
         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                /* User clicked cancel so do some stuff */
+                // User clicked cancel so do some stuff //
                 WizardAuthActivity.this.finish();
             }
         }).create();
 
         loginDialog.show();
 
-    }
+    }*/
 
     /**
      * new method for back presses in android 2.0, instead of the standard mechanism defined in the
@@ -707,9 +699,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     /** {@inheritDoc} */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Hold on to this
-        mMenu = menu;
-
         // Inflate the currently selected menu XML resource.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings_menu, menu);

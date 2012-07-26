@@ -35,7 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
-import com.imaginea.android.sugarcrm.ModuleDetailFragment.MyYesNoAlertDialogFragment;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
@@ -255,7 +254,7 @@ public class EditModuleDetailFragment extends Fragment {
             mUserCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
             mUserAdapter = new UsersSuggestAdapter(getActivity().getBaseContext(), mUserCursor);
 
-            mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
+            mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.loading), false);
             mProgressDialog.show();
         }
 
@@ -710,7 +709,7 @@ public class EditModuleDetailFragment extends Fragment {
      */
     public void saveModuleItem(View v) {
 
-        mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.saving), true);
+        mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.saving), false);
         mProgressDialog.show();
 
         String[] detailsProjection = mSelectFields;
