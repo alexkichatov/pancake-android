@@ -29,7 +29,7 @@
 	        		style="@style/text_label" />
         		<Spinner 
 	        		android:layout_width="fill_parent" 
-	        		android:layout_height="wrap_content" 
+	        		android:layout_height="45dp" 
 	        		android:drawSelectorOnTop="true"
 	        		android:prompt="@string/module"
 	        		style="@style/text_row_value"/>
@@ -48,7 +48,7 @@
 	        		style="@style/text_label" />
        			<Spinner 
 	        		android:layout_width="fill_parent" 
-	        		android:layout_height="wrap_content"
+	        		android:layout_height="45dp"
 	        		style="@style/text_row_value"/>
         	</LinearLayout>
         	<LinearLayout
@@ -65,7 +65,7 @@
 	        		style="@style/text_label" />
 	       		<Spinner
 	        		android:layout_width="fill_parent" 
-	        		android:layout_height="wrap_content"
+	        		android:layout_height="45dp"
 	        		style="@style/text_row_value"/>
         	</LinearLayout>
        		<Button android:id="@+id/saveSortOrder"
