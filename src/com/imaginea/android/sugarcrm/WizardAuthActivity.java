@@ -45,6 +45,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 /**
  * WizardAuthActivity, same as Wizard Activity, but with account manager integration works only with
@@ -106,6 +107,8 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     private TextView mHeaderTextView;
 
     private TextView loginStatusMsg;
+    
+    public static Semaphore resultWait = new Semaphore(0);
 
     private static final String LOG_TAG = WizardAuthActivity.class.getSimpleName();
 
@@ -316,6 +319,12 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 mAuthTask.cancel(true);
         }
     }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+        WizardAuthActivity.resultWait.release();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -485,7 +494,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
         private String sceDesc;
 
-        //private Semaphore resultWait = new Semaphore(0);
+        
 
         SharedPreferences prefs;
 
@@ -540,10 +549,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     // databaseHelper.executeSQLFromFile(Util.SQL_FILE);
                     // TODO - note , we need a mechanism to release the lock incase the metadata
                     // sync never happens, or its gets killed.
-                    // resultWait.acquire();
-                    while(!prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false)) {
-                        Thread.sleep(1000);
-                    }
+                    WizardAuthActivity.resultWait.acquire();
+                    //while(!prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false)) {
+                     //   Thread.sleep(2000);
+                    //}
                 }
 
             } catch (SugarCrmException sce) {
@@ -619,7 +628,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             boolean metaDataSyncCompleted = pref.getBoolean(Util.SYNC_METADATA_COMPLETED, false);
             if (metaDataSyncCompleted) {
-               // resultWait.release();
+                WizardAuthActivity.resultWait.release();
                 ContentResolver.removeStatusChangeListener(syncHandler);
             }
             // else {

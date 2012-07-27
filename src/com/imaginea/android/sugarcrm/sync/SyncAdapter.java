@@ -16,6 +16,7 @@ import com.imaginea.android.sugarcrm.ModulesActivity;
 import com.imaginea.android.sugarcrm.R;
 import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.SugarCrmApp;
+import com.imaginea.android.sugarcrm.WizardAuthActivity;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
@@ -38,6 +39,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private final AccountManager mAccountManager;
 
     private final Context mContext;
+
+    private Date mLastUpdated;
 
     private int mNotiId = -1;
 
@@ -110,7 +113,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             case Util.SYNC_MODULE_META_DATA:
                 // use this only for testing
-                SugarSyncManager.syncModules(mContext, account.name, sessionId);
+                //SugarSyncManager.syncModules(mContext, account.name, sessionId);
                 break;
             case Util.SYNC_ALL_META_DATA:
                 // should be used once for one time set-up
@@ -126,11 +129,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // TODO - Need to resolve SYNC issue.
                 // if (modulesSyncd && aclAccessSyncd & usersSyncd) {
+                WizardAuthActivity.resultWait.release();
                 if (modulesSyncd && usersSyncd) {
                     Editor editor = pref.edit();
                     editor.putBoolean(Util.SYNC_METADATA_COMPLETED, true);
                     editor.commit();
-                }
+                }                
                 break;
             case Util.SYNC_ACL_ACCESS_META_DATA:
                 // use this only for testing
@@ -199,7 +203,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             syncModuleData(account, extras, authority, sessionId, moduleName, syncResult);
         }
 
-        new Date();
+        // update the last synced date.
+        mLastUpdated = new Date();
         // do not use sync result status to notify, notify module specific comprehensive stats
         mContext.getApplicationContext();
         String msg = mContext.getString(R.string.syncMessage);
