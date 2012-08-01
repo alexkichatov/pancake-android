@@ -94,6 +94,7 @@ public class SyncConfigActivity extends Activity {
      * @param v
      *            a {@link android.view.View} object.
      */
+    @SuppressWarnings("deprecation")
     public void startSync(View v) {
         Bundle extras = new Bundle();
         // extras.putInt(key, value)
@@ -101,6 +102,20 @@ public class SyncConfigActivity extends Activity {
         extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
         SugarCrmApp app = (SugarCrmApp) getApplication();
         final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this).toString();
+        if(ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY))
+        {
+            AlertDialog alertDialog = new AlertDialog.Builder(SyncConfigActivity.this).create();
+            alertDialog.setTitle(R.string.info);
+            alertDialog.setMessage(getString(R.string.syncProgressMsg));
+            alertDialog.setIcon(R.drawable.applaunch);
+            alertDialog.setButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    SyncConfigActivity.this.finish();
+                }
+            });
+            alertDialog.show();
+            return;
+        }
         ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
         savePrefs();
 

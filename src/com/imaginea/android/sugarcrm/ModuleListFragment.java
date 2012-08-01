@@ -906,6 +906,7 @@ public class ModuleListFragment extends ListFragment {
             mProgressDialog = null;
         }
 
+        @SuppressWarnings("deprecation")
         private void startModuleSync() {
             Log.d(LOG_TAG, "startModuleSync");
             Bundle extras = new Bundle();
@@ -1010,6 +1011,19 @@ public class ModuleListFragment extends ListFragment {
         	if(!Util.isNetworkOn(ModuleListFragment.this.getActivity().getBaseContext())) {
         		Toast.makeText(ModuleListFragment.this.getActivity(), R.string.networkUnavailable, Toast.LENGTH_SHORT).show();
         	} else {
+        	    SugarCrmApp app = (SugarCrmApp) ModuleListFragment.this.getActivity().getApplication();
+                final String usr = SugarCrmSettings.getUsername(ModuleListFragment.this.getActivity()).toString();
+        	    if(ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY))
+                {
+                    AlertDialog alertDialog = new AlertDialog.Builder(ModuleListFragment.this.getActivity()).create();
+                    alertDialog.setTitle(R.string.info);
+                    alertDialog.setMessage(getString(R.string.syncProgressMsg));
+                    alertDialog.setIcon(R.drawable.applaunch);
+                    alertDialog.setButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {}});
+                    alertDialog.show();
+                    return;
+                }        	    
         	    mSyncTask = new ModuleSyncTask();
         		mSyncTask.execute();
         	}
