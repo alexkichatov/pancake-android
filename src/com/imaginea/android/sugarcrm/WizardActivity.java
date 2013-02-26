@@ -424,6 +424,7 @@ public class WizardActivity extends Activity {
                 List<String> userModules = mDbHelper.getUserModules();
                 if (userModules == null || userModules.size() == 0) {
                     userModules = RestUtil.getAvailableModules(url, sessionId);
+                    Log.d(LOG_TAG, "======userModules ===== "+ userModules.size());
                     try {
                         mDbHelper.setUserModules(userModules);
                     } catch (SugarCrmException sce) {

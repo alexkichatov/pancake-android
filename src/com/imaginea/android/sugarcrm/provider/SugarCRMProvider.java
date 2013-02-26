@@ -99,6 +99,30 @@ public class SugarCRMProvider extends ContentProvider {
     private static final int SEARCH = 26;
 
     private static final int RECENT = 27;
+    
+    private static final int SYNC = 28;
+    
+    private static final int MODULES = 29;
+    
+    private static final int ACCOUNTS_CONTACTS = 30;
+    
+    private static final int ACCOUNTS_CASES = 31;
+    
+    private static final int ACCOUNTS_OPPORTUNITIES = 32;
+    
+    private static final int ACL_ACTIONS = 33;
+    
+    private static final int ACL_ROLES = 34; 
+    
+    private static final int ALARMS = 35;
+    
+    private static final int CONTACTS_CASES = 36;
+    
+    private static final int CONTACTS_OPPORTUNITIES = 37;
+    
+    private static final int LINK_FIELDS = 38;
+    
+    private static final int MODULE_FIELDS = 39;
 
     private static final UriMatcher sUriMatcher;
 
@@ -887,7 +911,7 @@ public class SugarCRMProvider extends ContentProvider {
         case ACCOUNT_OPPORTUNITY:
             accountId = uri.getPathSegments().get(1);
             String opportunityId = uri.getPathSegments().get(3);
-            count = db.delete(DatabaseHelper.ACCOUNTS_CONTACTS_TABLE_NAME, AccountsOpportunitiesColumns.ACCOUNT_ID
+            count = db.delete(DatabaseHelper.ACCOUNTS_OPPORTUNITIES_TABLE_NAME, AccountsOpportunitiesColumns.ACCOUNT_ID
                                             + "="
                                             + accountId
                                             + " AND "
@@ -1005,12 +1029,26 @@ public class SugarCRMProvider extends ContentProvider {
                                             + (!TextUtils.isEmpty(where) ? " AND (" + where + ')'
                                                                             : ""), whereArgs);
             break;
-        case RECENT:
-            Log.e(TAG, "delete made for recent");
             
-            //TODO
+            
+        case RECENT:
+        case SYNC:
+        case USERS:
+        case MODULES:
+        case ACCOUNTS_CASES:
+        case ACCOUNTS_CONTACTS:
+        case ACCOUNTS_OPPORTUNITIES:
+        case ACL_ACTIONS:
+        case ACL_ROLES:
+        case ALARMS:
+        case CONTACTS_CASES:
+        case CONTACTS_OPPORTUNITIES:
+        case LINK_FIELDS:
+        case MODULE_FIELDS: 
+        	String tablename = uri.getPathSegments().get(0);
+        	count = db.delete(tablename, where, whereArgs);
             break;
-
+            
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -1783,6 +1821,7 @@ public class SugarCRMProvider extends ContentProvider {
                                         + SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH);
 
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS, ACCOUNT);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, DatabaseHelper.ACCOUNTS_TABLE_NAME, ACCOUNT);
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS + "/#/#", ACCOUNT);
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS + "/#", ACCOUNT_ID);
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS + "/#/" + Util.CONTACTS, ACCOUNT_CONTACT);
@@ -1830,11 +1869,23 @@ public class SugarCRMProvider extends ContentProvider {
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.CAMPAIGNS + "/#", CAMPAIGN_ID);
         sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.CAMPAIGNS + "/#/#", CAMPAIGN);
 
-        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.USERS, USERS);
-
-        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.RECENT, RECENT);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.USERS, USERS);        
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.RECENT, RECENT);        
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.SYNC_TABLE, SYNC);        
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.MODULES, MODULES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS_CASES, ACCOUNTS_CASES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS_CONTACTS, ACCOUNTS_CONTACTS);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACCOUNTS_OPPORTUNITIES, ACCOUNTS_OPPORTUNITIES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACL_ACTIONS, ACL_ACTIONS);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ACL_ROLES, ACL_ROLES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.ALARMS, ALARMS);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.CONTACTS_CASES, CONTACTS_CASES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.CONTACTS_OPPORTUNITIES, CONTACTS_OPPORTUNITIES);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.LINK_FIELDS, LINK_FIELDS);
+        sUriMatcher.addURI(SugarCRMContent.AUTHORITY, Util.MODULES_FIELDS, MODULE_FIELDS);
 
         // sUriMatcher.addURI(SugarBeans.AUTHORITY, "sugarbeans/#", SUGAR_BEAN_ID);
 
     }
 }
+

@@ -198,5 +198,16 @@
 			android:authorities="com.imaginea.sugarcrm.provider" android:label="@string/appName"
 			android:description="@string/appProviderDesc"
 			android:syncable="true" />
+		
+		<receiver android:name=".AccountRemovalReceiver"
+              android:enabled="true">
+        	<intent-filter>
+               <action
+                    android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".AccountRemovalService" />
+		
     </application>
 </manifest>

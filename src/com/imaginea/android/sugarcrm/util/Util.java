@@ -101,12 +101,34 @@ public class Util {
 
     // module names
     public static final String ACCOUNTS = "Accounts";
+    
+    public static final String ACCOUNTS_CASES = "Accounts_cases";
+    
+    public static final String ACCOUNTS_CONTACTS = "Accounts_contacts";
+    
+    public static final String ACCOUNTS_OPPORTUNITIES = "Accounts_opportunities";
+    
+    public static final String ACL_ACTIONS = "Acl_actions";
+    
+    public static final String ACL_ROLES = "Acl_roles";
+    
+    public static final String ALARMS = "Alarms";
 
     public static final String CONTACTS = "Contacts";
+    
+    public static final String CONTACTS_CASES = "Contacts_cases";
+    
+    public static final String CONTACTS_OPPORTUNITIES = "Contacts_opportunities";
 
     public static final String LEADS = "Leads";
+    
+    public static final String LINK_FIELDS = "Link_fields";
 
     public static final String OPPORTUNITIES = "Opportunities";
+    
+    public static final String MODULES = "Modules";
+    
+    public static final String MODULES_FIELDS = "Module_fields";
 
     public static final String MEETINGS = "Meetings";
 
@@ -125,6 +147,8 @@ public class Util {
     public static final String STATUS = "Status";
 
     public static final String RECENT = "Recent";
+    
+    public static final String SYNC_TABLE = "Sync_table";
 
     public static final String IMPORT_FLAG = "importFlag";
 
