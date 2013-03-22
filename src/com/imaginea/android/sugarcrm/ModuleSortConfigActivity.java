@@ -1,23 +1,23 @@
 package com.imaginea.android.sugarcrm;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * <p>
@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 public class ModuleSortConfigActivity extends Activity {
 
     private final String TAG = ModuleSortConfigActivity.class.getSimpleName();
-
-    private DatabaseHelper mDbHelper;
 
     private Spinner mModuleNameSpinner;
 
@@ -61,23 +59,22 @@ public class ModuleSortConfigActivity extends Activity {
        // mHeaderTextView = (TextView) findViewById(R.id.headerText);
        // mHeaderTextView.setText(R.string.sortSettings);
 
-        mDbHelper = new DatabaseHelper(this);
         app = (SugarCrmApp) getApplication();
 
         // get the modules that are displayed in the dashboard
-        List<String> moduleList = mDbHelper.getModuleList();
+        List<String> moduleList = ContentUtils.getModuleList(this);
         final String[] moduleNames = new String[moduleList.size()];
         moduleList.toArray(moduleNames);
 
-        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.container);
-        mModuleNameSpinner = (Spinner) ((ViewGroup) linearLayout.getChildAt(0)).getChildAt(1);
-        mFieldNameSpinner = (Spinner) ((ViewGroup) linearLayout.getChildAt(1)).getChildAt(1);
-        mSortOrderSpinner = (Spinner) ((ViewGroup) linearLayout.getChildAt(2)).getChildAt(1);
+        mModuleNameSpinner = (Spinner) findViewById(R.id.module_spinner);
+        mFieldNameSpinner = (Spinner) findViewById(R.id.moduleField_spinner);
+        mSortOrderSpinner = (Spinner) findViewById(R.id.sortOrder_spinner);
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, moduleNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mModuleNameSpinner.setAdapter(adapter);
         mModuleNameSpinner.setBackgroundColor(Color.GRAY);
+        
         // disable the fieldname spinner until the user selects the module
         mFieldNameSpinner.setEnabled(false);
 
@@ -100,9 +97,9 @@ public class ModuleSortConfigActivity extends Activity {
 
                 String moduleName = moduleNames[position];
                 // get the fields that are in the LIST_PROJECTION of the module
-                String[] moduleFields = mDbHelper.getModuleListSelections(moduleName);
+                String[] moduleFields = ContentUtils.getModuleListSelections(moduleName);
                 // get the ModuleField objects for the module
-                Map<String, ModuleField> map = mDbHelper.getModuleFields(moduleName);
+                Map<String, ModuleField> map = ContentUtils.getModuleFields(ModuleSortConfigActivity.this, moduleName);
                 // get the labels of the module fields to display
                 String[] moduleFieldsChoice = new String[moduleFields.length];
                 for (int i = 0; i < moduleFields.length; i++) {
@@ -166,17 +163,6 @@ public class ModuleSortConfigActivity extends Activity {
 
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     /**
      * <p>

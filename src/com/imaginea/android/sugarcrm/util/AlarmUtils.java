@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AlarmColumns;
@@ -105,8 +106,8 @@ public class AlarmUtils {
         Bundle extras = new Bundle();
         Uri uri = Uri.withAppendedPath(Uri.parse("content://" + SugarCRMProvider.AUTHORITY + "/"
                                         + Util.MEETINGS), mRowId);
-        DatabaseHelper mDbHelper = new DatabaseHelper(context);
-        Cursor mCursor = context.getContentResolver().query(uri, mDbHelper.getModuleProjections(mModuleName), null, null, mDbHelper.getModuleSortOrder(mModuleName));
+       
+        Cursor mCursor = context.getContentResolver().query(uri, ContentUtils.getModuleProjections(mModuleName), null, null, ContentUtils.getModuleSortOrder(mModuleName));
         if (mCursor != null && mCursor.moveToFirst()) {
             String title = mCursor.getString(mCursor.getColumnIndex(MeetingsColumns.NAME));
             extras.putString(MeetingsColumns.NAME, title);

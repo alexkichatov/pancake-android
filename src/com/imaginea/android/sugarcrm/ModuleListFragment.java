@@ -1,46 +1,43 @@
 package com.imaginea.android.sugarcrm;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Filterable;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
@@ -48,47 +45,25 @@ import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 /**
  * ModuleListFragment, lists the view projections for all the modules.
  * 
  */
-public class ModuleListFragment extends ListFragment {
+public class ModuleListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
 
     private ListView mListView;
-
-    private View mEmpty;
-
-    private View mListFooterView;
-
-    private TextView mListFooterText;
-
-    private View mListFooterProgress;
-
-    private boolean mBusy = false;
 
     private String mModuleName;
 
     private Uri mModuleUri;
 
-    // private boolean mStopLoading = false;
-
     private Uri mIntentUri;
 
     private int mCurrentSelection;
-    
-    private ModuleSyncTask mSyncTask;
-
-    // private static int mMaxResults = 20;
 
     private DatabaseHelper mDbHelper;
 
-    private GenericCursorAdapter mAdapter;
-
-    private static final int DIALOG_SORT_CHOICE = 1;
+    private SimpleCursorAdapter mAdapter;
 
     private String[] mModuleFields;
 
@@ -125,7 +100,7 @@ public class ModuleListFragment extends ListFragment {
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         Intent intent = getActivity().getIntent();
-
+     
         // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
@@ -134,16 +109,7 @@ public class ModuleListFragment extends ListFragment {
         }
 
         mIntentUri = intent.getData();
-        // If the list is a list of related items, hide the filterImage and
-        // allItems image
-        // if (mIntentUri != null && mIntentUri.getPathSegments().size() >= 3) {
-        // getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
-        // getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
-
-        // }
-
-        // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-        // tv.setText(mModuleName);
+       
         final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
 
         final Action homeAction = new IntentAction(ModuleListFragment.this.getActivity(), new Intent(ModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
@@ -175,61 +141,36 @@ public class ModuleListFragment extends ListFragment {
         // button code in the layout - 1.6 SDK feature to specify onClick
         mListView.setItemsCanFocus(true);
         mListView.setFocusable(true);
-        mEmpty = getActivity().findViewById(R.id.empty);
-        mListView.setEmptyView(mEmpty);
+        
+        View empty = getActivity().findViewById(R.id.empty);    
+        TextView tv1 = (TextView) (empty.findViewById(R.id.mainText));
+        tv1.setText("No " + mModuleName + " found");
+        mListView.setEmptyView(empty);        
+        
         registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
         }
 
-        mModuleUri = mDbHelper.getModuleUri(mModuleName);
+        mModuleUri = ContentUtils.getModuleUri(mModuleName);
         if (mIntentUri == null) {
             intent.setData(mModuleUri);
             mIntentUri = mModuleUri;
         }
-        /*
-         * Perform a managed query. The Activity will handle closing and requerying the cursor when
-         * needed. TODO - optimize this, if we sync up a dataset, then no need to run detail
-         * projection here, just do a list projection
-         */
-        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
-
-        String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
-        if (moduleSel.length >= 2)
-            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
-                    android.R.id.text1, android.R.id.text2 });
+   
+        mModuleFields = ContentUtils.getModuleListSelections(mModuleName);
+        if (mModuleFields.length >= 2)
+            mAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.contact_listitem, null, mModuleFields, new int[] {
+                    android.R.id.text1, android.R.id.text2 }, 0);
         else
-            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
+            mAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.contact_listitem, null, mModuleFields, new int[] { android.R.id.text1 }, 0);
         setListAdapter(mAdapter);
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
 
-        TextView tv1 = (TextView) (mEmpty.findViewById(R.id.mainText));
-
-        if (mAdapter.getCount() == 0) {
-            mListView.setVisibility(View.GONE);
-            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
-            tv1.setVisibility(View.VISIBLE);
-            if (mModuleName != null) {
-                tv1.setText("No " + mModuleName + " found");
-            }
-        } else {
-            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            tv1.setVisibility(View.GONE);
-        }
-
-        mListFooterView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
-        getListView().addFooterView(mListFooterView);
-        mListFooterText = (TextView) getActivity().findViewById(R.id.status);
-
-        mListFooterProgress = mListFooterView.findViewById(R.id.progress);
-
-        // get the sort options
-        // get the LIST projection
-        mModuleFields = mDbHelper.getModuleListSelections(mModuleName);
-        // get the module fields for the module
-        Map<String, ModuleField> map = mDbHelper.getModuleFields(mModuleName);
+       // get the module fields for the module
+        Map<String, ModuleField> map = ContentUtils.getModuleFields(getActivity(), mModuleName);
         if (map == null) {
             Log.w(LOG_TAG, "Cannot prepare Options as Map is null for module:" + mModuleName);
             // TODO return false;
@@ -245,94 +186,17 @@ public class ModuleListFragment extends ListFragment {
                 fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
             } else
                 mModuleFieldsChoice[i] = "";
+            
             if (mModuleFieldsChoice[i].indexOf(":") > 0) {
                 mModuleFieldsChoice[i] = mModuleFieldsChoice[i].substring(0, mModuleFieldsChoice[i].length() - 1);
                 fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
             }
         }
+        
+        getLoaderManager().initLoader(0, null, this);
     }
 
-    /**
-     * GenericCursorAdapter
-     */
-    private final class GenericCursorAdapter extends SimpleCursorAdapter implements Filterable {
-
-        private int realoffset = 0;
-
-        private int limit = 20;
-
-        private ContentResolver mContent;
-
-        public GenericCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-            super(context, layout, c, from, to);
-            mContent = context.getContentResolver();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            View v = super.getView(position, convertView, parent);
-            int count = getCursor().getCount();
-            if (!mBusy && position != 0 && position == count - 1) {
-                mBusy = true;
-                realoffset += count;
-                // Uri uri = getIntent().getData();
-                // TODO - fix this, this is no longer used
-                Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI, realoffset + "/" + limit);
-                Log.d(LOG_TAG, "Changing cursor:" + newUri.toString());
-                final Cursor cursor = getActivity().managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
-                CRMContentObserver observer = new CRMContentObserver(new Handler() {
-
-                    @Override
-                    public void handleMessage(Message msg) {
-                        super.handleMessage(msg);
-                        Log.d(LOG_TAG, "Changing cursor: in handler");
-                        // if (cursor.getCount() < mMaxResults)
-                        // mStopLoading = true;
-                        changeCursor(cursor);
-                        mListFooterText.setVisibility(View.GONE);
-                        mListFooterProgress.setVisibility(View.GONE);
-                        mBusy = false;
-                    }
-                });
-                cursor.registerContentObserver(observer);
-            }
-            if (mBusy) {
-                mListFooterProgress.setVisibility(View.VISIBLE);
-                mListFooterText.setVisibility(View.VISIBLE);
-                mListFooterText.setText("Loading...");
-                // Non-null tag means the view still needs to load it's data
-                // text.setTag(this);
-            }
-            return v;
-        }
-
-        @Override
-        public String convertToString(Cursor cursor) {
-            return cursor.getString(2);
-        }
-
-        @Override
-        public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null) {
-                return getFilterQueryProvider().runQuery(constraint);
-            }
-
-            StringBuilder buffer = null;
-            String[] args = null;
-            if (constraint != null) {
-                buffer = new StringBuilder();
-                buffer.append("UPPER(");
-                buffer.append(mDbHelper.getModuleListSelections(mModuleName)[0]);
-                buffer.append(") GLOB ?");
-                args = new String[] { constraint.toString().toUpperCase() + "*" };
-            }
-
-            return mContent.query(mDbHelper.getModuleUri(mModuleName), mDbHelper.getModuleListProjections(mModuleName), buffer == null ? null
-                                            : buffer.toString(), args, mDbHelper.getModuleSortOrder(mModuleName));
-        }
-    }
-
+   
     /**
      * opens the Detail Screen
      * 
@@ -419,10 +283,7 @@ public class ModuleListFragment extends ListFragment {
         if (Log.isLoggable(LOG_TAG, Log.DEBUG))
             Log.d(LOG_TAG, "beanId:" + beanId);
 
-        if (mDbHelper == null)
-            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-
-        mModuleUri = mDbHelper.getModuleUri(mModuleName);
+        mModuleUri = ContentUtils.getModuleUri(mModuleName);
         Uri deleteUri = Uri.withAppendedPath(mModuleUri, cursor.getString(0));
         getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
         ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, beanId);
@@ -449,15 +310,6 @@ public class ModuleListFragment extends ListFragment {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(LOG_TAG, "onPause");
-        if (mSyncTask != null && mSyncTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mSyncTask.cancel(true);
-            }
-    }
 
     /** {@inheritDoc} */
     // TODO
@@ -474,153 +326,7 @@ public class ModuleListFragment extends ListFragment {
         return true;
     }
 
-    /** {@inheritDoc} */
-    // TODO
-    // @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        MenuHelper.onPrepareOptionsMenu(this.getActivity(), menu, mModuleName);
-
-        // get the sort options
-        // get the LIST projection
-        mModuleFields = mDbHelper.getModuleListSelections(mModuleName);
-        // get the module fields for the module
-        Map<String, ModuleField> map = mDbHelper.getModuleFields(mModuleName);
-        if (map == null) {
-            Log.w(LOG_TAG, "Cannot prepare Options as Map is null for module:" + mModuleName);
-            // TODO return false;
-            return;
-        }
-        mModuleFieldsChoice = new String[mModuleFields.length];
-        for (int i = 0; i < mModuleFields.length; i++) {
-            // add the module field label to be displayed in the choice menu
-            ModuleField modField = map.get(mModuleFields[i]);
-            if (modField != null)
-                mModuleFieldsChoice[i] = modField.getLabel();
-            else
-                mModuleFieldsChoice[i] = "";
-            if (mModuleFieldsChoice[i].indexOf(":") > 0) {
-                mModuleFieldsChoice[i] = mModuleFieldsChoice[i].substring(0, mModuleFieldsChoice[i].length() - 1);
-            }
-        }
-
-        if (!mModuleName.equalsIgnoreCase(Util.CONTACTS)) {
-            menu.findItem(R.id.importContact).setVisible(false);
-        }
-
-        // TODO
-        super.onPrepareOptionsMenu(menu);
-        return;
-    }
-
-    /** {@inheritDoc} */
-    // TODO
-    // @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the currently selected menu XML resource.
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.list_activity_menu, menu);
-
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.home:
-            showHome();
-            return true;
-        case R.id.search:
-            onSearchRequested();
-            return true;
-        case R.id.addItem:
-            Intent myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
-            myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-            Log.v(LOG_TAG, "intetnURI: " + mIntentUri);
-            if (mIntentUri != null)
-                myIntent.setData(mIntentUri);
-            this.startActivity(myIntent);
-            return true;
-        case R.id.sort:
-            // TODO
-            getActivity().showDialog(DIALOG_SORT_CHOICE);
-            return true;
-        case R.id.importContact:
-            myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
-            myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-            myIntent.putExtra(Util.IMPORT_FLAG, Util.CONTACT_IMPORT_FLAG);
-            if (mIntentUri != null)
-                myIntent.setData(mIntentUri);
-            // TODO
-            this.startActivity(myIntent);
-            return true;
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    // TODO
-    // @Override
-    /*
-     * protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
-     * super.onPrepareDialog(id, dialog, args); }
-     */
-
-    /** {@inheritDoc} */
-    // @Override
-    // TODO
-    /*
-     * protected void onPrepareDialog(int id, Dialog dialog) { super.onPrepareDialog(id, dialog); }
-     */
-
-    /** {@inheritDoc} */
-    // @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case DIALOG_SORT_CHOICE:
-            Builder builder = new AlertDialog.Builder(this.getActivity());
-            builder.setIcon(android.R.drawable.ic_dialog_alert);
-            builder.setTitle(R.string.sortBy);
-
-            mSortColumnIndex = 0;
-            builder.setSingleChoiceItems(mModuleFieldsChoice, 0, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    mSortColumnIndex = whichButton;
-                }
-            });
-            builder.setPositiveButton(R.string.ascending, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
-                    sortList(sortOrder);
-                }
-            });
-            builder.setNegativeButton(R.string.descending, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
-                    sortList(sortOrder);
-                }
-            });
-            return builder.create();
-
-        case R.string.delete:
-
-            return new AlertDialog.Builder(this.getActivity()).setTitle(id).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-
-                    deleteItem();
-
-                }
-            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-
-                }
-            }).create();
-        }
-
-        return null;
-    }
-
+    
     /** {@inheritDoc} */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -651,9 +357,9 @@ public class ModuleListFragment extends ListFragment {
         // TODO disable options based on acl actions for the module
 
         // TODO
-        if (mDbHelper.getModuleField(mModuleName, ModuleFields.PHONE_WORK) != null)
+        if (ContentUtils.getModuleField(getActivity(), mModuleName, ModuleFields.PHONE_WORK) != null)
             menu.add(4, R.string.call, 4, R.string.call);
-        if (mDbHelper.getModuleField(mModuleName, ModuleFields.EMAIL1) != null)
+        if (ContentUtils.getModuleField(getActivity(), mModuleName, ModuleFields.EMAIL1) != null)
             menu.add(5, R.string.email, 4, R.string.email);
 
     }
@@ -686,7 +392,7 @@ public class ModuleListFragment extends ListFragment {
         case R.string.delete:
             mCurrentSelection = position;
             // getActivity().showDialog(R.string.delete);
-            DialogFragment newFragment = new MyYesNoAlertDialogFragment().newInstance(R.string.delete);
+            DialogFragment newFragment = new ModuleListAlertDialogFragment(R.string.delete);
             newFragment.show(getFragmentManager(), "dialog");
             return true;
 
@@ -706,13 +412,12 @@ public class ModuleListFragment extends ListFragment {
     private void sortList(String sortOrder) {
         String selection = null;
         if (MODE == Util.ASSIGNED_ITEMS_MODE) {
-            // TODO: get the user name from Account Manager
             String userName = SugarCrmSettings.getUsername(this.getActivity());
             selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
         }
-        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), selection, null, sortOrder);
-        mAdapter.changeCursor(cursor);
-        mAdapter.notifyDataSetChanged();
+        mSelections = selection;
+        mSelectionArgs = null;
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     void addToRecent(int position) {
@@ -730,86 +435,6 @@ public class ModuleListFragment extends ListFragment {
         Uri insertResultUri = getActivity().getApplicationContext().getContentResolver().insert(Recent.CONTENT_URI, modifiedValues);
         Log.i(LOG_TAG, "insertResultURi - " + insertResultUri);
 
-    }
-
-    /**
-     * <p>
-     * showAssignedItems
-     * </p>
-     * 
-     * @param view
-     *            a {@link android.view.View} object.
-     */
-    public void showAssignedItems(View view) {
-        MODE = Util.ASSIGNED_ITEMS_MODE;
-        // TODO: get the user name from Account Manager
-        String userName = SugarCrmSettings.getUsername(this.getActivity());
-        String selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
-        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), selection, null, getSortOrder());
-
-        mAdapter.changeCursor(cursor);
-        mAdapter.notifyDataSetChanged();
-
-        TextView mainTextView = (TextView) (mEmpty.findViewById(R.id.mainText));
-        if (mAdapter.getCount() == 0) {
-            mListView.setVisibility(View.GONE);
-            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
-            mainTextView.setVisibility(View.VISIBLE);
-            if (mModuleName != null) {
-                mainTextView.setText("No " + mModuleName + " found");
-            }
-        } else {
-            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            mainTextView.setVisibility(View.GONE);
-        }
-
-        if (ViewUtil.isTablet(getActivity())) {
-            Intent myIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
-            myIntent.putExtra(Util.ROW_ID, "1");
-            myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
-            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(myIntent);
-        }
-    }
-
-    /**
-     * <p>
-     * showAllItems
-     * </p>
-     * 
-     * @param view
-     *            a {@link android.view.View} object.
-     */
-    public void showAllItems(View view) {
-        
-        MODE = Util.LIST_MODE;
-        Cursor cursor = getActivity().managedQuery(mIntentUri, mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
-        mAdapter.changeCursor(cursor);
-        mAdapter.notifyDataSetChanged();
-
-        TextView mainTextView = (TextView) (mEmpty.findViewById(R.id.mainText));
-        if (mAdapter.getCount() == 0) {
-            mListView.setVisibility(View.GONE);
-            mEmpty.findViewById(R.id.progress).setVisibility(View.INVISIBLE);
-            mainTextView.setVisibility(View.VISIBLE);
-            if (mModuleName != null) {
-                mainTextView.setText("No " + mModuleName + " found");
-            }
-        } else {
-            mEmpty.findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            mainTextView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * <p>
-     * show Home Screen
-     * </p>
-     * 
-     * @param view
-     *            a {@link android.view.View} object.
-     */
-    public void showHome(View view) {
-        // showHome();
     }
 
     private void showHome() {
@@ -867,8 +492,19 @@ public class ModuleListFragment extends ListFragment {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + emailAddress));
         startActivity(Intent.createChooser(intent, getActivity().getString(R.string.email)));
     }
+    
+    private void startModuleSync() {
+        Log.d(LOG_TAG, "startModuleSync");
+        Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
+        extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULE_DATA);
+        extras.putString(RestUtilConstants.MODULE_NAME, mModuleName);
+        SugarCrmApp app = (SugarCrmApp) ModuleListFragment.this.getActivity().getApplication();
+        final String usr = SugarCrmSettings.getUsername(ModuleListFragment.this.getActivity()).toString();
+        ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
+    }
 
-    // Task to sync individual module
+ /*   // Task to sync individual module
     class ModuleSyncTask extends AsyncTask<Object, Object, Object> {
 
         boolean hasExceptions = false;
@@ -918,7 +554,7 @@ public class ModuleListFragment extends ListFragment {
             ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
         }
     }
-
+*/
     private Intent AddAction() {
         Intent myIntent = new Intent(this.getActivity(), EditModuleDetailActivity.class);
         myIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
@@ -937,55 +573,7 @@ public class ModuleListFragment extends ListFragment {
         }
     }
 
-    public class MyAlertDialogFragment extends DialogFragment {
-
-        public MyAlertDialogFragment newInstance(int title) {
-            MyAlertDialogFragment frag = new MyAlertDialogFragment();
-            Bundle args = new Bundle();
-            args.putInt("title", title);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int title = getArguments().getInt("title");
-            mSortColumnIndex = 0;
-            
-            Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
-            if(sortOrderMap != null) {
-                for (Entry<String, String> entry : sortOrderMap.entrySet()) {
-                    for (mSortColumnIndex = 0; mSortColumnIndex < mModuleFieldsChoice.length;) {
-                        if(fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]).equals(entry.getKey()))
-                            break;
-                        mSortColumnIndex++;
-                    }                    
-                }        
-            }
-            if(mSortColumnIndex == mModuleFieldsChoice.length)
-                mSortColumnIndex = 0;
-            return new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title).setSingleChoiceItems(mModuleFieldsChoice, mSortColumnIndex, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    mSortColumnIndex = whichButton;
-                }
-            }).setPositiveButton(R.string.ascending, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
-                    app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "ASC");
-                    sortList(sortOrder);
-                }
-            })
-
-            .setNegativeButton(R.string.descending, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // ((FragmentAlertDialog)getActivity()).doNegativeClick();
-                    String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
-                    app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "DESC");
-                    sortList(sortOrder);
-                }
-            }).create();
-        }
-    }
+   
 
     private class SortAction extends AbstractAction {
 
@@ -995,7 +583,7 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void performAction(View view) {
-            DialogFragment newFragment = new MyAlertDialogFragment().newInstance(R.string.sortBy);
+            DialogFragment newFragment = new ModuleListAlertDialogFragment(R.string.sortBy);
             newFragment.show(getFragmentManager(), "dialog");
         }
     }
@@ -1015,17 +603,13 @@ public class ModuleListFragment extends ListFragment {
                 final String usr = SugarCrmSettings.getUsername(ModuleListFragment.this.getActivity()).toString();
         	    if(ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY))
                 {
-                    AlertDialog alertDialog = new AlertDialog.Builder(ModuleListFragment.this.getActivity()).create();
-                    alertDialog.setTitle(R.string.info);
-                    alertDialog.setMessage(getString(R.string.syncProgressMsg));
-                    alertDialog.setIcon(R.drawable.applaunch);
-                    alertDialog.setButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {}});
-                    alertDialog.show();
-                    return;
-                }        	    
-        	    mSyncTask = new ModuleSyncTask();
-        		mSyncTask.execute();
+        	    	 DialogFragment newFragment = new ModuleListAlertDialogFragment(R.string.info);
+        	         newFragment.show(getFragmentManager(), "dialog");
+                     return;
+                }   
+        	    startModuleSync();
+//        	    mSyncTask = new ModuleSyncTask();
+//        		mSyncTask.execute();
         	}
         }
     }
@@ -1038,7 +622,12 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void performAction(View view) {
-            showAllItems(view);
+        	
+        	MODE = Util.LIST_MODE;
+            mSelections = null;
+            mSelectionArgs = null;
+            
+            getLoaderManager().restartLoader(0, null, ModuleListFragment.this);
         }
     }
 
@@ -1050,38 +639,115 @@ public class ModuleListFragment extends ListFragment {
 
         @Override
         public void performAction(View view) {
-            showAssignedItems(view);
+        	
+        	 MODE = Util.ASSIGNED_ITEMS_MODE;
+             String userName = SugarCrmSettings.getUsername(ModuleListFragment.this.getActivity());
+             String selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
+             
+             mSelections = selection;
+             mSelectionArgs = null;
+             getLoaderManager().restartLoader(0, null, ModuleListFragment.this);
         }
     }
 
-    private class MyYesNoAlertDialogFragment extends DialogFragment {
 
-        public MyYesNoAlertDialogFragment newInstance(int title) {
-            MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		
+		return new CursorLoader(getActivity(), mIntentUri,
+				ContentUtils.getModuleProjections(mModuleName), mSelections, mSelectionArgs,
+                getSortOrder());
+	
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor data) {
+		
+		mAdapter.swapCursor(data);
+		
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		
+		mAdapter.swapCursor(null);
+		
+	}
+	
+	private class ModuleListAlertDialogFragment extends DialogFragment {
+
+        public ModuleListAlertDialogFragment(int title) {        	
             Bundle args = new Bundle();
             args.putInt("title", title);
-            frag.setArguments(args);
-            return frag;
+            setArguments(args);         
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+            
+            switch(title){
+            case R.string.sortBy:
+            	 mSortColumnIndex = 0;
+                 
+                 Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
+                 if(sortOrderMap != null) {
+                     for (Entry<String, String> entry : sortOrderMap.entrySet()) {
+                         for (mSortColumnIndex = 0; mSortColumnIndex < mModuleFieldsChoice.length;) {
+                             if(fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]).equals(entry.getKey()))
+                                 break;
+                             mSortColumnIndex++;
+                         }                    
+                     }        
+                 }
+                 if(mSortColumnIndex == mModuleFieldsChoice.length)
+                     mSortColumnIndex = 0;
+                 return new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title).setSingleChoiceItems(mModuleFieldsChoice, mSortColumnIndex, new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int whichButton) {
+                         mSortColumnIndex = whichButton;
+                     }
+                 }).setPositiveButton(R.string.ascending, new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int whichButton) {
+                         String sortOrder = mModuleFields[mSortColumnIndex] + " ASC";
+                         app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "ASC");
+                         sortList(sortOrder);
+                     }
+                 })
 
-            return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.delete).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
+                 .setNegativeButton(R.string.descending, new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int whichButton) {
+                         // ((FragmentAlertDialog)getActivity()).doNegativeClick();
+                         String sortOrder = mModuleFields[mSortColumnIndex] + " DESC";
+                         app.setModuleSortOrder(mModuleName, fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]), "DESC");
+                         sortList(sortOrder);
+                     }
+                 }).create();
+            	
+            case R.string.delete:
+            	return new AlertDialog.Builder(this.getActivity()).setTitle(title).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
 
-                    deleteItem();
-                    if (ViewUtil.isTablet(getActivity())) {
-                        ModuleDetailFragment fragment = (ModuleDetailFragment) getActivity().getSupportFragmentManager().findFragmentByTag("module_detail");
-                        getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-                        ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
-                        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+                        deleteItem();
+                        if (ViewUtil.isTablet(getActivity())) {
+                            ModuleDetailFragment fragment = (ModuleDetailFragment) getActivity().getSupportFragmentManager().findFragmentByTag("module_detail");
+                            getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                            ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+                            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+                        }
                     }
-                }
-            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                }
-            }).create();
+                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                }).create();
+            	
+            case R.string.info:
+            	return new AlertDialog.Builder(ModuleListFragment.this.getActivity()).setTitle(title).setMessage(R.string.syncProgressMsg).setIcon(R.drawable.applaunch)
+            	.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}}).create();
+                            	
+            }
+            return null;
+           
         }
     }
 }

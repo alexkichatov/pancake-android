@@ -17,6 +17,7 @@ import com.imaginea.android.sugarcrm.R;
 import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.SugarCrmApp;
 import com.imaginea.android.sugarcrm.WizardAuthActivity;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
@@ -190,10 +191,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private void syncAllModulesData(Account account, Bundle extras, String authority,
                                     String sessionId, SyncResult syncResult)
                                     throws SugarCrmException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
-        List<String> moduleList = databaseHelper.getModuleList();
-        databaseHelper.close();
-
+       
+    	List<String> moduleList = ContentUtils.getModuleList(mContext);
+      
         if (moduleList.size() == 0) {
             Log.w(LOG_TAG, "No modules to sync");
         }
@@ -229,10 +229,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                     String moduleName, SyncResult syncResult)
                                     throws SugarCrmException {
         Log.i(LOG_TAG, "Syncing Incoming Module Data:" + moduleName);
+        
+        int sincType = extras.getInt(Util.SYNC_TYPE);
 
         // TODO - should be catch SugarCRMException and allow processing other modules and
         // fail completely
-        SugarSyncManager.syncModulesData(mContext, account.name, sessionId, moduleName, syncResult);
+        SugarSyncManager.syncModulesData(mContext, account.name, sincType, sessionId, moduleName, syncResult);
 
         /*
          * at this point we are done with identifying the merge conflicts in the sync table for
@@ -242,7 +244,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.i(LOG_TAG, "Syncing Outgoing Module Data:" + moduleName);
         SugarSyncManager.syncOutgoingModuleData(mContext, account.name, sessionId, moduleName, syncResult);
 
-        if (Util.SYNC_MODULE_DATA == extras.getInt(Util.SYNC_TYPE)) {
+        if (Util.SYNC_MODULE_DATA == sincType) {
             if (mNotiId != -1)
                 Util.notificationCancel(mContext, mNotiId);
 

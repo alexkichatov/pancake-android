@@ -54,8 +54,6 @@ public class SugarService extends Service {
 
     public static final int ONE_MINUTE = 60 * 1000;
 
-    private static int mCurrentSyncEventIndex = 0;
-
     // use better constants herer
     private static int mStatus = 0;
 

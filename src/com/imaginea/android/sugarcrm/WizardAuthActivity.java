@@ -1,14 +1,13 @@
 package com.imaginea.android.sugarcrm;
 
+
+import java.util.concurrent.Semaphore;
+
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -20,7 +19,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,24 +26,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.IOException;
-import java.util.concurrent.Semaphore;
 
 /**
  * WizardAuthActivity, same as Wizard Activity, but with account manager integration works only with
@@ -82,31 +69,15 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     /** Was the original caller asking for an entirely new account? */
     protected boolean mRequestNewAccount = false;
 
-    // In-order list of wizard steps to present to user. These are layout resource ids.
-    private final static int[] STEPS = new int[] { R.layout.url_config_wizard,
-            R.layout.login_activity };
-
-    protected ViewFlipper flipper = null;
-
-    protected Button next, prev;
-
     private SugarCrmApp app;
-
-    private boolean isValidUrl = false;
-
-    private UrlValidationTask mUrlTask;
 
     private AuthenticationTask mAuthTask;
 
-    private LayoutInflater mInflater;
-
-    private int wizardState;
-
     private ProgressDialog mProgressDialog;
-
-    private TextView mHeaderTextView;
-
-    private TextView loginStatusMsg;
+  
+    private EditText mUrlEditText;
+    private EditText mUsrEditText;
+    private EditText mPasswordEditText;
     
     public static Semaphore resultWait = new Semaphore(0);
 
@@ -117,90 +88,46 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-
+        
         app = (SugarCrmApp) getApplication();
-        // if (!TextUtils.isEmpty(app.getSessionId())) {
-        if (!TextUtils.isEmpty("")) {
-            setResult(RESULT_OK);
-            finish();
-        } else {
+   
+        mAccountManager = AccountManager.get(this);
+        final Intent intent = getIntent();
+        mUsername = intent.getStringExtra(Util.PREF_USERNAME);
+        mAuthtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
+        mRequestNewAccount = mUsername == null;
+        mConfirmCredentials = intent.getBooleanExtra(PARAM_CONFIRMCREDENTIALS, false);
 
-            mAccountManager = AccountManager.get(this);
-            final Intent intent = getIntent();
-            mUsername = intent.getStringExtra(Util.PREF_USERNAME);
-            mAuthtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
-            mRequestNewAccount = mUsername == null;
-            mConfirmCredentials = intent.getBooleanExtra(PARAM_CONFIRMCREDENTIALS, false);
+        Log.i(LOG_TAG, "request new: " + mRequestNewAccount);
 
-            Log.i(LOG_TAG, "request new: " + mRequestNewAccount);
-
-            final String restUrl = SugarCrmSettings.getSugarRestUrl(WizardAuthActivity.this);
-            final String usr = SugarCrmSettings.getUsername(WizardAuthActivity.this).toString();
-            Log.i(LOG_TAG, "restUrl - " + restUrl + "\nusr - " + usr + "\n");
-            mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            Account userAccount = getAccount(usr);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WizardAuthActivity.this);
-            boolean bStatus = prefs.getBoolean(Util.STATUS, false);
-            // if the REST url is not available
-            if (TextUtils.isEmpty(restUrl) || userAccount == null || !bStatus) {
-                // TODO: must be connected to the network to configure the REST URL
-                Log.i(LOG_TAG, "REST URL is not available!");
-                wizardState = Util.URL_NOT_AVAILABLE;
-
-                setFlipper();
-                mHeaderTextView.setText(R.string.sugarCrmUrlHeader);
-                // inflate both url layout and username_password layout
-                for (int layout : STEPS) {
-                    View step = mInflater.inflate(layout, this.flipper, false);
-                    this.flipper.addView(step);
-                }
-                this.updateButtons(wizardState);
-            } else {
-                // if the username is not available
-                if (TextUtils.isEmpty(usr) || userAccount == null || !bStatus) {
-                    // TODO: must be connected to the network to configure the SugarCRM account
-                    Log.i(LOG_TAG, "REST URL is available but not the username!");
-                    wizardState = Util.URL_AVAILABLE;
-                    setFlipper();
-                    inflateLoginView();
-                    this.updateButtons(wizardState);
-
-                } else {
-                    Log.i(LOG_TAG, "REST URL and username are available!");
-                    wizardState = Util.URL_USER_AVAILABLE;
-
-                    // if the user is not connected to the network : OFFLINE mode
-                    if (!Util.isNetworkOn(getBaseContext())) {
-                        wizardState = Util.OFFLINE_MODE;
-                        // directly send him to dashboard if the user is not connected to the
-                        // network
-                        setResult(RESULT_OK);
-                        finish();
-                    } else {
-
-                        setFlipper();
-
-                        mHeaderTextView.setText(R.string.login);
-
-                        // never print the password
-                        Log.i(LOG_TAG, "user name is " + usr);
-                        String pwd = mAccountManager.getPassword(userAccount);
-                        mAuthTask = new AuthenticationTask();
-                        mAuthTask.execute(usr, pwd);
-
-                        // View loginView = inflateLoginView();
-                        // EditText editTextUser = (EditText)
-                        // loginView.findViewById(R.id.loginUsername);
-                        // editTextUser.setText(mUsername);
-                        // mHeaderTextView.setText(R.string.login);
-                    }
-                }
-            }
+        final String restUrl = SugarCrmSettings.getSugarRestUrl(WizardAuthActivity.this);
+        final String usr = SugarCrmSettings.getUsername(WizardAuthActivity.this);
+        Log.i(LOG_TAG, "restUrl - " + restUrl + "\nusr - " + usr + "\n");
+ 
+        Account userAccount = getAccount(usr);
+                    
+       if (!TextUtils.isEmpty(usr) && (userAccount != null ) && (mRequestNewAccount)) {
+    	   mAuthTask = new AuthenticationTask();
+    	   String pwd = mAccountManager.getPassword(userAccount);
+           mAuthTask.execute(usr, pwd); 
+           return;
         }
-        // }
-
-    }
+        	    
+       setContentView(R.layout.authentication_activity); 
+       
+    	Button next = (Button)findViewById(R.id.actionNext);
+    	next.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {					
+				handleLogin(v);
+			}
+		});
+              
+       mUrlEditText = (EditText)findViewById(R.id.wizardUrl);
+       mUsrEditText = (EditText)findViewById(R.id.loginUsername);
+       mPasswordEditText = (EditText)findViewById(R.id.loginPassword);
+   }
 
     private Account getAccount(String userName) {
 
@@ -217,64 +144,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         return userAccount;
     }
 
-    private View inflateLoginView() {
-        // inflate only the username_password layout
-        View loginView = mInflater.inflate(STEPS[1], this.flipper, false);
-        this.flipper.addView(loginView);
-        return loginView;
-    }
-
-    private void setFlipper() {
-        setContentView(R.layout.sugar_wizard);
-        mHeaderTextView = (TextView) findViewById(R.id.headerText);
-        this.flipper = (ViewFlipper) this.findViewById(R.id.wizardFlipper);
-        prev = (Button) this.findViewById(R.id.actionPrev);
-        next = (Button) this.findViewById(R.id.actionNext);
-
-        loginStatusMsg = (TextView) flipper.findViewById(R.id.loginStatusMsg);
-
-        final int finalState = wizardState;
-        next.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-
-                // if (isFirstDisplayed()) {
-                if (flipper.getCurrentView().getId() == R.id.urlStep) {
-                    String url = ((EditText) flipper.findViewById(R.id.wizardUrl)).getText().toString();
-                    TextView tv = (TextView) flipper.findViewById(R.id.wizardUrlStatus);
-                    if (TextUtils.isEmpty(url)) {
-                        tv.setText(getString(R.string.validFieldMsg)
-                                                        + " REST url. \n For example, \n"
-                                                        + getBaseContext().getString(R.string.defaultUrl));
-                    } else {
-                        mUrlTask = new UrlValidationTask();
-                        mUrlTask.execute(url);
-                    }
-
-                } else if (flipper.getCurrentView().getId() == R.id.signInStep) {
-                    handleLogin(v);
-                } else {
-                    // show next step and update buttons
-                    flipper.showNext();
-                    updateButtons(finalState);
-                }
-            }
-        });
-
-        prev.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if (isFirstDisplayed()) {
-                    // user walked past beginning of wizard, so return that they cancelled
-                    WizardAuthActivity.this.setResult(Activity.RESULT_CANCELED);
-                    WizardAuthActivity.this.finish();
-                } else {
-                    // show previous step and update buttons
-                    flipper.showPrevious();
-                    updateButtons(finalState);
-                }
-            }
-        });
-    }
-
     /**
      * <p>
      * handleLogin
@@ -284,22 +153,21 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
      *            a {@link android.view.View} object.
      */
     public void handleLogin(View view) {
-        String usr = ((EditText) flipper.findViewById(R.id.loginUsername)).getText().toString();
-        String pwd = ((EditText) flipper.findViewById(R.id.loginPassword)).getText().toString();
-        // boolean rememberPwd = ((CheckBox)
-        // flipper.findViewById(R.id.loginRememberPwd)).isChecked();
-
-        loginStatusMsg = (TextView) flipper.findViewById(R.id.loginStatusMsg);
-        String msg = "";
-        if (TextUtils.isEmpty(usr) || TextUtils.isEmpty(pwd)) {
-            msg = getString(R.string.validFieldMsg) + "username and password.\n";
-            loginStatusMsg.setText(msg);
-        } else {
-            mAuthTask = new AuthenticationTask();
-            mAuthTask.execute(usr, pwd); // rememberPwd);
+    	
+        String usr = mUsrEditText.getText().toString();
+        String pwd = mPasswordEditText.getText().toString();
+        
+        if(TextUtils.isEmpty(mUrlEditText.getText().toString())){
+        	Toast.makeText(WizardAuthActivity.this, "Url should not be empty", Toast.LENGTH_SHORT).show();
+        }else if(TextUtils.isEmpty(usr)){
+        	Toast.makeText(WizardAuthActivity.this, "User name should not be empty", Toast.LENGTH_SHORT).show();
+        }else if(TextUtils.isEmpty(pwd)){
+        	Toast.makeText(WizardAuthActivity.this, "Password name should not be empty", Toast.LENGTH_SHORT).show();
+        }else{
+        	 mAuthTask = new AuthenticationTask();
+             mAuthTask.execute(usr, pwd); 
         }
-
-    }
+     }
 
     /** {@inheritDoc} */
     @Override
@@ -333,158 +201,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         Log.i(LOG_TAG, "onResume");
     }
 
-    /**
-     * <p>
-     * isFirstDisplayed
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    protected boolean isFirstDisplayed() {
-        return (flipper.getDisplayedChild() == 0);
-    }
-
-    /**
-     * <p>
-     * isLastDisplayed
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    protected boolean isLastDisplayed() {
-        return (flipper.getDisplayedChild() == flipper.getChildCount() - 1);
-    }
-
-    /**
-     * <p>
-     * updateButtons
-     * </p>
-     * 
-     * @param state
-     *            a int.
-     */
-    protected void updateButtons(int state) {
-        /*
-         * Log.i(LOG_TAG, "currentView Id : " + flipper.getCurrentView().getId()); Log.i(LOG_TAG,
-         * "urlView Id : " + R.id.urlStep); Log.i(LOG_TAG, "signInView Id : " + R.id.signInStep);
-         */
-        if (flipper.getCurrentView().getId() == R.id.urlStep) {
-            ((TextView) findViewById(R.id.wizardUrlStatus)).setText(String.format(getString(R.string.urlDesc), getString(R.string.defaultUrl)));
-            prev.setVisibility(View.INVISIBLE);
-            next.setText(getString(R.string.next));
-            next.setVisibility(View.VISIBLE);
-        } else if (flipper.getCurrentView().getId() == R.id.signInStep) {
-            mHeaderTextView.setText(R.string.login);
-            if (flipper.getChildCount() == 2) {
-                prev.setVisibility(View.VISIBLE);
-                next.setText(R.string.finish);
-            } else {
-                next.setText(getString(R.string.signIn));
-            }
-            next.setVisibility(View.VISIBLE);
-        }
-    }
-
-    // Task to validate the REST URL
-    class UrlValidationTask extends AsyncTask<Object, Void, Object> {
-
-        private boolean hasExceptions = false;
-
-        private String sceDesc;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = ViewUtil.getProgressDialog(WizardAuthActivity.this, getString(R.string.connecting), true);
-            mProgressDialog.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    mUrlTask.cancel(true);
-                    Toast.makeText(WizardAuthActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
-                }
-            });
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mProgressDialog.cancel();
-                }
-            });
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Object doInBackground(Object... urls) {
-            try {
-                isValidUrl = isValidUrl(urls[0].toString());
-            } catch (SugarCrmException sce) {
-                hasExceptions = true;
-                sceDesc = sce.getDescription();
-                Log.e(LOG_TAG, sce.getDescription(), sce);
-            }
-            return urls[0].toString();
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
-
-        @Override
-        protected void onPostExecute(Object restUrl) {
-            super.onPostExecute(restUrl);
-
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-
-            if (isCancelled())
-                return;
-
-            TextView tv = (TextView) flipper.findViewById(R.id.wizardUrlStatus);
-
-            if (hasExceptions) {
-                tv.setText("Invalid Url : "
-                                                + sceDesc
-                                                + "\n\n Please check the url you have entered! \n\n"
-                                                + getBaseContext().getString(R.string.defaultUrl));
-            } else {
-                if (isValidUrl) {
-                    tv.setText("VALID URL");
-                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(WizardAuthActivity.this);
-                    Editor editor = sp.edit();
-                    editor.putString(Util.PREF_REST_URL, restUrl.toString());
-                    editor.commit();
-
-                    // show next step and update buttons
-                    flipper.showNext();
-                    updateButtons(wizardState);
-                } else {
-                    tv.setText("Invalid Url : "
-                                                    + "\n\n Please check the url you have entered! \n\n"
-                                                    + getBaseContext().getString(R.string.defaultUrl));
-                }
-            }
-
-        }
-
-        protected boolean isValidUrl(String restUrl) throws SugarCrmException {
-            HttpClient httpClient = new DefaultHttpClient();
-            try {
-                HttpGet reqUrl = new HttpGet(restUrl);
-                HttpResponse response = httpClient.execute(reqUrl);
-                int statusCode = response.getStatusLine().getStatusCode();
-                return statusCode == 200 ? true : false;
-            } catch (IllegalStateException ise) {
-                throw new SugarCrmException(ise.getMessage());
-            } catch (ClientProtocolException cpe) {
-                throw new SugarCrmException(cpe.getMessage());
-            } catch (IOException ioe) {
-                throw new SugarCrmException(ioe.getMessage());
-            } catch (Exception e) {
-                throw new SugarCrmException(e.getMessage());
-            }
-        }
-    }
-
+   
     // Task to authenticate
     class AuthenticationTask extends AsyncTask<Object, Object, Object> implements
                                     SyncStatusObserver {
@@ -493,9 +210,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         boolean hasExceptions = false;
 
         private String sceDesc;
-
         
-
         SharedPreferences prefs;
 
         Object syncHandler;
@@ -524,20 +239,38 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             // TODO this settings are important - make it cleaner later to use the same variables
             mUsername = usr;
             mPassword = args[1].toString();
-            String url = SugarCrmSettings.getSugarRestUrl(getBaseContext());
+            
+            String restUrl = SugarCrmSettings.getSugarRestUrl(WizardAuthActivity.this);
+            //first time Url should read from mUrlEditText
+            if(restUrl == null)
+            	restUrl = mUrlEditText.getText().toString();
 
             String sessionId = null;
             if(!(Util.isNetworkOn(getBaseContext()))) {
-            	wizardState = Util.OFFLINE_MODE;
+ 
             	hasExceptions = true;
-            	setResult(RESULT_OK);
-                finish();
+            	sceDesc = "Network is not avialable";
+         //   	Toast.makeText(WizardAuthActivity.this, "Network is not avialable", Toast.LENGTH_SHORT).show();
+        //    	setResult(RESULT_OK);
+        //        finish();
+            	
+                return null;
             }
 
             try {
-                sessionId = RestUtil.loginToSugarCRM(url, usr, mPassword);
+                sessionId = RestUtil.loginToSugarCRM(restUrl, usr, mPassword);
                 Log.i(LOG_TAG, "SessionId - " + sessionId);
-                onAuthenticationResult(true);
+                if(sessionId != null){
+                	onAuthenticationResult();
+                	
+                	Editor editor = prefs.edit();
+                    editor.putString(Util.PREF_USERNAME, usr);
+                    editor.putString(Util.PREF_REST_URL, restUrl);
+                    editor.commit();
+                	
+                }else{
+                	return null;
+                }
                 boolean metaDataSyncCompleted = prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false);
                 if (!metaDataSyncCompleted) {
                     // sync meta-data - modules and acl roles and actions for a user
@@ -581,39 +314,20 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 return;
 
             if (hasExceptions) {
-                if (loginStatusMsg != null)
-            		loginStatusMsg.setText(sceDesc);
+                Toast.makeText(WizardAuthActivity.this, sceDesc, Toast.LENGTH_SHORT).show();
                 mProgressDialog.cancel();
-                // }
-                // else {
-                // setFlipper();
-                // View loginView = inflateLoginView();
-                //
-                // next.setText(getString(R.string.signIn));
-                // next.setVisibility(View.VISIBLE);
-                //
-                // EditText editTextUser = (EditText) loginView.findViewById(R.id.loginUsername);
-                // editTextUser.setText(usr);
-                //
-                // TextView tv = (TextView) flipper.findViewById(R.id.loginStatusMsg);
-                // tv.setText(sceDesc);
-                // }
+                
+                mProgressDialog = null;
+                setResult(RESULT_CANCELED);
+                finish();              
 
             } else {
-
+    
                 // save the sessionId in the application context after the successful login
                 app.setSessionId(sessionId.toString());
-
-                Editor editor = prefs.edit();
-                editor.putString(Util.PREF_USERNAME, usr);
-                editor.putBoolean(Util.STATUS, true);
-                editor.commit();
-
-                if (wizardState != Util.URL_USER_PWD_AVAILABLE) {
-                    Log.d(LOG_TAG, "Cancelling progress bar which is showing:"
-                                                    + mProgressDialog.isShowing());
-                    mProgressDialog.cancel();
-                }
+                Log.d(LOG_TAG, "Cancelling progress bar which is showing:" + mProgressDialog.isShowing());
+                mProgressDialog.cancel();
+          
                 mProgressDialog = null;
                 setResult(RESULT_OK);
                 finish();
@@ -623,19 +337,14 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         public void onStatusChanged(int which) {
             Log.d(LOG_TAG, "onStatusChanged:" + which);
-            //Log.d(LOG_TAG, "unlockThread:release lock permits available:"
-             //                               + resultWait.availablePermits());
+            
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             boolean metaDataSyncCompleted = pref.getBoolean(Util.SYNC_METADATA_COMPLETED, false);
             if (metaDataSyncCompleted) {
                 WizardAuthActivity.resultWait.release();
                 ContentResolver.removeStatusChangeListener(syncHandler);
             }
-            // else {
-            // hasExceptions = true;
-            // sceDesc = getString(R.string.appNotConfigMsg);
-            // }
-        }
+       }
 
         private void startMetaDataSync() {
             Log.d(LOG_TAG, "startMetaDataSync");
@@ -646,39 +355,14 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             SugarCrmApp app = (SugarCrmApp) getApplication();
             final String usr = SugarCrmSettings.getUsername(WizardAuthActivity.this).toString();
             ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
-            // ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING,
+            //ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING,
             // this);
             // TODO -this is API - level 8 - using 2 for testing
             syncHandler = ContentResolver.addStatusChangeListener(2, this);
         }
     }
 
-    /* Not using this anywhere
-    private void showAlertDialog() {
-        final String usr = SugarCrmSettings.getUsername(WizardAuthActivity.this).toString();
-
-        final View loginView = mInflater.inflate(R.layout.login_activity, this.flipper, false);
-        EditText editTextUser = (EditText) loginView.findViewById(R.id.loginUsername);
-        editTextUser.setText(usr);
-        editTextUser.setEnabled(false);
-
-        Button loginBtn = (Button) loginView.findViewById(R.id.loginOk);
-        loginBtn.setVisibility(View.VISIBLE);
-
-        final AlertDialog loginDialog = new AlertDialog.Builder(WizardAuthActivity.this).setTitle(R.string.password).setView(loginView).setPositiveButton(R.string.signIn, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // User clicked cancel so do some stuff //
-                WizardAuthActivity.this.finish();
-            }
-        }).create();
-
-        loginDialog.show();
-
-    }*/
-
+   
     /**
      * new method for back presses in android 2.0, instead of the standard mechanism defined in the
      * docs to handle legacy applications we use version code to handle back button... implement
@@ -730,81 +414,36 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
     /**
      * Called when the authentication process completes (see attemptLogin()).
-     * 
-     * @param result
-     *            a boolean.
      */
-    public void onAuthenticationResult(boolean result) {
-        Log.i(LOG_TAG, "onAuthenticationResult(" + result + ")");
-        // Hide the progress dialog
-        // hideProgress();
-        if (result) {
-            if (!mConfirmCredentials) {
-                finishLogin();
-            } else {
-                finishConfirmCredentials(true);
-            }
-        } else {
-            Log.e(LOG_TAG, "onAuthenticationResult: failed to authenticate");
-            // if (mRequestNewAccount) {
-            // "Please enter a valid username/password.
-            // mMessage
-            // .setText(getText(R.string.login_activity_loginfail_text_both));
-            // } else {
-            // "Please enter a valid password." (Used when the
-            // account is already in the database but the password
-            // doesn't work.)
-            // mMessage
-            // .setText(getText(R.string.login_activity_loginfail_text_pwonly));
-            // }
-        }
-    }
-
-    /**
-     * Called when response is received from the server for confirm credentials request. See
-     * onAuthenticationResult(). Sets the AccountAuthenticatorResult which is sent back to the
-     * caller.
-     * 
-     * @param result
-     *            a boolean.
-     */
-    protected void finishConfirmCredentials(boolean result) {
-        Log.i(LOG_TAG, "finishConfirmCredentials()");
-        final Account account = new Account(mUsername, Util.ACCOUNT_TYPE);
-        mAccountManager.setPassword(account, mPassword);
+    public void onAuthenticationResult() {
+        Log.i(LOG_TAG, "onAuthenticationResult()");
         final Intent intent = new Intent();
-        intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result);
-        setAccountAuthenticatorResult(intent.getExtras());
-        // setResult(RESULT_OK, intent);
-        // finish();
-    }
+        if (!mConfirmCredentials) {
+        	 Log.i(LOG_TAG, "finishLogin()");
+             final Account account = new Account(mUsername, Util.ACCOUNT_TYPE);
 
-    /**
-     * 
-     * Called when response is received from the server for authentication request. See
-     * onAuthenticationResult(). Sets the AccountAuthenticatorResult which is sent back to the
-     * caller. Also sets the authToken in AccountManager for this account.
-     */
-    protected void finishLogin() {
-        Log.i(LOG_TAG, "finishLogin()");
-        final Account account = new Account(mUsername, Util.ACCOUNT_TYPE);
-
-        if (mRequestNewAccount) {
-            mAccountManager.addAccountExplicitly(account, mPassword, null);
-            // Set contacts sync for this account.
-            ContentResolver.setSyncAutomatically(account, SugarCRMProvider.AUTHORITY, true);
+             if (mRequestNewAccount) {
+                 mAccountManager.addAccountExplicitly(account, mPassword, null);
+                 // Set contacts sync for this account.
+                 ContentResolver.setSyncAutomatically(account, SugarCRMProvider.AUTHORITY, true);
+             } else {
+                 mAccountManager.setPassword(account, mPassword);
+             }
+           
+             mAuthtoken = mPassword;
+             intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
+             intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Util.ACCOUNT_TYPE);
+             if (mAuthtokenType != null && mAuthtokenType.equals(Util.AUTHTOKEN_TYPE)) {
+                 intent.putExtra(AccountManager.KEY_AUTHTOKEN, mAuthtoken);
+             }          
         } else {
+        	Log.i(LOG_TAG, "finishConfirmCredentials()");
+            final Account account = new Account(mUsername, Util.ACCOUNT_TYPE);
             mAccountManager.setPassword(account, mPassword);
-        }
-        final Intent intent = new Intent();
-        mAuthtoken = mPassword;
-        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Util.ACCOUNT_TYPE);
-        if (mAuthtokenType != null && mAuthtokenType.equals(Util.AUTHTOKEN_TYPE)) {
-            intent.putExtra(AccountManager.KEY_AUTHTOKEN, mAuthtoken);
+           
+            intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, true);            
         }
         setAccountAuthenticatorResult(intent.getExtras());
-        // setResult(RESULT_OK, intent);
-        // finish();
+        
     }
 }

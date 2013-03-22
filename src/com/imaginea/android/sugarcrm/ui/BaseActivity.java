@@ -37,7 +37,8 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mActivityHelper.onPostCreate(savedInstanceState);
+        //This is commented becuause currently using custom action bar.
+//        mActivityHelper.onPostCreate(savedInstanceState);
     }
 
     @Override

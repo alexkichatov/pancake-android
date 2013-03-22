@@ -27,11 +27,14 @@ import android.util.Log;
 
 import com.imaginea.android.sugarcrm.ModuleFields;
 import com.imaginea.android.sugarcrm.R;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLActions;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLRoles;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleColumns;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Sync;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
 import com.imaginea.android.sugarcrm.util.Module;
@@ -90,7 +93,7 @@ public class SugarSyncManager {
      * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
      *             if any.
      */
-    public static synchronized void syncModulesData(Context context, String account,
+    public static synchronized void syncModulesData(Context context, String account, int syncType,
                                     String sessionId, String moduleName, SyncResult syncResult)
                                     throws SugarCrmException {
         long rawId = 0;
@@ -99,31 +102,33 @@ public class SugarSyncManager {
         if (databaseHelper == null)
             databaseHelper = new DatabaseHelper(context);
         int offset = 0;
-        int maxResults = 20;
         String deleted = "";
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         // TODO use a constant and remove this as we start from the login screen
         String url = pref.getString(Util.PREF_REST_URL, context.getString(R.string.defaultUrl));
 
-        String[] projections = databaseHelper.getModuleProjections(moduleName);
-        String orderBy = databaseHelper.getModuleSortOrder(moduleName);
-        setLinkNameToFieldsArray(moduleName);
+        String[] projections = ContentUtils.getModuleProjections(moduleName);
+        String orderBy = ContentUtils.getModuleSortOrder(moduleName);
+        setLinkNameToFieldsArray(context, moduleName);
 
         // TODO - Fetching based on dates
         if (mDateFormat == null)
             mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-        Date startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 1);
-        long time = pref.getLong(Util.PREF_SYNC_START_TIME, startDate.getTime());
-        startDate.setTime(time);
-
-        Date endDate = new Date();
-        endDate.setTime(System.currentTimeMillis());
-        time = pref.getLong(Util.PREF_SYNC_END_TIME, endDate.getTime());
-        endDate.setTime(time);
-
+        Date startDate = getSyncStartDate(context, syncType, moduleName);
+       
+        Date endDate = getSyncEndDate(context, syncType, moduleName);
+        
+        int maxResults = 1000;
+        
+        String maxRecordsPerSession = pref.getString(Util.PREF_FETCH_RECORDS_SIZE, "2000");
+        int downloadRecordsSizePerRequest = -1;
+        
+        if(!maxRecordsPerSession.equals("ALL")){
+        	downloadRecordsSizePerRequest = Integer.parseInt(maxRecordsPerSession);
+        }
+        
         mQuery = moduleName + "." + ModuleFields.DATE_MODIFIED + ">'"
                                         + mDateFormat.format(startDate) + "' AND " + moduleName
                                         + "." + ModuleFields.DATE_MODIFIED + "<='"
@@ -191,12 +196,158 @@ public class SugarSyncManager {
                 }
             }
             batchOperation.execute();
+            
+            if((downloadRecordsSizePerRequest != -1) && (offset >= downloadRecordsSizePerRequest)){
+            	break;
+            }
 
         }
         mLinkNameToFieldsArray.clear();
         // syncRelationships(context, account, sessionId, moduleName);
         databaseHelper.close();
         databaseHelper = null;
+        
+        updateLastSyncTime(context, syncType, moduleName, endDate.getTime());
+        
+    }
+    
+    /**
+     * updateLastSyncTime
+     * 
+     * @param context
+     *            a {@link android.content.Context} object.
+     * @param syncType
+     *            integer syncType
+     * @param module
+     *            a {@link java.lang.String} object.
+     * @param endTime
+     *            long time in milliseconds
+     *            
+     *            
+     */
+    private static void updateLastSyncTime(Context context, int syncType, String module, long endTime){
+    	
+    	if(Util.SYNC_MODULE_DATA == syncType){
+	        String selection = ModuleColumns.MODULE_NAME + "='" + module + "'"; 
+	        ContentValues values = new ContentValues();
+	        values.put(Modules.LAST_SYNC_TIME, Long.toString(endTime));
+	        context.getContentResolver().update(Modules.CONTENT_URI, values, selection, null);
+        }else{
+        	boolean update = false;
+        	String selection = ModuleColumns.MODULE_NAME + "='" + module + "'";   		
+    		Cursor cursor = context.getContentResolver().query(Modules.CONTENT_URI, Modules.DETAILS_PROJECTION, selection, null, null);
+    		if((null != cursor) && (cursor.getCount() > 0)){
+    			cursor.moveToFirst();
+	    		//read the last sync time and check whether it is intial sync or not
+    			//if lastSyncTime is null then update the last sync time 
+	   			 String lastSyncTime = cursor.getString(cursor.getColumnIndex(ModuleColumns.LAST_SYNC_TIME));
+	   			 if(lastSyncTime == null){
+	   				update = true;
+	   			 }else{
+	   				 long lastTime = Long.parseLong(lastSyncTime);
+	   				 if(endTime > lastTime){
+	   					 update = true;
+	   				 }
+	   			 }
+	   			 cursor.close();
+    		}
+    		if(update){
+    			selection = ModuleColumns.MODULE_NAME + "='" + module + "'"; 
+    	        ContentValues values = new ContentValues();
+    	        values.put(Modules.LAST_SYNC_TIME, Long.toString(endTime));
+    	        context.getContentResolver().update(Modules.CONTENT_URI, values, selection, null);
+    		}
+        }
+    }
+    
+    /**
+     * getSyncEndDate
+     * 
+     * @param context
+     *            a {@link android.content.Context} object.
+     * @param syncType
+     *            integer syncType
+     * @param module
+     *            a {@link java.lang.String} object.  
+     * @return Date
+     * 			a {@link java.util.Date} object   
+     *            
+     */
+    private static Date getSyncEndDate(Context context, int syncType, String module){
+
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    	
+    	Date endDate = new Date();
+    	endDate.setTime(System.currentTimeMillis());
+    	    	
+    	if(Util.SYNC_MODULES_DATA == syncType){
+    		long time = pref.getLong(Util.PREF_SYNC_END_TIME, endDate.getTime());
+            endDate.setTime(time);
+    	} else{
+    		String selection = ModuleColumns.MODULE_NAME + "='" + module + "'";   		
+    		Cursor cursor = context.getContentResolver().query(Modules.CONTENT_URI, Modules.DETAILS_PROJECTION, selection, null, null);
+    		if((null != cursor) && (cursor.getCount() > 0)){
+    			cursor.moveToFirst();
+	    		//read the last sync time and check whether it is intial sync or not
+    			//if lastSyncTime is null then read the end sync time from settings
+	   			 String lastSyncTime = cursor.getString(cursor.getColumnIndex(ModuleColumns.LAST_SYNC_TIME));
+	   			 if(lastSyncTime == null){
+	   				 long syncTime = pref.getLong(Util.PREF_SYNC_END_TIME, endDate.getTime());
+	   				endDate.setTime(syncTime);
+	   			 }
+	   			 cursor.close();
+    		}
+    	}
+    	
+    	return endDate;
+    }
+    
+    /**
+     * getSyncStartDate
+     * 
+     * @param context
+     *            a {@link android.content.Context} object.
+     * @param syncType
+     *            integer syncType
+     * @param module
+     *            a {@link java.lang.String} object.
+     * @return Date
+     * 			a {@link java.util.Date} object       
+     *            
+     */
+    private static Date getSyncStartDate(Context context, int syncType, String module){
+    	
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    	
+    	Date startDate = new Date();
+    	
+    	if(Util.SYNC_MODULES_DATA == syncType){
+    		startDate.setMonth(startDate.getMonth() - 1);
+	        long time = pref.getLong(Util.PREF_SYNC_START_TIME, startDate.getTime());
+	        startDate.setTime(time);
+    	}else{
+    		
+    		//get the last sync time for module 
+    		String selection = ModuleColumns.MODULE_NAME + "='" + module + "'";
+    		
+    		Cursor cursor = context.getContentResolver().query(Modules.CONTENT_URI, Modules.DETAILS_PROJECTION, selection, null, null);
+    		if((null != cursor) && (cursor.getCount() > 0)){   
+    			cursor.moveToFirst();
+    			//read the last sync time from db and set it startDate.
+    			 String lastSyncTime = cursor.getString(cursor.getColumnIndex(ModuleColumns.LAST_SYNC_TIME));
+    			 if(lastSyncTime != null){
+    				 long syncTime = Long.parseLong(lastSyncTime);
+    				 startDate.setTime(syncTime);
+    			 }else{
+    				 startDate.setMonth(startDate.getMonth() - 1);
+    			     long time = pref.getLong(Util.PREF_SYNC_START_TIME, startDate.getTime());
+    			     startDate.setTime(time);
+    			 }
+    			cursor.close();
+    		}
+    	}
+    	
+    	return startDate;
     }
 
     /**
@@ -220,7 +371,7 @@ public class SugarSyncManager {
     public static void syncRelationshipsData(Context context, String account, String sessionId,
                                     String moduleName, SugarBean bean, BatchOperation batchOperation)
                                     throws SugarCrmException {
-        String[] relationships = databaseHelper.getModuleRelationshipItems(moduleName);
+        String[] relationships = ContentUtils.getModuleRelationshipItems(moduleName);
         if (relationships == null) {
             if (Log.isLoggable(LOG_TAG, Log.VERBOSE))
                 Log.v(LOG_TAG, "relationships is null");
@@ -293,15 +444,15 @@ public class SugarSyncManager {
      * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
      *             if any.
      */
-    public static void setLinkNameToFieldsArray(String moduleName) throws SugarCrmException {
-        String[] relationships = databaseHelper.getModuleRelationshipItems(moduleName);
+    public static void setLinkNameToFieldsArray(Context context, String moduleName) throws SugarCrmException {
+        String[] relationships = ContentUtils.getModuleRelationshipItems(moduleName);
         if (relationships == null)
             return;
         for (String relation : relationships) {
             // get the relationships for a user only if access is allowed
-            if (databaseHelper.isModuleAccessAvailable(relation)) {
+            if (ContentUtils.isModuleAccessAvailable(context, relation)) {
                 String linkFieldName = databaseHelper.getLinkfieldName(relation);
-                String[] relationProj = databaseHelper.getModuleProjections(relation);
+                String[] relationProj = ContentUtils.getModuleProjections(relation);
 
                 // remove ACCOUNT_NAME from the projection
                 List<String> projList = new ArrayList<String>(Arrays.asList(relationProj));
@@ -376,8 +527,8 @@ public class SugarSyncManager {
                                     throws SugarCrmException {
         if (Log.isLoggable(LOG_TAG, Log.VERBOSE))
             Log.v(LOG_TAG, "In updateModuleItem");
-        Uri contentUri = databaseHelper.getModuleUri(moduleName);
-        String[] projections = databaseHelper.getModuleProjections(moduleName);
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
+        String[] projections = ContentUtils.getModuleProjections(moduleName);
         Uri uri = ContentUris.withAppendedId(contentUri, rawId);
         // check the changes from server and mark them for merge in sync table
         SyncRecord syncRecord = databaseHelper.getSyncRecord(rawId, moduleName);
@@ -409,7 +560,7 @@ public class SugarSyncManager {
 
         // modified the uri to have moduleName/#/relatedModuleName/# so the uri would take care of
         // updates
-        Uri contentUri = Uri.withAppendedPath(databaseHelper.getModuleUri(moduleName), rawId + "");
+        Uri contentUri = Uri.withAppendedPath(ContentUtils.getModuleUri(moduleName), rawId + "");
         contentUri = Uri.withAppendedPath(contentUri, relatedModuleName);
         contentUri = Uri.withAppendedPath(contentUri, relationRawId + "");
         // if (Log.isLoggable(LOG_TAG, Log.VERBOSE))
@@ -443,7 +594,7 @@ public class SugarSyncManager {
      */
     private static void deleteModuleItem(Context context, long rawId, String moduleName,
                                     BatchOperation batchOperation) {
-        Uri contentUri = databaseHelper.getModuleUri(moduleName);
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
 
         batchOperation.add(SugarCRMOperations.newDeleteCpo(ContentUris.withAppendedId(contentUri, rawId), true).build());
     }
@@ -459,7 +610,7 @@ public class SugarSyncManager {
     private static void deleteRelatedModuleItem(Context context, long rawId, long relatedRawId,
                                     String moduleName, String relaledModuleName,
                                     BatchOperation batchOperation) {
-        Uri contentUri = databaseHelper.getModuleUri(moduleName);
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
         Uri parentUri = ContentUris.withAppendedId(contentUri, rawId);
         Uri relatedUri = Uri.withAppendedPath(parentUri, relaledModuleName);
         Uri deleteUri = ContentUris.withAppendedId(relatedUri, relatedRawId);
@@ -477,7 +628,7 @@ public class SugarSyncManager {
      */
     private static long lookupRawId(ContentResolver resolver, String moduleName, String beanId) {
         long rawId = 0;
-        Uri contentUri = databaseHelper.getModuleUri(moduleName);
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
         String[] projection = new String[] { SugarCRMContent.RECORD_ID };
         final Cursor c = resolver.query(contentUri, projection, mSelection, new String[] { beanId }, null);
         try {
@@ -509,7 +660,8 @@ public class SugarSyncManager {
                                     throws SugarCrmException {
         if (databaseHelper == null)
             databaseHelper = new DatabaseHelper(context);
-        List<String> userModules = databaseHelper.getUserModules();
+        
+        List<String> userModules = ContentUtils.getUserModules(context);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String url = pref.getString(Util.PREF_REST_URL, context.getString(R.string.defaultUrl));
 
@@ -519,8 +671,10 @@ public class SugarSyncManager {
                 // "No user modules available in the database. Trying to get available modules from the server.");
                 userModules = RestUtil.getAvailableModules(url, sessionId);
             }
+            
+            ContentUtils.setUserModules(context, userModules);
             // Log.i(LOG_TAG, "userModules : " + userModules.size());
-            databaseHelper.setUserModules(userModules);
+            //databaseHelper.setUserModules(userModules);
         } catch (SugarCrmException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             return false;
@@ -528,7 +682,7 @@ public class SugarSyncManager {
 
         Set<Module> moduleFieldsInfo = new HashSet<Module>();
         // exclude the modules now that are not part of the supported modules for user
-        List<String> moduleList = databaseHelper.getModuleList();
+        List<String> moduleList = ContentUtils.getModuleList(context);
         for (String moduleName : moduleList) {
             String[] fields = {};
             try {
@@ -579,7 +733,7 @@ public class SugarSyncManager {
         int num = cursor.getCount();
         Log.d(LOG_TAG, "UNSYNCD Item count:" + num);
         // Log.d(LOG_TAG, "UNSYNCD Column count:" + cursor.getColumnCount());
-        String selectFields[] = databaseHelper.getModuleProjections(moduleName);
+        String selectFields[] = ContentUtils.getModuleProjections(moduleName);
         cursor.moveToFirst();
         for (int i = 0; i < num; i++) {
             long syncRecordId = cursor.getLong(Sync.ID_COLUMN);
@@ -603,7 +757,7 @@ public class SugarSyncManager {
         String url = pref.getString(Util.PREF_REST_URL, context.getString(R.string.defaultUrl));
         String updatedBeanId = null;
 
-        Uri uri = ContentUris.withAppendedId(databaseHelper.getModuleUri(relatedModuleName), syncId);
+        Uri uri = ContentUris.withAppendedId(ContentUtils.getModuleUri(relatedModuleName), syncId);
 
         Map<String, String> moduleItemValues = new LinkedHashMap<String, String>();
         Cursor cursor = context.getContentResolver().query(uri, selectedFields, null, null, null);

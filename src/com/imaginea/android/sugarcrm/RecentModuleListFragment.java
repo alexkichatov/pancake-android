@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
@@ -61,8 +62,6 @@ public class RecentModuleListFragment extends ListFragment {
     // others from modiying anyway
     // private static int mMaxResults = 20;
 
-    private DatabaseHelper mDbHelper;
-
     private GenericCursorAdapter mAdapter;
 
     private String mSelections = ModuleFields.DELETED + "=?";
@@ -85,7 +84,6 @@ public class RecentModuleListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         Intent intent = getActivity().getIntent();
         // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
@@ -133,7 +131,7 @@ public class RecentModuleListFragment extends ListFragment {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
         }
 
-        mModuleUri = mDbHelper.getModuleUri(mModuleName);
+        mModuleUri = ContentUtils.getModuleUri(mModuleName);
         if (mIntentUri == null) {
             intent.setData(mModuleUri);
             mIntentUri = mModuleUri;
@@ -144,11 +142,11 @@ public class RecentModuleListFragment extends ListFragment {
         // TODO - optimize this, if we sync up a dataset, then no need to run
         // detail projection
         // here, just do a list projection
-        Cursor cursor = getActivity().managedQuery(intent.getData(), mDbHelper.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(intent.getData(), ContentUtils.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
 
         // CRMContentObserver observer = new CRMContentObserver()
         // cursor.registerContentObserver(observer);
-        String[] moduleSel = mDbHelper.getModuleListSelections(mModuleName);
+        String[] moduleSel = ContentUtils.getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2)
             mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
                     android.R.id.text1, android.R.id.text2 });
@@ -253,13 +251,13 @@ public class RecentModuleListFragment extends ListFragment {
             if (constraint != null) {
                 buffer = new StringBuilder();
                 buffer.append("UPPER(");
-                buffer.append(mDbHelper.getModuleListSelections(mModuleName)[0]);
+                buffer.append(ContentUtils.getModuleListSelections(mModuleName)[0]);
                 buffer.append(") GLOB ?");
                 args = new String[] { constraint.toString().toUpperCase() + "*" };
             }
 
-            return mContent.query(mDbHelper.getModuleUri(mModuleName), mDbHelper.getModuleListProjections(mModuleName), buffer == null ? null
-                                            : buffer.toString(), args, mDbHelper.getModuleSortOrder(mModuleName));
+            return mContent.query(ContentUtils.getModuleUri(mModuleName), ContentUtils.getModuleListProjections(mModuleName), buffer == null ? null
+                                            : buffer.toString(), args, ContentUtils.getModuleSortOrder(mModuleName));
         }
     }
 
@@ -311,7 +309,7 @@ public class RecentModuleListFragment extends ListFragment {
      *            a {@link android.view.View} object.
      */
     public void showAllItems(View view) {
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), mDbHelper.getModuleProjections(mModuleName), null, null, getSortOrder());
+        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), ContentUtils.getModuleProjections(mModuleName), null, null, getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }

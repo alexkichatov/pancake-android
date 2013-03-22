@@ -1,24 +1,32 @@
 package com.imaginea.android.sugarcrm.provider;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
 
 import com.imaginea.android.sugarcrm.ModuleFields;
-import com.imaginea.android.sugarcrm.R;
 import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.SugarCrmSettings;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLActionColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLActions;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLRoleColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLRoles;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsCasesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsContactsColumns;
@@ -27,23 +35,19 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AlarmColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Calls;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Campaigns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Cases;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsCasesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsOpportunitiesColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Leads;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.LeadsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.LinkFieldColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Meetings;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldGroupColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldSortOrder;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldSortOrderColumns;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFields_TableInfo;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Opportunities;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.OpportunitiesColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.RecentColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Sync;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.SyncColumns;
@@ -57,20 +61,6 @@ import com.imaginea.android.sugarcrm.util.ModuleFieldBean;
 import com.imaginea.android.sugarcrm.util.SugarBean;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * This class helps open, create, and upgrade the database file.
@@ -132,30 +122,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
-    private String[] defaultSupportedModules = { Util.ACCOUNTS, Util.CONTACTS, Util.LEADS,
+   /* private String[] defaultSupportedModules = { Util.ACCOUNTS, Util.CONTACTS, Util.LEADS,
             Util.OPPORTUNITIES, Util.CASES, Util.CALLS, Util.MEETINGS, Util.CAMPAIGNS };
-
-    private static HashMap<String, Integer> moduleIcons = new HashMap<String, Integer>();
+	*/
+//    private static HashMap<String, Integer> moduleIcons = new HashMap<String, Integer>();
 
     // private static List<String> moduleList;
 
-    private static final HashMap<String, String[]> moduleProjections = new HashMap<String, String[]>();
+ //   private static final HashMap<String, String[]> moduleProjections = new HashMap<String, String[]>();
 
-    private static final HashMap<String, String[]> moduleListProjections = new HashMap<String, String[]>();
+//    private static final HashMap<String, String[]> moduleListProjections = new HashMap<String, String[]>();
 
-    private static final HashMap<String, String[]> moduleListSelections = new HashMap<String, String[]>();
+ //   private static final HashMap<String, String[]> moduleListSelections = new HashMap<String, String[]>();
 
-    private static final HashMap<String, String> moduleSortOrder = new HashMap<String, String>();
+ //   private static final HashMap<String, String> moduleSortOrder = new HashMap<String, String>();
 
-    private static final HashMap<String, Uri> moduleUris = new HashMap<String, Uri>();
+ //   private static final HashMap<String, Uri> moduleUris = new HashMap<String, Uri>();
 
-    private static final HashMap<String, String> moduleSelections = new HashMap<String, String>();
+//    private static final HashMap<String, String> moduleSelections = new HashMap<String, String>();
 
-    private static HashMap<String, HashMap<String, ModuleField>> moduleFields;
+//    private static HashMap<String, HashMap<String, ModuleField>> moduleFields;
 
     private static HashMap<String, HashMap<String, LinkField>> linkFields;
 
-    private static final HashMap<String, String[]> moduleRelationshipItems = new HashMap<String, String[]>();
+ //   private static final HashMap<String, String[]> moduleRelationshipItems = new HashMap<String, String[]>();
 
     private static final HashMap<String, String[]> relationshipTables = new HashMap<String, String[]>();
 
@@ -165,11 +155,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final HashMap<String, String> linkfieldNames = new HashMap<String, String>();
 
-    private static List<String> billingAddressGroup = new ArrayList<String>();
+//    private static List<String> billingAddressGroup = new ArrayList<String>();
 
-    private static List<String> shippingAddressGroup = new ArrayList<String>();
+ //   private static List<String> shippingAddressGroup = new ArrayList<String>();
 
-    private static List<String> durationGroup = new ArrayList<String>();
+  //  private static List<String> durationGroup = new ArrayList<String>();
 
     private Map<String, Map<String, Integer>> accessMap = new HashMap<String, Map<String, Integer>>();
 
@@ -183,20 +173,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static {
 
-        // Icons projection
-        moduleIcons.put(Util.ACCOUNTS, R.drawable.account);
-        moduleIcons.put(Util.CONTACTS, R.drawable.contacts);
-        moduleIcons.put(Util.LEADS, R.drawable.leads);
-        moduleIcons.put(Util.OPPORTUNITIES, R.drawable.opportunity);
-        moduleIcons.put(Util.CASES, R.drawable.cases);
-        moduleIcons.put(Util.CALLS, R.drawable.calls);
-        moduleIcons.put(Util.MEETINGS, R.drawable.meeting);
-        moduleIcons.put(Util.CAMPAIGNS, R.drawable.campaigns);
-        // moduleIcons.put("Settings", R.drawable.settings1);
-        moduleIcons.put(Util.RECENT, R.drawable.recent);
-
+   
         // Module Projections
-        moduleProjections.put(Util.ACCOUNTS, Accounts.DETAILS_PROJECTION);
+    /*    moduleProjections.put(Util.ACCOUNTS, Accounts.DETAILS_PROJECTION);
         moduleProjections.put(Util.CONTACTS, Contacts.DETAILS_PROJECTION);
         moduleProjections.put(Util.LEADS, Leads.DETAILS_PROJECTION);
         moduleProjections.put(Util.OPPORTUNITIES, Opportunities.DETAILS_PROJECTION);
@@ -204,9 +183,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleProjections.put(Util.CALLS, Calls.DETAILS_PROJECTION);
         moduleProjections.put(Util.MEETINGS, Meetings.DETAILS_PROJECTION);
         moduleProjections.put(Util.CAMPAIGNS, Campaigns.DETAILS_PROJECTION);
+        
+        */
 
         // module list projections
-        moduleListProjections.put(Util.ACCOUNTS, Accounts.LIST_PROJECTION);
+     /*   moduleListProjections.put(Util.ACCOUNTS, Accounts.LIST_PROJECTION);
         moduleListProjections.put(Util.CONTACTS, Contacts.LIST_PROJECTION);
         moduleListProjections.put(Util.LEADS, Leads.LIST_PROJECTION);
         moduleListProjections.put(Util.OPPORTUNITIES, Opportunities.LIST_PROJECTION);
@@ -214,20 +195,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleListProjections.put(Util.CALLS, Calls.LIST_PROJECTION);
         moduleListProjections.put(Util.MEETINGS, Meetings.LIST_PROJECTION);
         moduleListProjections.put(Util.CAMPAIGNS, Campaigns.LIST_PROJECTION);
-
-        // Module List Selections
-        moduleListSelections.put(Util.ACCOUNTS, Accounts.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.CONTACTS, Contacts.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.LEADS, Leads.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.OPPORTUNITIES, Opportunities.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.CASES, Cases.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.CALLS, Calls.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.MEETINGS, Meetings.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.CAMPAIGNS, Campaigns.LIST_VIEW_PROJECTION);
-        moduleListSelections.put(Util.RECENT, Recent.LIST_VIEW_PROJECTION);
+        */
 
         // Default sort orders
-        moduleSortOrder.put(Util.ACCOUNTS, Accounts.DEFAULT_SORT_ORDER);
+ /*       moduleSortOrder.put(Util.ACCOUNTS, Accounts.DEFAULT_SORT_ORDER);
         moduleSortOrder.put(Util.CONTACTS, Contacts.DEFAULT_SORT_ORDER);
         moduleSortOrder.put(Util.LEADS, Leads.DEFAULT_SORT_ORDER);
         moduleSortOrder.put(Util.OPPORTUNITIES, Opportunities.DEFAULT_SORT_ORDER);
@@ -235,20 +206,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleSortOrder.put(Util.CALLS, Calls.DEFAULT_SORT_ORDER);
         moduleSortOrder.put(Util.MEETINGS, Meetings.DEFAULT_SORT_ORDER);
         moduleSortOrder.put(Util.CAMPAIGNS, Campaigns.DEFAULT_SORT_ORDER);
+        */
 
-        // Content Uris
-        moduleUris.put(Util.ACCOUNTS, Accounts.CONTENT_URI);
-        moduleUris.put(Util.CONTACTS, Contacts.CONTENT_URI);
-        moduleUris.put(Util.LEADS, Leads.CONTENT_URI);
-        moduleUris.put(Util.OPPORTUNITIES, Opportunities.CONTENT_URI);
-        moduleUris.put(Util.CASES, Cases.CONTENT_URI);
-        moduleUris.put(Util.CALLS, Calls.CONTENT_URI);
-        moduleUris.put(Util.MEETINGS, Meetings.CONTENT_URI);
-        moduleUris.put(Util.CAMPAIGNS, Campaigns.CONTENT_URI);
-        moduleUris.put(Util.USERS, Users.CONTENT_URI);
-        moduleUris.put(Util.RECENT, Recent.CONTENT_URI);
         // TODO - complete this list
-        moduleRelationshipItems.put(Util.ACCOUNTS, new String[] { Util.CONTACTS,
+   /*     moduleRelationshipItems.put(Util.ACCOUNTS, new String[] { Util.CONTACTS,
                 Util.OPPORTUNITIES, Util.CASES });
         // TODO - leads removed from CONTACTS relationship and vice versa
         moduleRelationshipItems.put(Util.CONTACTS, new String[] { Util.OPPORTUNITIES });
@@ -260,7 +221,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleRelationshipItems.put(Util.CASES, new String[] {});
         moduleRelationshipItems.put(Util.CALLS, new String[] {});
         moduleRelationshipItems.put(Util.MEETINGS, new String[] {});
-        moduleRelationshipItems.put(Util.CAMPAIGNS, new String[] {});
+        moduleRelationshipItems.put(Util.CAMPAIGNS, new String[] {});*/
         // moduleRelationshipItems.put(Util.CASES, new String[] { Util.CONTACTS });
         // moduleRelationshipItems.put(Util.CALLS, new String[] { Util.CONTACTS });
         // moduleRelationshipItems.put(Util.MEETINGS, new String[] { Util.CONTACTS });
@@ -298,7 +259,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         linkfieldNames.put(Util.ACLROLES, "aclroles");
         linkfieldNames.put(Util.ACLACTIONS, "actions");
 
-        billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET);
+  /*      billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET);
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_2);
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_3);
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_4);
@@ -306,8 +267,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STATE);
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_POSTALCODE);
         billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_COUNTRY);
+        
+   */
 
-        shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET);
+    /*    shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET);
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_2);
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_3);
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_4);
@@ -315,9 +278,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STATE);
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_POSTALCODE);
         shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_COUNTRY);
-
-        durationGroup.add(ModuleFields.DURATION_HOURS);
+*/
+        
+ /*       durationGroup.add(ModuleFields.DURATION_HOURS);
         durationGroup.add(ModuleFields.DURATION_MINUTES);
+        */
 
         // add a field name to the map if a module field in detail projection is to be excluded
         fieldsExcludedForEdit.put(SugarCRMContent.RECORD_ID, SugarCRMContent.RECORD_ID);
@@ -356,6 +321,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** {@inheritDoc} */
     @Override
     public void onCreate(SQLiteDatabase db) {
+    	
         createAccountsTable(db);
         createContactsTable(db);
         createLeadsTable(db);
@@ -380,7 +346,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // createModuleFieldsGroupTable(db);
 
         // create join tables
-
         createAccountsContactsTable(db);
         createAccountsOpportunitiesTable(db);
         createAccountsCasesTable(db);
@@ -721,7 +686,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + MODULES_TABLE_NAME + " (" + ModuleColumns.ID
                                         + " INTEGER PRIMARY KEY," + ModuleColumns.MODULE_NAME
-                                        + " TEXT," + " UNIQUE(" + ModuleColumns.MODULE_NAME + ")"
+                                        + " TEXT," + ModuleColumns.LAST_SYNC_TIME + " TEXT,"
+                                        +" UNIQUE(" + ModuleColumns.MODULE_NAME + ")"
                                         + ");");
     }
 
@@ -843,7 +809,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         + ACLActionColumns.ACTION_ID + ")" + ");");
     }
 
-    private static void createModuleFieldsSortOrderTable(SQLiteDatabase db) {
+  /*  private static void createModuleFieldsSortOrderTable(SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + MODULE_FIELDS_SORT_ORDER_TABLE_NAME + " ("
                                         + ModuleFieldSortOrderColumns.ID + " INTEGER PRIMARY KEY,"
@@ -860,10 +826,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         + ModuleFieldGroupColumns.TITLE + " TEXT,"
                                         + ModuleFieldGroupColumns.GROUP_ID + " INTEGER" + ");");
     }
-
+*/
     private void setAclAccessMap() {
         // get the module list
-        List<String> moduleNames = getModuleList();
+        List<String> moduleNames = ContentUtils.getModuleList(mContext);
 
         SQLiteDatabase db = getReadableDatabase();
         for (String moduleName : moduleNames) {
@@ -987,10 +953,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, String> getFieldsExcludedForDetails() {
+ /*   public Map<String, String> getFieldsExcludedForDetails() {
         return fieldsExcludedForDetails;
     }
-
+*/
     /**
      * <p>
      * Getter for the field <code>moduleProjections</code>.
@@ -1000,9 +966,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getModuleProjections(String moduleName) {
+  /*  public String[] getModuleProjections(String moduleName) {
         return moduleProjections.get(moduleName);
     }
+    */
 
     /**
      * <p>
@@ -1013,9 +980,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getModuleListProjections(String moduleName) {
+   /* public String[] getModuleListProjections(String moduleName) {
         return moduleListProjections.get(moduleName);
     }
+    */
 
     /**
      * <p>
@@ -1026,9 +994,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      */
+    //This moved to ContentUtil
+    /*
     public String[] getModuleListSelections(String moduleName) {
         return moduleListSelections.get(moduleName);
-    }
+    }*/
 
     /**
      * <p>
@@ -1039,9 +1009,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getModuleSortOrder(String moduleName) {
+  /*  public String getModuleSortOrder(String moduleName) {
         return moduleSortOrder.get(moduleName);
     }
+    */
 
     /**
      * <p>
@@ -1052,10 +1023,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a {@link android.net.Uri} object.
      */
-    public Uri getModuleUri(String moduleName) {
+    //this moved to ContentUtils
+  /*  public Uri getModuleUri(String moduleName) {
         return moduleUris.get(moduleName);
     }
-
+*/
     /**
      * <p>
      * getModuleSelection
@@ -1090,10 +1062,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getModuleRelationshipItems(String moduleName) {
+  /*  public String[] getModuleRelationshipItems(String moduleName) {
         return moduleRelationshipItems.get(moduleName);
     }
-
+*/
     /**
      * <p>
      * Getter for the field <code>relationshipTables</code>.
@@ -1140,6 +1112,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.List} object.
      */
+    //This method moved to ContentUtils class.
+    /*
     public List<String> getModuleList() {
         List<String> userModules = getUserModules();
         List<String> supportedModules = Arrays.asList(getSupportedModulesList());
@@ -1152,7 +1126,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return modules;
         // TODO: return the module List after the exclusion of modules from the user moduleList
         // return moduleList;
-    }
+    }*/
 
     /**
      * while fetching relationship module items, we need to determine if current user has access to
@@ -1162,14 +1136,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean isModuleAccessAvailable(String moduleName) {
+    //this moved to content utils.
+   /* public boolean isModuleAccessAvailable(String moduleName) {
         // userModules list is already sorted when querying from DB, hey we can as well go against
         // the db or use a map
         List<String> userModules = getUserModules();
         int index = Collections.binarySearch(userModules, moduleName);
         return index < 0 ? false : true;
     }
-
+*/
     /**
      * <p>
      * getLinkfieldName
@@ -1190,9 +1165,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getSupportedModulesList() {
+  /*  public String[] getSupportedModulesList() {
         return defaultSupportedModules;
-    }
+    }*/
 
     /**
      * <p>
@@ -1203,12 +1178,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getModuleIcon(String moduleName) {
+    //This moved to ContentUtils
+ /*   public int getModuleIcon(String moduleName) {
         Integer iconResource = moduleIcons.get(moduleName);
         if (iconResource == null)
             return android.R.drawable.alert_dark_frame;
         return iconResource;
     }
+*/
 
     /**
      * <p>
@@ -1217,9 +1194,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.List} object.
      */
-    public List<String> getBillingAddressGroup() {
+  /*  public List<String> getBillingAddressGroup() {
         return billingAddressGroup;
     }
+    */
 
     /**
      * <p>
@@ -1228,9 +1206,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.List} object.
      */
-    public List<String> getShippingAddressGroup() {
+ /*   public List<String> getShippingAddressGroup() {
         return shippingAddressGroup;
     }
+    */
 
     /**
      * <p>
@@ -1239,9 +1218,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.List} object.
      */
-    public List<String> getDurationGroup() {
+  /*  public List<String> getDurationGroup() {
         return durationGroup;
     }
+    */
 
     /**
      * <p>
@@ -1254,7 +1234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
      */
-    public ModuleField getModuleField(String moduleName, String fieldName) {
+ /*   public ModuleField getModuleField(String moduleName, String fieldName) {
         SQLiteDatabase db = getReadableDatabase();
         ModuleField moduleField = null;
 
@@ -1268,7 +1248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             selection = "(" + ModuleFieldColumns.MODULE_ID + "=" + moduleId + " AND "
                                             + ModuleFieldColumns.NAME + "='" + fieldName + "')";
-            cursor = db.query(MODULE_FIELDS_TABLE_NAME, com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleField.DETAILS_PROJECTION, selection, null, null, null, null);
+            cursor = db.query(MODULE_FIELDS_TABLE_NAME, ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null, null, null, null);
             cursor.moveToFirst();
 
             if (cursor.getCount() > 0)
@@ -1282,7 +1262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return moduleField;
     }
-
+*/
     /**
      * <p>
      * Getter for the field <code>moduleFields</code>.
@@ -1292,13 +1272,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, ModuleField> getModuleFields(String moduleName) {
+ /*   public Map<String, ModuleField> getModuleFields(String moduleName) {
         if (moduleFields != null) {
             HashMap<String, ModuleField> map = moduleFields.get(moduleName);
             if (map != null && map.size() > 0)
                 return map;
         } else
             moduleFields = new HashMap<String, HashMap<String, ModuleField>>();
+           
         SQLiteDatabase db = getReadableDatabase();
         String selection = ModuleColumns.MODULE_NAME + "='" + moduleName + "'";
         Cursor cursor = db.query(MODULES_TABLE_NAME, Modules.DETAILS_PROJECTION, selection, null, null, null, null);
@@ -1309,7 +1290,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // name of the module field is the key and ModuleField is the value
         HashMap<String, ModuleField> fieldNameVsModuleField = new HashMap<String, ModuleField>();
         selection = ModuleFieldColumns.MODULE_ID + "=" + moduleId;
-        cursor = db.query(MODULE_FIELDS_TABLE_NAME, com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleField.DETAILS_PROJECTION, selection, null, null, null, null);
+        cursor = db.query(MODULE_FIELDS_TABLE_NAME, ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null, null, null, null);
         cursor.moveToFirst();
         for (int i = 0; i < cursor.getCount(); i++) {
             String name = cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.NAME));
@@ -1323,7 +1304,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         moduleFields.put(moduleName, fieldNameVsModuleField);
         return fieldNameVsModuleField;
     }
-
+*/
     /**
      * <p>
      * Getter for the field <code>linkFields</code>.
@@ -1374,7 +1355,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 
      * @return a {@link java.util.List} object.
      */
-    public List<String> getUserModules() {
+    //this moved to content utils
+  /*  public List<String> getUserModules() {
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<String> moduleList = new ArrayList<String>();
         // get a sorted list with module_name OrderBy
@@ -1389,7 +1371,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return moduleList;
     }
-
+*/
     /**
      * <p>
      * setUserModules
@@ -1400,6 +1382,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
      *             if any.
      */
+    
+ /*// this is moved to ContentUtils class
     public void setUserModules(List<String> moduleNames) throws SugarCrmException {
         boolean hasFailed = false;
         SQLiteDatabase db = getWritableDatabase();
@@ -1442,7 +1426,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
     }
-
+*/
+    
     /**
      * <p>
      * setModuleFieldsInfo
@@ -1639,7 +1624,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // get the module field details from the module_fields table for the moduleFieldId
             selection = ModuleFieldColumns.ID + "=" + moduleFieldId + "";
-            Cursor moduleFieldCursor = db.query(DatabaseHelper.MODULE_FIELDS_TABLE_NAME, com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleField.DETAILS_PROJECTION, selection, null, null, null, null);
+            Cursor moduleFieldCursor = db.query(DatabaseHelper.MODULE_FIELDS_TABLE_NAME, ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null, null, null, null);
             moduleFieldCursor.moveToFirst();
             String moduleFieldName = moduleFieldCursor.getString(1);
             ModuleField moduleFieldObj = new ModuleField(moduleFieldName, moduleFieldCursor.getString(3), moduleFieldCursor.getString(2), moduleFieldCursor.getInt(4) == 1 ? true
@@ -1882,7 +1867,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         for (Entry<String, Map<String, String>> entry : usersList.entrySet()) {
-            String userName = entry.getKey();
+ //           String userName = entry.getKey();
             ContentValues values = new ContentValues();
             Map<String, String> userListValues = entry.getValue();
             for (Entry<String, String> userEntry : userListValues.entrySet()) {
@@ -1950,7 +1935,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String lookupBeanId(String moduleName, String rowId) {
         ContentResolver resolver = mContext.getContentResolver();
         String beanId = null;
-        Uri contentUri = getModuleUri(moduleName);
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
         String[] projection = new String[] { SugarCRMContent.SUGAR_BEAN_ID };
 
         final Cursor c = resolver.query(contentUri, projection, mSelection, new String[] { rowId }, null);
@@ -1977,27 +1962,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public String lookupAccountBeanId(String moduleName, String rowId) {
 
-        if (moduleRelationshipItems.containsKey(moduleName)) {
+        ContentResolver resolver = mContext.getContentResolver();
+        String beanId = null;
+        Uri contentUri = ContentUtils.getModuleUri(moduleName);
+        String[] projection = new String[] { SugarCRMContent.SUGAR_BEAN_ID };
 
-            ContentResolver resolver = mContext.getContentResolver();
-            String beanId = null;
-            Uri contentUri = getModuleUri(moduleName);
-            String[] projection = new String[] { SugarCRMContent.SUGAR_BEAN_ID };
-
-            final Cursor c = resolver.query(contentUri, projection, mSelection, new String[] { rowId }, null);
-            try {
-                if (c.moveToFirst()) {
-                    beanId = c.getString(0);
-                }
-            } finally {
-                if (c != null) {
-                    c.close();
-                }
+        final Cursor c = resolver.query(contentUri, projection, mSelection, new String[] { rowId }, null);
+        try {
+            if (c.moveToFirst()) {
+                beanId = c.getString(0);
             }
-            return beanId;
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
-
-        return null;
+        return beanId;
     }
 
     /**
@@ -2012,7 +1992,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String lookupUserBeanId(String userBeanName) {
         ContentResolver resolver = mContext.getContentResolver();
         String beanId = null;
-        Uri contentUri = getModuleUri(Util.USERS);
+        Uri contentUri = ContentUtils.getModuleUri(Util.USERS);
         String[] projection = new String[] { ModuleFields.ID };
         String selection = Users.USER_NAME + "='" + userBeanName + "'";
         final Cursor c = resolver.query(contentUri, projection, selection, null, null);

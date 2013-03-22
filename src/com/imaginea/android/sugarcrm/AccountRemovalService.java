@@ -1,18 +1,16 @@
 package com.imaginea.android.sugarcrm;
 
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
-import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
-import com.imaginea.android.sugarcrm.util.Util;
-
 import android.accounts.AccountManager;
 import android.app.IntentService;
-import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.IBinder;
-import android.util.Log;
+import android.preference.PreferenceManager;
+
+import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
+import com.imaginea.android.sugarcrm.util.Util;
 
 public class AccountRemovalService extends IntentService {
 
@@ -111,7 +109,9 @@ public class AccountRemovalService extends IntentService {
                 .getAccountsByType("com.imaginea.android.sugarcrm");
             	
             	if( (sugarCRMAccounts != null) && ( sugarCRMAccounts.length == 0) ){
-            		clearTheDb();            		
+            		clearTheDb(); 
+            		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            		prefs.edit().clear().commit();
             	}
             }
         	

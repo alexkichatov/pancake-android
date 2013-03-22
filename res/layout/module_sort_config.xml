@@ -14,7 +14,8 @@
 	    <LinearLayout android:id="@+id/container"
         	android:orientation="vertical"
         	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content" >
+        	android:layout_height="wrap_content" 
+        	android:gravity="center">
         	<LinearLayout
         		android:id="@+id/moduleNameContainer"
         		android:orientation="horizontal"
@@ -28,6 +29,7 @@
 	        		android:width="120dip"
 	        		style="@style/text_label" />
         		<Spinner 
+        		    android:id="@+id/module_spinner"
 	        		android:layout_width="fill_parent" 
 	        		android:layout_height="45dp" 
 	        		android:drawSelectorOnTop="true"
@@ -47,6 +49,7 @@
 	        		android:width="120dip"
 	        		style="@style/text_label" />
        			<Spinner 
+       			    android:id="@+id/moduleField_spinner"
 	        		android:layout_width="fill_parent" 
 	        		android:layout_height="45dp"
 	        		style="@style/text_row_value"/>
@@ -64,6 +67,7 @@
 	        		android:width="120dip"
 	        		style="@style/text_label" />
 	       		<Spinner
+	       		    android:id="@+id/sortOrder_spinner"
 	        		android:layout_width="fill_parent" 
 	        		android:layout_height="45dp"
 	        		style="@style/text_row_value"/>

@@ -86,6 +86,7 @@
     <string name="related">Related</string>
     <string name="noResults">No results found</string>
     <string name="syncSettings">Sync settings</string>
+    <string name="noOfrecords">Fetch records size:</string>
     <string name="dateFilters">Date Filters</string>
     <string name="startDate">Start Date</string>
     <string name="endDate">End Date</string>

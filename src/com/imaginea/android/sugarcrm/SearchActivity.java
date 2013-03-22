@@ -16,6 +16,7 @@ import android.widget.SimpleCursorAdapter;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -74,7 +75,7 @@ public class SearchActivity extends ListActivity {
 
     private void showResults(String query) {
         DatabaseHelper dbHelper = new DatabaseHelper(SearchActivity.this);
-        Uri moduleUri = dbHelper.getModuleUri(mModuleName);
+        Uri moduleUri = ContentUtils.getModuleUri(mModuleName);
         if (getIntent().getData() == null) {
             getIntent().setData(moduleUri);
         }
@@ -87,11 +88,11 @@ public class SearchActivity extends ListActivity {
         // findViewById(R.id.filterImage).setVisibility(View.GONE);
         // findViewById(R.id.allItems).setVisibility(View.GONE);
 
-        Cursor cursor = managedQuery(getIntent().getData(), dbHelper.getModuleProjections(mModuleName), dbHelper.getModuleSelection(mModuleName, query), null, null);
+        Cursor cursor = managedQuery(getIntent().getData(), ContentUtils.getModuleProjections(mModuleName), dbHelper.getModuleSelection(mModuleName, query), null, null);
 
         // startManagingCursor(cursor);
         GenericCursorAdapter adapter;
-        String[] moduleSel = dbHelper.getModuleListSelections(mModuleName);
+        String[] moduleSel = ContentUtils.getModuleListSelections(mModuleName);
         cursor.moveToFirst();
         if (moduleSel.length >= 2)
             adapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] {

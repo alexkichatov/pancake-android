@@ -1,5 +1,10 @@
 package com.imaginea.android.sugarcrm;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,22 +14,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.util.Util;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * SyncConfigActivity
@@ -33,13 +37,13 @@ import java.util.GregorianCalendar;
  */
 public class SyncConfigActivity extends Activity {
 
-    private TextView mHeaderTextView;
-
-    private TextView mTitleTextView;
-
     private Button mStartDateButton;
 
     private Button mEndDateButton;
+    
+    private Spinner mRecordsSizeSpinner;
+    
+    private String[] mRecordsSize = {"500", "1000", "2000", "5000", "10000", "ALL"};
 
     // cache the time
     private Date mStartTime;
@@ -61,10 +65,13 @@ public class SyncConfigActivity extends Activity {
         final Action homeAction = new IntentAction(this, new Intent(this, DashboardActivity.class), R.drawable.home);
         actionBar.setHomeAction(homeAction);
         actionBar.setTitle(getString(R.string.syncSettings));
+        
+        mRecordsSizeSpinner = (Spinner)findViewById(R.id.recordsSize_spinner);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, mRecordsSize);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mRecordsSizeSpinner.setAdapter(adapter);
+        mRecordsSizeSpinner.setBackgroundColor(Color.GRAY);
 
-        // mHeaderTextView = (TextView) findViewById(R.id.headerText);
-        // mHeaderTextView.setText(R.string.syncSettings);
-        // mTitleTextView = (TextView) findViewById(R.id.title);
         mStartDateButton = (Button) findViewById(R.id.start_date);
         mEndDateButton = (Button) findViewById(R.id.end_date);
 
@@ -81,11 +88,16 @@ public class SyncConfigActivity extends Activity {
         populateWhen();
 
         SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this).toString();
+        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
         if (ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY)) {
             findViewById(R.id.syncLater).setVisibility(View.GONE);
             findViewById(R.id.cancelSync).setVisibility(View.VISIBLE);
         }
+     
+        String records_size = SugarCrmSettings.getFetchRecordsSize(SyncConfigActivity.this);
+        int position = Arrays.binarySearch(mRecordsSize, records_size);
+        mRecordsSizeSpinner.setSelection(position);
+        
     }
 
     /**
@@ -101,7 +113,7 @@ public class SyncConfigActivity extends Activity {
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
         extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
         SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this).toString();
+        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
         if(ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY))
         {
             AlertDialog alertDialog = new AlertDialog.Builder(SyncConfigActivity.this).create();
@@ -116,8 +128,9 @@ public class SyncConfigActivity extends Activity {
             alertDialog.show();
             return;
         }
-        ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);
+        
         savePrefs();
+        ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);       
 
         AlertDialog alertDialog = new AlertDialog.Builder(SyncConfigActivity.this).create();
         alertDialog.setTitle(R.string.info);
@@ -140,6 +153,11 @@ public class SyncConfigActivity extends Activity {
         Editor editor = pref.edit();
         editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
         editor.putLong(Util.PREF_SYNC_END_TIME, endMillis);
+       
+        //saving the records size per http request.
+        String selected = mRecordsSize[mRecordsSizeSpinner.getSelectedItemPosition()];
+        editor.putString(Util.PREF_FETCH_RECORDS_SIZE, selected);
+		    
         editor.commit();
     }
 
@@ -151,7 +169,7 @@ public class SyncConfigActivity extends Activity {
      */
     public void cancelSync(View v) {
         SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this).toString();
+        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
         ContentResolver.cancelSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY);
         this.finish();
     }

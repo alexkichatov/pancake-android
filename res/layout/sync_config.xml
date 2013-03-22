@@ -21,6 +21,26 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"            
         >
+        
+        <LinearLayout 
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            >
+            
+            <TextView 
+                android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:text="@string/noOfrecords"
+	        	style="@style/text_label"/>   
+	        	
+            <Spinner
+	       		    android:id="@+id/recordsSize_spinner"
+	        		android:layout_width="100dp" 
+	        		android:layout_height="45dp"
+	        		style="@style/text_row_value"/>
+            
+        </LinearLayout>
 		<TextView android:id="@+id/what_label"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"

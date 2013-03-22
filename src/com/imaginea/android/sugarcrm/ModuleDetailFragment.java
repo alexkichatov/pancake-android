@@ -37,7 +37,9 @@ import android.widget.TextView;
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.util.ModuleField;
@@ -45,9 +47,14 @@ import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * ModuleDetailFragment is used to show details for all modules.
@@ -75,18 +82,12 @@ public class ModuleDetailFragment extends Fragment {
 
     private LoadContentTask mTask;
 
-    private static final int HEADER = 1;
-
-    private static final int STATIC_ROW = 2;
-
-    private static final int DYNAMIC_ROW = 3;
-
     private ProgressDialog mProgressDialog;
 
     private CustomActionbar actionBar;
 
     private RelativeLayout mParent;
-
+  
     private static final String LOG_TAG = ModuleDetailFragment.class.getSimpleName();
 
     @Override
@@ -109,38 +110,19 @@ public class ModuleDetailFragment extends Fragment {
         mSugarBeanId = (String) intent.getStringExtra(RestUtilConstants.BEAN_ID);
         boolean bRecent = (boolean) intent.getBooleanExtra("Recent", false);
         boolean bRelation = (boolean) intent.getBooleanExtra("Relation", false);
-        mModuleName = "Contacts";
-        if (extras != null)
-            mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
+        
+        mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
 
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         if (intent.getData() == null) {
             if (mRowId == null)
                 mRowId = "1";
-            mUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+            mUri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId);
         } else
             mUri = intent.getData();
-        mSelectFields = mDbHelper.getModuleProjections(mModuleName);
-        // mCursor = getContentResolver().query(getIntent().getData(),
-        // mSelectFields, null, null,
-        // mDbHelper.getModuleSortOrder(mModuleName));
-        // startManagingCursor(mCursor);
-        // setContents();
-
-        mRelationshipModules = mDbHelper.getModuleRelationshipItems(mModuleName);
-
-        // ListView listView = (ListView) findViewById(android.R.id.list);
-        // listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        // {
-        // @Override
-        // public void onItemClick(AdapterView<?> arg0, View view, int position,
-        // long id) {
-        // if (Log.isLoggable(LOG_TAG, Log.INFO)) {
-        // Log.i(LOG_TAG, "clicked on " + mRelationshipModules[position]);
-        // }
-        // openListScreen(mRelationshipModules[position]);
-        // }
-        // });
+        mSelectFields = ContentUtils.getModuleProjections(mModuleName);
+       
+        mRelationshipModules = ContentUtils.getModuleRelationshipItems(mModuleName);
 
         /*
          * RelationshipAdapter adapter = new RelationshipAdapter(this);
@@ -165,7 +147,8 @@ public class ModuleDetailFragment extends Fragment {
                 }
             }
         }
-        mTask = new LoadContentTask();
+              
+        mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
     }
 
@@ -189,9 +172,8 @@ public class ModuleDetailFragment extends Fragment {
         } else {
             detailIntent = new Intent(ModuleDetailFragment.this.getActivity(), ModulesActivity.class);
         }
-        if (mDbHelper == null)
-            mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-        Uri uri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+       
+        Uri uri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId);
         uri = Uri.withAppendedPath(uri, moduleName);
         detailIntent.setData(uri);
         detailIntent.putExtra(RestUtilConstants.BEAN_ID, mSugarBeanId);
@@ -216,7 +198,7 @@ public class ModuleDetailFragment extends Fragment {
     public void onResume() {
     	super.onResume();
 		 if (mTask != null && mTask.getStatus() != AsyncTask.Status.RUNNING) {
-			 mTask = new LoadContentTask();
+			 mTask = new LoadContentTask(getActivity());
 	         mTask.execute(null, null, null);
 		 }    	 
     }
@@ -260,216 +242,180 @@ public class ModuleDetailFragment extends Fragment {
 
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
-        int staticRowsCount;
+    	Context mContext;
+    	  
+        private List<String> mBillingAddressGroup = new ArrayList<String>();
+        
+        private List<String> mShippingAddressGroup = new ArrayList<String>();
 
-        LoadContentTask() {
+        private List<String> mDurationGroup = new ArrayList<String>();     
+        
+        private List<String> mFieldsExcludedForDetails = new ArrayList<String>();
+
+        private String title;
+        private LinkedHashMap<String, DetailsItem> detailItems = new LinkedHashMap<String, DetailsItem>();
+
+        LoadContentTask(Context context) {
+        	mContext = context;
             mDetailsTable = (ViewGroup) getActivity().findViewById(R.id.accountDetalsTable);
-
-            staticRowsCount = mDetailsTable.getChildCount();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-            // TODO - cleanup
-            // if (tv != null)
-            // tv.setText(String.format(getString(R.string.detailsHeader), mModuleName));
-            // if(actionBar != null)
-            // actionBar.setTitle(String.format(getString(R.string.detailsHeader), mModuleName));
-
+            
             mProgressDialog = ViewUtil.getProgressDialog(ModuleDetailFragment.this.getActivity(), getString(R.string.loading), true);
             mProgressDialog.show();
+            
+            
+            //Initializing BillingAddressGroup the list 
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_2);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_3);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_4);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_CITY);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STATE);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_POSTALCODE);
+            mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_COUNTRY);
+            
+            //Initializing ShippingAddressGroup the list 
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_2);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_3);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_4);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_CITY);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STATE);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_POSTALCODE);
+            mShippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_COUNTRY);
+            
+            //Initializing DurationGroup the list 
+            mDurationGroup.add(ModuleFields.DURATION_HOURS);
+            mDurationGroup.add(ModuleFields.DURATION_MINUTES);        
+            
+            // add a field name to the map if a module field in detail projection is to be excluded in
+            // details screen
+            mFieldsExcludedForDetails.add(SugarCRMContent.RECORD_ID);
+            mFieldsExcludedForDetails.add(SugarCRMContent.SUGAR_BEAN_ID);
+            mFieldsExcludedForDetails.add(ModuleFields.DELETED);
+            mFieldsExcludedForDetails.add(ModuleFields.ACCOUNT_ID);       
         }
-
-        @Override
-        protected void onProgressUpdate(Object... values) {
-            super.onProgressUpdate(values);
-
-            switch ((Integer) values[0]) {
-
-            case HEADER:
-                // TextView titleView = (TextView) values[2];
-                // TODO
-                // if (titleView != null)
-                // titleView.setText((String) values[3]);
-                actionBar.setTitle((String) values[3]);
-                break;
-
-            case STATIC_ROW:
-                ViewGroup detailRow = (ViewGroup) values[2];
-                detailRow.setVisibility(View.VISIBLE);
-
-                TextView labelView = (TextView) values[3];
-                labelView.setText((String) values[4]);
-                TextView valueView = (TextView) values[5];
-                final String value = (String) values[6];
-                valueView.setText(value);
-
-                // handle the map
-                String fieldName = (String) values[1];
-                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(fieldName)
-                                                || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(fieldName)) {
-                    if (!TextUtils.isEmpty(value)) {
-                        valueView.setLinksClickable(true);
-                        valueView.setClickable(true);
-
-                        SpannableString spannableString = new SpannableString(value);
-                        spannableString.setSpan(new InternalURLSpan(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(LOG_TAG, "trying to locate - " + value);
-                                Uri uri = Uri.parse("geo:0,0?q=" + URLEncoder.encode(value));
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                intent.setData(uri);
-                                startActivity(Intent.createChooser(intent, getString(R.string.showAddressMsg)));
-                            }
-                        }), 0, value.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        valueView.setText(spannableString);
-
-                        // for trackball movement
-                        MovementMethod m = valueView.getMovementMethod();
-                        if ((m == null) || !(m instanceof LinkMovementMethod)) {
-                            if (valueView.getLinksClickable()) {
-                                valueView.setMovementMethod(LinkMovementMethod.getInstance());
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case DYNAMIC_ROW:
-                detailRow = (ViewGroup) values[2];
-                detailRow.setVisibility(View.VISIBLE);
-
-                labelView = (TextView) values[3];
-                labelView.setText((String) values[4]);
-                valueView = (TextView) values[5];
-                final String value2 = (String) values[6];
-                valueView.setText(value2);
-
-                // handle the map
-                fieldName = (String) values[1];
-                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(fieldName)
-                                                || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(fieldName)) {
-                    if (!TextUtils.isEmpty(value2)) {
-                        valueView.setLinksClickable(true);
-                        valueView.setClickable(true);
-
-                        SpannableString spannableString = new SpannableString(value2);
-                        spannableString.setSpan(new InternalURLSpan(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(LOG_TAG, "trying to locate - " + value2);
-                                Uri uri = Uri.parse("geo:0,0?q=" + URLEncoder.encode(value2));
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                intent.setData(uri);
-                                startActivity(Intent.createChooser(intent, getString(R.string.showAddressMsg)));
-                            }
-                        }), 0, value2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        valueView.setText(spannableString);
-
-                        // for trackball movement
-                        MovementMethod m = valueView.getMovementMethod();
-                        if ((m == null) || !(m instanceof LinkMovementMethod)) {
-                            if (valueView.getLinksClickable()) {
-                                valueView.setMovementMethod(LinkMovementMethod.getInstance());
-                            }
-                        }
-                    }
-                }
-
-                mDetailsTable.addView(detailRow);
-                break;
-            }
-        }
-
+  
         @Override
         protected Object doInBackground(Object... params) {
             try {
-                mCursor = getActivity().getContentResolver().query(mUri, mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
+                mCursor = getActivity().getContentResolver().query(mUri, mSelectFields, null, null, ContentUtils.getModuleSortOrder(mModuleName));
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 return Util.FETCH_FAILED;
             }
+            
+            prepareDetailItems();
 
             return Util.FETCH_SUCCESS;
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-
         }
 
         @Override
         protected void onPostExecute(Object result) {
             super.onPostExecute(result);
 
-            if (mCursor != null && mCursor.getCount() > 0 && mSugarBeanId != null) {
-                setContents();
-            } else {
-
-            }
+            if (detailItems.size() > 0) {
+            	setupDetailViews();
+            } 
+            
             // close the cursor irrespective of the result
             if (mCursor != null && !mCursor.isClosed())
                 mCursor.close();
 
-            if (isCancelled())
-                return;
-            int retVal = (Integer) result;
-            switch (retVal) {
-            case Util.FETCH_FAILED:
-                break;
-            case Util.FETCH_SUCCESS:
-                break;
-            default:
-
-            }
-
             mProgressDialog.cancel();
         }
+        
+        private void setupDetailViews(){
+        	actionBar.setTitle(title);
+        	
+        	LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        	
+        	Set<Entry<String, DetailsItem>> entrySet = detailItems.entrySet();
+        	
+        	Iterator<Entry<String, DetailsItem>> iterator = entrySet.iterator();
+        	
+        	while(iterator.hasNext()){
+        		
+        		Entry<String, DetailsItem> item = iterator.next();
+        		String label = item.getKey();
+        		DetailsItem detailObj = item.getValue();
+        		
+	        	ViewGroup tableRow = (ViewGroup) inflater.inflate(R.layout.table_row, null);
+	        	TextView textViewForLabel = (TextView) tableRow.getChildAt(0);
+	        	TextView textViewForValue = (TextView) tableRow.getChildAt(1);
+	        	
+	        	tableRow.setVisibility(View.VISIBLE);
+	        	textViewForLabel.setText(label);
+	        	
+	        	final String value = detailObj.getValue();
+	        	
+	        	if (detailObj.getType().equals("phone"))
+	        		textViewForValue.setAutoLinkMask(Linkify.PHONE_NUMBERS);
+	        	
+	        	textViewForValue.setText(value);
+	        	
+	        	        	
+	        	 // handle the map
+	            String  fieldName = detailObj.getFieldName();
+	            if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(fieldName)
+	                                            || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(fieldName)) {
+	                if (!TextUtils.isEmpty(value)) {
+	                	textViewForValue.setLinksClickable(true);
+	                	textViewForValue.setClickable(true);
+	
+	                    SpannableString spannableString = new SpannableString(value);
+	                    spannableString.setSpan(new InternalURLSpan(new OnClickListener() {
+	                        @Override
+	                        public void onClick(View v) {
+	                            Log.i(LOG_TAG, "trying to locate - " + value);
+	                            Uri uri = Uri.parse("geo:0,0?q=" + URLEncoder.encode(value));
+	                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+	                            intent.setData(uri);
+	                            startActivity(Intent.createChooser(intent, getString(R.string.showAddressMsg)));
+	                        }
+	                    }), 0, value.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+	
+	                    textViewForValue.setText(spannableString);
+	
+	                    // for trackball movement
+	                    MovementMethod m = textViewForValue.getMovementMethod();
+	                    if ((m == null) || !(m instanceof LinkMovementMethod)) {
+	                        if (textViewForValue.getLinksClickable()) {
+	                        	textViewForValue.setMovementMethod(LinkMovementMethod.getInstance());
+	                        }
+	                    }
+	                }
+	            }
+	            mDetailsTable.addView(tableRow);
+        	}
+            
+            
+        }
 
-        private void setContents() {
+        private void prepareDetailItems() {
 
             String[] detailsProjection = mSelectFields;
+            
+            mCursor.moveToFirst();
 
             if (mDbHelper == null)
                 mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
 
-            TextView textViewForTitle = (TextView) actionBar.getChildAt(2);
-            String title = "";
-            List<String> titleFields = Arrays.asList(mDbHelper.getModuleListSelections(mModuleName));
-
-            if (!isCancelled())
-                mCursor.moveToFirst();
-
-            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            List<String> billingAddressGroup = mDbHelper.getBillingAddressGroup();
-            List<String> shippingAddressGroup = mDbHelper.getShippingAddressGroup();
-            List<String> durationGroup = mDbHelper.getDurationGroup();
+            List<String> titleFields = Arrays.asList(ContentUtils.getModuleListSelections(mModuleName));
 
             String value = "";
-            Map<String, ModuleField> fieldNameVsModuleField = mDbHelper.getModuleFields(mModuleName);
-            Map<String, String> fieldsExcludedForDetails = mDbHelper.getFieldsExcludedForDetails();
-
-            // LinearLayout tableRow =
-            // (LinearLayout)inflater.inflate(R.layout.table_row, null);
-
-            int rowsCount = 0;
+            Map<String, ModuleField> fieldNameVsModuleField = ContentUtils.getModuleFields(mContext, mModuleName);
+  
             for (int i = 0; i < detailsProjection.length; i++) {
-                // if the task gets cancelled
-                if (isCancelled())
-                    break;
-
+             
                 String fieldName = detailsProjection[i];
 
                 // if the field name is excluded in details screen, skip it
-                if (fieldsExcludedForDetails.containsKey(fieldName)) {
+                if (mFieldsExcludedForDetails.contains(fieldName)) {
                     continue;
                 }
 
@@ -485,25 +431,10 @@ public class ModuleDetailFragment extends Fragment {
                 ModuleField moduleField = fieldNameVsModuleField.get(fieldName);
 
                 if (moduleField != null) {
-                    ViewGroup tableRow;
-                    TextView textViewForLabel;
-                    TextView textViewForValue;
-                    // first two columns in the detail projection are ROW_ID and
-                    // BEAN_ID
-                    if (staticRowsCount > rowsCount) {
-                        tableRow = (ViewGroup) mDetailsTable.getChildAt(rowsCount);
-                        textViewForLabel = (TextView) tableRow.getChildAt(0);
-                        textViewForValue = (TextView) tableRow.getChildAt(1);
-                    } else {
-                        tableRow = (ViewGroup) inflater.inflate(R.layout.table_row, null);
-                        textViewForLabel = (TextView) tableRow.getChildAt(0);
-                        textViewForValue = (TextView) tableRow.getChildAt(1);
-                    }
-
+               
                     // set the title
                     if (titleFields.contains(fieldName) && tempValue != null) {
-                        title = title + tempValue + " ";
-                        publishProgress(HEADER, fieldName, textViewForTitle, title);
+                        title = tempValue;
                         continue;
                     }
 
@@ -513,7 +444,7 @@ public class ModuleDetailFragment extends Fragment {
                     // the module is
                     // 'Accounts'
                     if (Util.ACCOUNTS.equals(mModuleName)) {
-                        if (billingAddressGroup.contains(fieldName)) {
+                        if (mBillingAddressGroup.contains(fieldName)) {
                             if (fieldName.equals(ModuleFields.BILLING_ADDRESS_STREET)) {
                                 // First field in the group
                                 value = (!TextUtils.isEmpty(tempValue)) ? tempValue + ", " : "";
@@ -530,7 +461,7 @@ public class ModuleDetailFragment extends Fragment {
                                                                                                 : "");
                                 continue;
                             }
-                        } else if (shippingAddressGroup.contains(fieldName)) {
+                        } else if (mShippingAddressGroup.contains(fieldName)) {
                             if (fieldName.equals(ModuleFields.SHIPPING_ADDRESS_STREET)) {
                                 // First field in the group
                                 value = (!TextUtils.isEmpty(tempValue)) ? tempValue + ", " : "";
@@ -551,7 +482,7 @@ public class ModuleDetailFragment extends Fragment {
                         } else {
                             value = tempValue;
                         }
-                    } else if (durationGroup.contains(fieldName)) {
+                    } else if (mDurationGroup.contains(fieldName)) {
                         if (fieldName.equals(ModuleFields.DURATION_HOURS)) {
                             // First field in the group
                             value = (!TextUtils.isEmpty(tempValue)) ? tempValue + "hr " : "";
@@ -568,24 +499,42 @@ public class ModuleDetailFragment extends Fragment {
                         value = tempValue;
                     }
 
-                    if (moduleField.getType().equals("phone"))
-                        textViewForValue.setAutoLinkMask(Linkify.PHONE_NUMBERS);
-
-                    int command = staticRowsCount < rowsCount ? DYNAMIC_ROW : STATIC_ROW;
-
                     if (!TextUtils.isEmpty(value)) {
-                        publishProgress(command, fieldName, tableRow, textViewForLabel, label, textViewForValue, value);
+                    	detailItems.put(label, new DetailsItem(fieldName, value, moduleField.getType()));
                     } else {
-                        publishProgress(command, fieldName, tableRow, textViewForLabel, label, textViewForValue, getString(R.string.notAvailable));
+                    	detailItems.put(label, new DetailsItem(fieldName, getString(R.string.notAvailable), moduleField.getType()));
                     }
 
-                    rowsCount++;
-                } else {
+               } else {
                     // module fields is null
                 }
 
             }
         }
+    }
+    
+    class DetailsItem{
+    	private String mFieldName;
+    	private String mValue;
+    	private String mType;
+    	
+    	DetailsItem(String fieldName, String value, String type){
+    		this.mFieldName = fieldName;
+    		this.mValue = value;
+    		this.mType = type;
+    	}
+    	
+    	public String getValue(){
+    		return mValue;
+    	}
+    	
+    	public String getType(){
+    		return mType;
+    	}
+    	
+    	public String getFieldName(){
+    		return mFieldName;
+    	}
     }
 
     static class InternalURLSpan extends ClickableSpan {
@@ -695,10 +644,8 @@ public class ModuleDetailFragment extends Fragment {
 
             return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.delete).setMessage(R.string.deleteAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    if (mDbHelper == null)
-                        mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-
-                    Uri deleteUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+                   
+                    Uri deleteUri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId);
                     getActivity().getContentResolver().registerContentObserver(deleteUri, false, new DeleteContentObserver(new Handler()));
                     ServiceHelper.startServiceForDelete(getActivity().getBaseContext(), deleteUri, mModuleName, mSugarBeanId);
                     

@@ -653,12 +653,15 @@ public final class SugarCRMContent {
 
     public static final class Modules implements ModuleColumns {
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, MODULE_NAME };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, MODULE_NAME, LAST_SYNC_TIME };
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = MODULE_NAME + " DESC";
+        
+        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
+                + "/" + Util.MODULES);
     }
 
     public interface ModuleColumns {
@@ -666,9 +669,11 @@ public final class SugarCRMContent {
         public String ID = RECORD_ID;
 
         public String MODULE_NAME = RestUtilConstants.NAME;
-    }
+        
+        public String LAST_SYNC_TIME = "last_sync_time";
+     }
 
-    public static final class ModuleField implements ModuleFieldColumns {
+    public static final class ModuleFields_TableInfo implements ModuleFieldColumns {
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, NAME, LABEL, TYPE,
                 IS_REQUIRED, MODULE_ID };
@@ -677,6 +682,9 @@ public final class SugarCRMContent {
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = NAME + " DESC";
+        
+        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
+                + "/" + Util.MODULES_FIELDS);
     }
 
     public interface ModuleFieldColumns {

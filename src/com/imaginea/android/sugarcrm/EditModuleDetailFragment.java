@@ -35,6 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
@@ -152,14 +153,14 @@ public class EditModuleDetailFragment extends Fragment {
         Log.v(TAG, "mode - " + MODE);
 
         if (intent.getData() == null && MODE == Util.EDIT_ORPHAN_MODE) {
-            mIntentUri = Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId);
+            mIntentUri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId);
             intent.setData(mIntentUri);
         } else if (intent.getData() == null && MODE == Util.NEW_ORPHAN_MODE) {
-            mIntentUri = mDbHelper.getModuleUri(mModuleName);
+            mIntentUri = ContentUtils.getModuleUri(mModuleName);
             intent.setData(mIntentUri);
         }
 
-        mSelectFields = mDbHelper.getModuleProjections(mModuleName);
+        mSelectFields = ContentUtils.getModuleProjections(mModuleName);
 
         /*
          * if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) { mCursor =
@@ -169,7 +170,7 @@ public class EditModuleDetailFragment extends Fragment {
         // startManagingCursor(mCursor);
         // setContents();
 
-        mTask = new LoadContentTask();
+        mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
 
         if (importFlag == Util.CONTACT_IMPORT_FLAG) {
@@ -220,6 +221,8 @@ public class EditModuleDetailFragment extends Fragment {
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
         int staticRowsCount;
+        
+        Context mContext;
 
         final static int STATIC_ROW = 1;
 
@@ -229,7 +232,8 @@ public class EditModuleDetailFragment extends Fragment {
 
         final static int INPUT_TYPE = 4;
 
-        LoadContentTask() {
+        LoadContentTask(Context context) {
+        	mContext = context;
             mDetailsTable = (ViewGroup) getActivity().findViewById(R.id.moduleDetailsTable);
 
             // as the last child is the SAVE button, count - 1 has to be done.
@@ -248,10 +252,10 @@ public class EditModuleDetailFragment extends Fragment {
                 tv.setTitle(String.format(getString(R.string.newDetailsHeader), mModuleName));
             }
 
-            mAccountCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
+            mAccountCursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
             mAccountAdapter = new AccountsSuggestAdapter(getActivity().getBaseContext(), mAccountCursor);
 
-            mUserCursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
+            mUserCursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
             mUserAdapter = new UsersSuggestAdapter(getActivity().getBaseContext(), mUserCursor);
 
             mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.loading), false);
@@ -359,7 +363,7 @@ public class EditModuleDetailFragment extends Fragment {
                             // the URI
                             int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
                             String selection = AccountsColumns.ID + "=" + accountRowId;
-                            Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            Cursor cursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                             cursor.moveToFirst();
                             String accountName = cursor.getString(2);
                             cursor.close();
@@ -503,7 +507,7 @@ public class EditModuleDetailFragment extends Fragment {
                             // the URI
                             int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
                             String selection = AccountsColumns.ID + "=" + accountRowId;
-                            Cursor cursor = getActivity().getContentResolver().query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            Cursor cursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                             cursor.moveToFirst();
                             String accountName = cursor.getString(2);
                             cursor.close();
@@ -565,7 +569,8 @@ public class EditModuleDetailFragment extends Fragment {
         protected Object doInBackground(Object... params) {
             try {
                 if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                    mCursor = getActivity().getContentResolver().query(Uri.withAppendedPath(mDbHelper.getModuleUri(mModuleName), mRowId), mSelectFields, null, null, mDbHelper.getModuleSortOrder(mModuleName));
+                    mCursor = getActivity().getContentResolver().query(Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId),
+                    		mSelectFields, null, null, ContentUtils.getModuleSortOrder(mModuleName));
                 }
                 // setContents();
             } catch (Exception e) {
@@ -626,7 +631,7 @@ public class EditModuleDetailFragment extends Fragment {
 
             LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            Map<String, ModuleField> fieldNameVsModuleField = mDbHelper.getModuleFields(mModuleName);
+            Map<String, ModuleField> fieldNameVsModuleField = ContentUtils.getModuleFields(mContext, mModuleName);
             Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
 
             int rowsCount = 0; // to keep track of number of rows being used
@@ -838,7 +843,7 @@ public class EditModuleDetailFragment extends Fragment {
                 ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), uri, mModuleName, modifiedValues);
             } else if (MODE == Util.NEW_ORPHAN_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
-                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), mDbHelper.getModuleUri(mModuleName), mModuleName, modifiedValues);
+                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), ContentUtils.getModuleUri(mModuleName), mModuleName, modifiedValues);
             }
 
             // finish();
@@ -1036,7 +1041,7 @@ public class EditModuleDetailFragment extends Fragment {
             if (Log.isLoggable(TAG, Log.DEBUG))
                 Log.d(TAG, "constraint " + (constraint != null ? constraint.toString() : ""));
 
-            return mContent.query(mDbHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, buffer == null ? null
+            return mContent.query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, buffer == null ? null
                                             : buffer.toString(), args, Accounts.DEFAULT_SORT_ORDER);
         }
     }
@@ -1066,7 +1071,7 @@ public class EditModuleDetailFragment extends Fragment {
             if (Log.isLoggable(TAG, Log.DEBUG))
                 Log.d(TAG, "constraint " + (constraint != null ? constraint.toString() : ""));
 
-            return mContent.query(mDbHelper.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, buffer == null ? null
+            return mContent.query(ContentUtils.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, buffer == null ? null
                                             : buffer.toString(), args, null);
         }
     }

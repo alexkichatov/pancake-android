@@ -32,6 +32,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsOpportunit
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Leads;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.LeadsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Meetings;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Opportunities;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.OpportunitiesColumns;
 import com.imaginea.android.sugarcrm.util.Util;
@@ -416,7 +417,13 @@ public class SugarCRMProvider extends ContentProvider {
         case RECENT:            
             c = db.query(DatabaseHelper.RECENT_TABLE_NAME, projection, selection, selectionArgs, null, null, null);
             break;
-
+            
+        case MODULES:
+        	 c = db.query(DatabaseHelper.MODULES_TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        	break;
+        case MODULE_FIELDS:
+       	 c = db.query(DatabaseHelper.MODULE_FIELDS_TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+       	break;
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -479,7 +486,7 @@ public class SugarCRMProvider extends ContentProvider {
             String accountId = uri.getPathSegments().get(1);
             String selection = AccountsColumns.ID + "=" + accountId;
 
-            Uri parentUri = mOpenHelper.getModuleUri(Util.ACCOUNTS);
+            Uri parentUri = ContentUtils.getModuleUri(Util.ACCOUNTS);
             Cursor cursor = query(parentUri, Accounts.DETAILS_PROJECTION, selection, null, null);
             boolean rowsPresent = cursor.moveToFirst();
             if (Log.isLoggable(TAG, Log.VERBOSE))
@@ -511,7 +518,7 @@ public class SugarCRMProvider extends ContentProvider {
         case ACCOUNT_LEAD:
             accountId = uri.getPathSegments().get(1);
             selection = AccountsColumns.ID + "=" + accountId;
-            cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.DETAILS_PROJECTION, selection, null, null);
+            cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.DETAILS_PROJECTION, selection, null, null);
             cursor.moveToFirst();
             accountName = cursor.getString(cursor.getColumnIndex(AccountsColumns.NAME));
             values.put(ModuleFields.ACCOUNT_ID, accountId);
@@ -530,7 +537,7 @@ public class SugarCRMProvider extends ContentProvider {
             accountId = uri.getPathSegments().get(1);
             selection = AccountsColumns.ID + "=" + accountId;
 
-            cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.DETAILS_PROJECTION, selection, null, null);
+            cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.DETAILS_PROJECTION, selection, null, null);
             cursor.moveToFirst();
             accountName = cursor.getString(cursor.getColumnIndex(AccountsColumns.NAME));
             // values.put(Contacts.ACCOUNT_ID, accountId);
@@ -647,7 +654,7 @@ public class SugarCRMProvider extends ContentProvider {
                     if (!TextUtils.isEmpty(accountName)) {
                         // get the account id for the account name
                         selection = AccountsColumns.NAME + "='" + accountName + "'";
-                        cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                        cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                         String newAccountId = null;
                         if (cursor.moveToFirst())
                             newAccountId = cursor.getString(0);
@@ -761,7 +768,7 @@ public class SugarCRMProvider extends ContentProvider {
                     if (!TextUtils.isEmpty(accountName)) {
                         // get the account id for the account name
                         selection = AccountsColumns.NAME + "='" + accountName + "'";
-                        cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                        cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                         String newAccountId = null;
                         if (cursor.moveToFirst()) {
                             newAccountId = cursor.getString(0);
@@ -857,6 +864,15 @@ public class SugarCRMProvider extends ContentProvider {
                 return campaignUri;
             }
             break;
+          
+        case MODULES:
+        	rowId = db.insert(DatabaseHelper.MODULES_TABLE_NAME, "", values);
+        	Log.d("inserting", "Module is inserted into db = "+rowId);
+        	 if (rowId > 0) {
+                 Uri modulesUri = ContentUris.withAppendedId(Modules.CONTENT_URI, rowId);
+                 return modulesUri;
+             }
+             break;
 
         default:
             // return uri;
@@ -1090,7 +1106,7 @@ public class SugarCRMProvider extends ContentProvider {
                 if (!TextUtils.isEmpty(accountName)) {
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1165,7 +1181,7 @@ public class SugarCRMProvider extends ContentProvider {
                 if (!TextUtils.isEmpty(accountName)) {
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1233,7 +1249,7 @@ public class SugarCRMProvider extends ContentProvider {
                 if (!TextUtils.isEmpty(accountName)) {
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1306,7 +1322,7 @@ public class SugarCRMProvider extends ContentProvider {
                     if (!TextUtils.isEmpty(accountName)) {
                         // get the account id for the account name
                         selection = AccountsColumns.NAME + "='" + accountName + "'";
-                        Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                        Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                         String newAccountId = null;
                         if (cursor.moveToFirst())
                             newAccountId = cursor.getString(0);
@@ -1390,7 +1406,7 @@ public class SugarCRMProvider extends ContentProvider {
 
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1464,7 +1480,7 @@ public class SugarCRMProvider extends ContentProvider {
 
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1524,7 +1540,7 @@ public class SugarCRMProvider extends ContentProvider {
                     if (!TextUtils.isEmpty(accountName)) {
                         // get the account id for the account name
                         selection = AccountsColumns.NAME + "='" + accountName + "'";
-                        Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                        Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                         String newAccountId = null;
                         if (cursor.moveToFirst())
                             newAccountId = cursor.getString(0);
@@ -1609,7 +1625,7 @@ public class SugarCRMProvider extends ContentProvider {
 
                     // get the account id for the account name
                     selection = AccountsColumns.NAME + "='" + accountName + "'";
-                    Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                    Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                     String newAccountId = null;
                     if (cursor.moveToFirst())
                         newAccountId = cursor.getString(0);
@@ -1692,7 +1708,7 @@ public class SugarCRMProvider extends ContentProvider {
                     if (!TextUtils.isEmpty(accountName)) {
                         // get the account id for the account name
                         selection = AccountsColumns.NAME + "='" + accountName + "'";
-                        Cursor cursor = query(mOpenHelper.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                        Cursor cursor = query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
                         String newAccountId = null;
                         if (cursor.moveToFirst())
                             newAccountId = cursor.getString(0);
@@ -1786,6 +1802,10 @@ public class SugarCRMProvider extends ContentProvider {
                                             + (!TextUtils.isEmpty(where) ? " AND (" + where + ')'
                                                                             : ""), whereArgs);
             break;
+        case MODULES:        	
+        	count = db.update(DatabaseHelper.MODULES_TABLE_NAME, values, where, whereArgs);        	
+        	break;
+        	
         case RECENT:
             Log.e(TAG, "update made for recent");
             

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.util.SugarBean;
 
@@ -318,7 +319,7 @@ public class SugarCRMOperations {
         // if (!mIsNewId) {
         // mValues.put(SugarCRMContent.RECORD_ID, mRawId);
         // }
-        Uri contentUri = databaseHelper.getModuleUri(mModuleName);
+        Uri contentUri = ContentUtils.getModuleUri(mModuleName);
 
         mBuilder = newInsertCpo(contentUri, mYield);
         mBuilder.withValues(mValues);
@@ -337,7 +338,7 @@ public class SugarCRMOperations {
         // if (!mIsNewId) {
         // mValues.put(SugarCRMContent.RECORD_ID, mRawId);
         // }
-        Uri contentUri = databaseHelper.getModuleUri(mModuleName);
+        Uri contentUri = ContentUtils.getModuleUri(mModuleName);
         // String uriPath = mRelatedModuleName;
         // Log.v("Ops", "addRelatedInsertOp:" + uriPath);
         // ;

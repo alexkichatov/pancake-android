@@ -45,7 +45,20 @@ public class SugarCrmSettings extends PreferenceActivity {
      * @return a {@link java.lang.String} object.
      */
     public static String getUsername(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(Util.PREF_USERNAME, context.getString(R.string.defaultUser));
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(Util.PREF_USERNAME, null);
+    }
+    
+    /**
+     * <p>
+     * getFetchRecordsSize
+     * </p>
+     * 
+     * @param context
+     *            a {@link android.content.Context} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String getFetchRecordsSize(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(Util.PREF_FETCH_RECORDS_SIZE, "2000");
     }
 
     /**

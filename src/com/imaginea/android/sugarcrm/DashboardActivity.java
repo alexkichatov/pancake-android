@@ -9,14 +9,12 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+
 import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.tab.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
-
-import java.util.List;
 
 /**
  * DashboardActivity
@@ -27,9 +25,9 @@ public class DashboardActivity extends BaseSinglePaneActivity {
 
     // private GridView mDashboard;
 
-    private DatabaseHelper mDbHelper;
+ //   private DatabaseHelper mDbHelper;
 
-    private ProgressDialog mProgressDialog;
+//    private ProgressDialog mProgressDialog;
 
     @Override
     protected Fragment onCreatePane() {
@@ -56,10 +54,12 @@ public class DashboardActivity extends BaseSinglePaneActivity {
         // requestWindowFeature(Window.FEATURE_NO_TITLE);
         // setContentView(R.layout.dashboard_activity);
 
-        mDbHelper = new DatabaseHelper(this);
+       // mDbHelper = new DatabaseHelper(this);
 
-        Class wizardActivity = WizardDetector.getClass(getBaseContext());
-        startActivityForResult(new Intent(this, wizardActivity), Util.LOGIN_REQUEST_CODE);
+      //  Class wizardActivity = WizardDetector.getClass(getBaseContext());
+        
+        startActivityForResult(new Intent(this, WizardAuthActivity.class), Util.LOGIN_REQUEST_CODE);       
+        
 
         // super.onCreate(savedInstanceState);
         // TextView tv = (TextView) findViewById(R.id.headerText);
@@ -100,17 +100,22 @@ public class DashboardActivity extends BaseSinglePaneActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+/*
         if (mProgressDialog != null) {
             mProgressDialog.cancel();
             mProgressDialog = null;
         }
+        */
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onResume() {
-        super.onResume();       
+        super.onResume();
+        String usr = SugarCrmSettings.getUsername(this);
+        if(usr == null){
+        	 startActivityForResult(new Intent(this, WizardAuthActivity.class), Util.LOGIN_REQUEST_CODE);   
+        }
     }
 
     /** {@inheritDoc} */
@@ -162,6 +167,7 @@ public class DashboardActivity extends BaseSinglePaneActivity {
 
     }
 
+    /*
     public void viewModuleList(View view) {
         Intent myIntent;
         String moduleName = (String) view.getTag();
@@ -191,7 +197,7 @@ public class DashboardActivity extends BaseSinglePaneActivity {
         myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
         DashboardActivity.this.startActivity(myIntent);
     }
-
+*/
     /*public class AppsAdapter extends BaseAdapter {
         private Context mContext;
 
