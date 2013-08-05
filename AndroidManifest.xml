@@ -1,211 +1,258 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.imaginea.android.sugarcrm" 
-      android:versionCode="1"
-      android:versionName="1.0"
-      android:sharedUserId="com.imaginea.android.sugarcrm"
-      android:installLocation="internalOnly">
-      
+    package="com.imaginea.android.sugarcrm"
+    android:installLocation="auto"
+    android:sharedUserId="com.imaginea.android.sugarcrm"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
-      <!--  by default all are true for 1.6 -->
+    <!-- by default all are true for 1.6 -->
     <supports-screen
-          android:xlargeScreens="true"
-          android:largeScreens="true"
-          android:normalScreens="true"
-          android:smallScreens="true"       
-          android:anyDensity="true" />
-    
-    
-    <!--  changed to 5 as WizardActivity has WizardAuth stuff in it and no longer supports 1.6  -->
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
-	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-	<uses-permission android:name="android.permission.WRITE_SETTINGS" />	 
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <!-- changed to 5 as WizardActivity has WizardAuth stuff in it and no longer supports 1.6 -->
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="14" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-	<uses-permission android:name="android.permission.READ_CONTACTS"/>
-	<uses-permission android:name="android.permission.CALL_PHONE"/>  
-	
-	<!--  explicitly defining the features we do not require -->
-	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-	<uses-feature android:name="android.hardware.wifi" android:required="false"/>
-	<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-  
-    <application android:icon="@drawable/applaunch"
-    	android:label="@string/appName"
-	    android:name="SugarCrmApp"
-	    android:debuggable="true">
-        
-        <activity android:name=".DashboardActivity"
-            android:label="@string/appName" android:theme="@style/Theme.Pancake"
-        	android:launchMode="singleTask">
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- explicitly defining the features we do not require -->
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <application
+        android:name="SugarCrmApp"
+        android:debuggable="true"
+        android:icon="@drawable/applaunch"
+        android:label="@string/appName" >
+        <activity
+            android:name=".DashboardActivity"
+            android:label="@string/appName"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Pancake" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-		<activity android:name=".ModulesActivity"
-			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
-			 <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />                    
-            </intent-filter>
-			<meta-data android:name="android.app.default_searchable"
-               android:value=".SearchActivity" />
-		</activity>		
-		
-		<activity android:name=".RecentModuleActivity" 
-			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
-			 <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />                    
-            </intent-filter>
-			<meta-data android:name="android.app.default_searchable"
-               android:value=".SearchActivity" />
-		</activity>      
-        
-        <activity android:name=".SugarCrmSettings" android:label="@string/settings"
-        	 android:theme="@style/Theme.Pancake.Settings">
+        <activity
+            android:name=".ModulesActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
             <intent-filter>
-                <action android:name="com.imaginea.android.sugarcrm.settings" />           
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
+        </activity>
+        <activity
+            android:name=".RecentModuleActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
+        </activity>
+        <activity
+            android:name=".SugarCrmSettings"
+            android:label="@string/settings"
+            android:theme="@style/Theme.Pancake.Settings" >
+            <intent-filter>
+                <action android:name="com.imaginea.android.sugarcrm.settings" />
+
                 <category android:name="android.intent.category.PREFERENCE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
-        <activity android:name=".ModuleDetailActivity" android:label="@string/contactDetails"
-       	 	android:theme="@style/Theme.Pancake"
-       	 	android:configChanges="orientation|keyboardHidden">
-             <intent-filter>
+        <activity
+            android:name=".ModuleDetailActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/contactDetails"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />                    
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>                
-                
-        <activity android:name=".EditModuleDetailActivity" android:label="@string/editDetails"
-       	 	android:theme="@style/Theme.Pancake" 
-       	 	android:configChanges="orientation|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".EditModuleDetailActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/editDetails"
+            android:theme="@style/Theme.Pancake" >
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />                    
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-	    
-	    <activity android:name=".SearchActivity" android:launchMode="singleTop"
-	    	android:theme="@style/Theme.Pancake"
-       	 	android:configChanges="orientation|keyboardHidden">
-	        <intent-filter>
-	            <action android:name="android.intent.action.SEARCH" />
-	        </intent-filter>
-	        <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
-	    </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
 
-        <activity android:name=".WizardActivity"
-			android:label="@string/appName"
-			android:theme="@style/Theme.Pancake"
-			android:clearTaskOnLaunch="true"
-			android:excludeFromRecents="true">
-			<!--
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name=".WizardActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+
+            <!--
 				No intent-filter here! This activity is only ever launched by
 				someone who explicitly knows the class name
-			-->
-		</activity>
-		<activity android:name=".WizardAuthActivity"
-		    android:configChanges="keyboardHidden|orientation"
-			android:label="@string/appName"
-			android:theme="@style/Theme.Pancake"
-			android:clearTaskOnLaunch="true"
-			android:excludeFromRecents="true">
-		</activity>
-		<activity android:name=".SyncConfigActivity"
-			android:label="@string/appName"
-			android:theme="@style/Theme.Pancake">
-			 <intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".WizardAuthActivity"
+            android:clearTaskOnLaunch="true"
+            android:configChanges="keyboardHidden|orientation"
+            android:excludeFromRecents="true"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+        </activity>
+        <activity
+            android:name="com.imaginea.android.sugarcrm.sync.SyncConfigActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />           
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-		
-		<activity android:name=".ModuleSortConfigActivity" 
-			android:label="@string/appName"
-			android:theme="@style/Theme.Pancake">		
-			 <intent-filter>
+        <activity
+            android:name=".ModuleSortConfigActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />         
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-		</activity>
-		
-		<activity android:name=".tab.ModuleDetailsMultiPaneActivity"
-			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
-			<intent-filter>
+        </activity>
+        <activity
+            android:name="com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />    
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-		</activity>
-		
-		<activity android:name=".tab.RecentModuleMultiPaneActivity"
-			   android:label="@string/appName" android:theme="@style/Theme.Pancake">
-			<intent-filter>
+        </activity>
+        <activity
+            android:name="com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity"
+            android:label="@string/appName"
+            android:theme="@style/Theme.Pancake" >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />    
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-		</activity>
-		
-        <service android:name=".SugarService" />
+        </activity>
+
+        <service android:name="com.imaginea.android.sugarcrm.services.SugarService" />
         <!-- The authenticator service -->
-		<service android:name=".auth.AuthenticationService"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.accounts.AccountAuthenticator" />
-			</intent-filter>
-			<meta-data android:name="android.accounts.AccountAuthenticator"
-				android:resource="@xml/authenticator" />
-		</service>
+        <service
+            android:name=".auth.AuthenticationService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
 
-		<service android:name=".sync.SyncService" android:exported="true">
-			<intent-filter>
-				<action android:name="android.content.SyncAdapter" />
-			</intent-filter>
-			<meta-data android:name="android.content.SyncAdapter"
-				android:resource="@xml/syncadapter" />
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name="com.imaginea.android.sugarcrm.sync.SyncService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
 
-		</service>
-		
-		<receiver android:name="com.imaginea.android.sugarcrm.util.AlarmReceiver"> 
-        	<intent-filter> 
-            	<action android:name=
-                	"com.imaginea.android.sugarcrm.ALARM_RECEIVED" /> 
-        	</intent-filter> 
-    	</receiver>
-    	
-		<!-- TODO : permissions, grantUri and export flags need to be set appropriately, 
-		we want to share our provider only with apps signed by our certificate or running with the same UID -->
-		<!-- permission android:name="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" 
-			android:label="@string/perm_access_sugarCrm" android:description="@string/sugarProviderDesc" 
-			android:protectionLevel="signature"/--> 
-			<!-- add provider permission android:permission="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" -->
-		<provider android:name=".provider.SugarCRMProvider"
-			android:authorities="com.imaginea.sugarcrm.provider" android:label="@string/appName"
-			android:description="@string/appProviderDesc"
-			android:syncable="true" />
-		
-		<receiver android:name=".AccountRemovalReceiver"
-              android:enabled="true">
-        	<intent-filter>
-               <action
-                    android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <receiver android:name="com.imaginea.android.sugarcrm.util.AlarmReceiver" >
+            <intent-filter>
+                <action android:name="com.imaginea.android.sugarcrm.ALARM_RECEIVED" />
             </intent-filter>
         </receiver>
-        <service
-            android:name=".AccountRemovalService" />
-		
+
+        <!--
+        TODO : permissions, grantUri and export flags need to be set appropriately, 
+		we want to share our provider only with apps signed by our certificate or running with the same UID
+        -->
+        <!--
+             permission android:name="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" 
+			android:label="@string/perm_access_sugarCrm" android:description="@string/sugarProviderDesc" 
+			android:protectionLevel="signature"/
+        -->
+        <!-- add provider permission android:permission="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" -->
+        <provider
+            android:name=".provider.SugarCRMProvider"
+            android:authorities="com.imaginea.sugarcrm.provider"
+            android:description="@string/appProviderDesc"
+            android:label="@string/appName"
+            android:syncable="true" />
+
+        <receiver
+            android:name=".AccountRemovalReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.imaginea.android.sugarcrm.services.AccountRemovalService" />
     </application>
+
 </manifest>

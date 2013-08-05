@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm.tab;
+package com.imaginea.android.sugarcrm.ui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,30 +8,29 @@ import com.imaginea.android.sugarcrm.EditModuleDetailActivity;
 import com.imaginea.android.sugarcrm.EditModuleDetailFragment;
 import com.imaginea.android.sugarcrm.ModuleDetailActivity;
 import com.imaginea.android.sugarcrm.ModuleDetailFragment;
-import com.imaginea.android.sugarcrm.ModuleListFragment;
-import com.imaginea.android.sugarcrm.ModulesActivity;
 import com.imaginea.android.sugarcrm.R;
-import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
+import com.imaginea.android.sugarcrm.RecentModuleActivity;
+import com.imaginea.android.sugarcrm.RecentModuleListFragment;
 
 /**
- * A multi-pane activity, consisting of a {@link ModuleListFragment}, and
+ * A multi-pane activity, consisting of a {@link RecentModuleListFragment}, and
  * {@link ModuleDetailFragment}.
  * 
  * This activity requires API level 11 or greater
  */
-public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity {
+public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.modules);
+        setContentView(R.layout.recent_modules);
 
         ModuleDetailFragment moduleDetailFragment = (ModuleDetailFragment) getSupportFragmentManager().findFragmentByTag("module_detail");
         if (moduleDetailFragment == null) {
             moduleDetailFragment = new ModuleDetailFragment();
             moduleDetailFragment.setArguments(intentToFragmentArguments(getIntent()));
 
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
+             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
         }
     }
 
@@ -48,9 +47,9 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity {
 
     @Override
     public FragmentReplaceInfo onSubstituteFragmentForActivityLaunch(String activityClassName) {
-        if (ModulesActivity.class.getName().equals(activityClassName)) {
+        if (RecentModuleActivity.class.getName().equals(activityClassName)) {
             // this won't happen as Module list fragment is not reloaded
-            return new FragmentReplaceInfo(ModuleListFragment.class, "modules", R.id.fragment_container_module_detail);
+            return new FragmentReplaceInfo(RecentModuleListFragment.class, "modules", R.id.fragment_container_module_detail);
         } else if (ModuleDetailActivity.class.getName().equals(activityClassName)) {
             findViewById(R.id.fragment_container_module_detail).setBackgroundColor(0xffffffff);
             return new FragmentReplaceInfo(ModuleDetailFragment.class, "module_detail", R.id.fragment_container_module_detail);

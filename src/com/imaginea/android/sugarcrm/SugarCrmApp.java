@@ -11,7 +11,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.imaginea.android.sugarcrm.util.RestUtil;
+import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -58,7 +58,7 @@ public class SugarCrmApp extends Application {
                 String password = AccountManager.get(this).getPassword(account);
                 mLastLoginTime = currentTime;
                 try {
-                    mSessionId = RestUtil.loginToSugarCRM(url, account.name, password);
+                    mSessionId = Rest.loginToSugarCRM(url, account.name, password);
                 } catch (SugarCrmException se) {
                     Log.e(LOG_TAG, se.getMessage(), se);
                 } catch (Exception ex) {

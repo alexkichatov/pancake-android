@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm;
+package com.imaginea.android.sugarcrm.sync;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -25,8 +25,13 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.imaginea.android.sugarcrm.CustomActionbar;
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
+import com.imaginea.android.sugarcrm.DashboardActivity;
+import com.imaginea.android.sugarcrm.R;
+import com.imaginea.android.sugarcrm.SugarCrmApp;
+import com.imaginea.android.sugarcrm.SugarCrmSettings;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -40,10 +45,11 @@ public class SyncConfigActivity extends Activity {
     private Button mStartDateButton;
 
     private Button mEndDateButton;
-    
+
     private Spinner mRecordsSizeSpinner;
-    
-    private String[] mRecordsSize = {"500", "1000", "2000", "5000", "10000", "ALL"};
+
+    private final String[] mRecordsSize = { "500", "1000", "2000", "5000",
+            "10000", "ALL" };
 
     // cache the time
     private Date mStartTime;
@@ -56,18 +62,20 @@ public class SyncConfigActivity extends Activity {
 
     /** {@inheritDoc} */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Setup layout
         setContentView(R.layout.sync_config);
         final CustomActionbar actionBar = (CustomActionbar) findViewById(R.id.custom_actionbar);
 
-        final Action homeAction = new IntentAction(this, new Intent(this, DashboardActivity.class), R.drawable.home);
+        final Action homeAction = new IntentAction(this, new Intent(this,
+                DashboardActivity.class), R.drawable.home);
         actionBar.setHomeAction(homeAction);
         actionBar.setTitle(getString(R.string.syncSettings));
-        
-        mRecordsSizeSpinner = (Spinner)findViewById(R.id.recordsSize_spinner);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, mRecordsSize);
+
+        mRecordsSizeSpinner = (Spinner) findViewById(R.id.recordsSize_spinner);
+        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
+                this, android.R.layout.simple_spinner_item, mRecordsSize);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mRecordsSizeSpinner.setAdapter(adapter);
         mRecordsSizeSpinner.setBackgroundColor(Color.GRAY);
@@ -75,10 +83,12 @@ public class SyncConfigActivity extends Activity {
         mStartDateButton = (Button) findViewById(R.id.start_date);
         mEndDateButton = (Button) findViewById(R.id.end_date);
 
-        long time = System.currentTimeMillis();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        long startTime = pref.getLong(Util.PREF_SYNC_START_TIME, time - THREE_MONTHS);
-        long endTime = pref.getLong(Util.PREF_SYNC_END_TIME, time);
+        final long time = System.currentTimeMillis();
+        final SharedPreferences pref = PreferenceManager
+                .getDefaultSharedPreferences(getBaseContext());
+        final long startTime = pref.getLong(Util.PREF_SYNC_START_TIME, time
+                - THREE_MONTHS);
+        final long endTime = pref.getLong(Util.PREF_SYNC_END_TIME, time);
         mStartTime = new Date();
         mStartTime.setTime(startTime);
         mEndTime = new Date();
@@ -87,17 +97,20 @@ public class SyncConfigActivity extends Activity {
         // setDate(mEndDateButton, mEndTime);
         populateWhen();
 
-        SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
-        if (ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY)) {
+        final SugarCrmApp app = (SugarCrmApp) getApplication();
+        final String usr = SugarCrmSettings
+                .getUsername(SyncConfigActivity.this);
+        if (ContentResolver.isSyncActive(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY)) {
             findViewById(R.id.syncLater).setVisibility(View.GONE);
             findViewById(R.id.cancelSync).setVisibility(View.VISIBLE);
         }
-     
-        String records_size = SugarCrmSettings.getFetchRecordsSize(SyncConfigActivity.this);
-        int position = Arrays.binarySearch(mRecordsSize, records_size);
+
+        final String records_size = SugarCrmSettings
+                .getFetchRecordsSize(SyncConfigActivity.this);
+        final int position = Arrays.binarySearch(mRecordsSize, records_size);
         mRecordsSizeSpinner.setSelection(position);
-        
+
     }
 
     /**
@@ -107,57 +120,69 @@ public class SyncConfigActivity extends Activity {
      *            a {@link android.view.View} object.
      */
     @SuppressWarnings("deprecation")
-    public void startSync(View v) {
-        Bundle extras = new Bundle();
+    public void startSync(final View v) {
+        final Bundle extras = new Bundle();
         // extras.putInt(key, value)
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
         extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
-        SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
-        if(ContentResolver.isSyncActive(app.getAccount(usr), SugarCRMProvider.AUTHORITY))
-        {
-            AlertDialog alertDialog = new AlertDialog.Builder(SyncConfigActivity.this).create();
+        final SugarCrmApp app = (SugarCrmApp) getApplication();
+        final String usr = SugarCrmSettings
+                .getUsername(SyncConfigActivity.this);
+        if (ContentResolver.isSyncActive(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY)) {
+            final AlertDialog alertDialog = new AlertDialog.Builder(
+                    SyncConfigActivity.this).create();
             alertDialog.setTitle(R.string.info);
             alertDialog.setMessage(getString(R.string.syncProgressMsg));
             alertDialog.setIcon(R.drawable.applaunch);
-            alertDialog.setButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    SyncConfigActivity.this.finish();
-                }
-            });
+            alertDialog.setButton(getString(android.R.string.ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog,
+                                final int which) {
+                            SyncConfigActivity.this.finish();
+                        }
+                    });
             alertDialog.show();
             return;
         }
-        
-        savePrefs();
-        ContentResolver.requestSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY, extras);       
 
-        AlertDialog alertDialog = new AlertDialog.Builder(SyncConfigActivity.this).create();
+        savePrefs();
+        ContentResolver.requestSync(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY, extras);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(
+                SyncConfigActivity.this).create();
         alertDialog.setTitle(R.string.info);
         alertDialog.setMessage(getString(R.string.syncMsg));
         alertDialog.setIcon(R.drawable.applaunch);
-        alertDialog.setButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                SyncConfigActivity.this.finish();
-            }
-        });
+        alertDialog.setButton(getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog,
+                            final int which) {
+                        SyncConfigActivity.this.finish();
+                    }
+                });
         alertDialog.show();
 
     }
 
     private void savePrefs() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        final SharedPreferences pref = PreferenceManager
+                .getDefaultSharedPreferences(getBaseContext());
 
-        long startMillis = mStartTime.getTime();
-        long endMillis = mEndTime.getTime();
-        Editor editor = pref.edit();
+        final long startMillis = mStartTime.getTime();
+        final long endMillis = mEndTime.getTime();
+        final Editor editor = pref.edit();
         editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
         editor.putLong(Util.PREF_SYNC_END_TIME, endMillis);
-       
-        //saving the records size per http request.
-        String selected = mRecordsSize[mRecordsSizeSpinner.getSelectedItemPosition()];
+
+        // saving the records size per http request.
+        final String selected = mRecordsSize[mRecordsSizeSpinner
+                .getSelectedItemPosition()];
         editor.putString(Util.PREF_FETCH_RECORDS_SIZE, selected);
-		    
+
         editor.commit();
     }
 
@@ -167,11 +192,13 @@ public class SyncConfigActivity extends Activity {
      * @param v
      *            a {@link android.view.View} object.
      */
-    public void cancelSync(View v) {
-        SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings.getUsername(SyncConfigActivity.this);
-        ContentResolver.cancelSync(app.getAccount(usr), SugarCRMProvider.AUTHORITY);
-        this.finish();
+    public void cancelSync(final View v) {
+        final SugarCrmApp app = (SugarCrmApp) getApplication();
+        final String usr = SugarCrmSettings
+                .getUsername(SyncConfigActivity.this);
+        ContentResolver.cancelSync(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY);
+        finish();
     }
 
     /**
@@ -180,7 +207,7 @@ public class SyncConfigActivity extends Activity {
      * @param v
      *            a {@link android.view.View} object.
      */
-    public void syncLater(View v) {
+    public void syncLater(final View v) {
         savePrefs();
         setResult(RESULT_CANCELED);
         finish();
@@ -200,16 +227,18 @@ public class SyncConfigActivity extends Activity {
     private class DateListener implements OnDateSetListener {
         View mView;
 
-        public DateListener(View view) {
+        public DateListener(final View view) {
             mView = view;
         }
 
-        public void onDateSet(DatePicker view, int year, int month, int monthDay) {
+        @Override
+        public void onDateSet(final DatePicker view, final int year,
+                final int month, final int monthDay) {
             // Cache the member variables locally to avoid inner class overhead.
-            Date startDate = mStartTime;
-            Date endDate = mEndTime;
+            final Date startDate = mStartTime;
+            final Date endDate = mEndTime;
 
-            Calendar calendar = Calendar.getInstance();
+            final Calendar calendar = Calendar.getInstance();
 
             // Cache the start and end millis so that we limit the number
             // of calls to normalize() and toMillis(), which are fairly
@@ -223,7 +252,7 @@ public class SyncConfigActivity extends Activity {
                 startMillis = calendar.getTimeInMillis();
                 // endMillis = startMillis + duartion;
                 endMillis = endDate.getTime();
-                long curTime = System.currentTimeMillis();
+                final long curTime = System.currentTimeMillis();
                 // see to that the endDate does not exceed the current date
                 if (endMillis > curTime) {
                     endMillis = curTime;
@@ -239,13 +268,14 @@ public class SyncConfigActivity extends Activity {
                 calendar.set(year, month, monthDay);
                 endMillis = calendar.getTimeInMillis();
 
-                long curTime = System.currentTimeMillis();
+                final long curTime = System.currentTimeMillis();
                 // see to that the endDate does not exceed the current date
                 if (endMillis > curTime) {
                     endMillis = curTime;
                 }
 
-                // Do not allow an event to have an end time before the start time.
+                // Do not allow an event to have an end time before the start
+                // time.
                 if (startMillis > endMillis) {
                     // endDate.setTime(startMillis);
                     endMillis = startMillis;
@@ -258,8 +288,9 @@ public class SyncConfigActivity extends Activity {
 
             setDate(mStartDateButton, startDate);
             setDate(mEndDateButton, endDate);
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            Editor editor = pref.edit();
+            final SharedPreferences pref = PreferenceManager
+                    .getDefaultSharedPreferences(getBaseContext());
+            final Editor editor = pref.edit();
             editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
             editor.putLong(Util.PREF_SYNC_END_TIME, endMillis);
             editor.commit();
@@ -270,29 +301,31 @@ public class SyncConfigActivity extends Activity {
      * DateClickListener
      */
     private class DateClickListener implements View.OnClickListener {
-        private Date mDate;
+        private final Date mDate;
 
-        public DateClickListener(Date date) {
+        public DateClickListener(final Date date) {
             mDate = date;
         }
 
-        public void onClick(View v) {
-            Calendar calendar = new GregorianCalendar();
+        @Override
+        public void onClick(final View v) {
+            final Calendar calendar = new GregorianCalendar();
             calendar.setTimeInMillis(mDate.getTime());
 
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int date = calendar.get(Calendar.DATE);
+            final int year = calendar.get(Calendar.YEAR);
+            final int month = calendar.get(Calendar.MONTH);
+            final int date = calendar.get(Calendar.DATE);
 
-            new DatePickerDialog(SyncConfigActivity.this, new DateListener(v), year, month, date).show();
+            new DatePickerDialog(SyncConfigActivity.this, new DateListener(v),
+                    year, month, date).show();
         }
     }
 
-    private void setDate(TextView view, Date date) {
-        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR
-                                        | DateUtils.FORMAT_SHOW_WEEKDAY
-                                        | DateUtils.FORMAT_ABBREV_MONTH
-                                        | DateUtils.FORMAT_ABBREV_WEEKDAY;
+    private void setDate(final TextView view, final Date date) {
+        final int flags = DateUtils.FORMAT_SHOW_DATE
+                | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_WEEKDAY
+                | DateUtils.FORMAT_ABBREV_MONTH
+                | DateUtils.FORMAT_ABBREV_WEEKDAY;
         view.setText(DateUtils.formatDateTime(this, date.getTime(), flags));
     }
 }

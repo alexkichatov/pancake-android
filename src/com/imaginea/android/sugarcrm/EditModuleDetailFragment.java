@@ -35,16 +35,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.UserColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.services.SugarService;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ImportContactsUtility;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ModuleFieldValidator;
+import com.imaginea.android.sugarcrm.util.ServiceHelper;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
@@ -130,10 +133,10 @@ public class EditModuleDetailFragment extends Fragment {
         mModuleName = Util.CONTACTS;
         if (extras != null) {
             // i always get the module name
-            mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
+            mModuleName = extras.getString(RestConstants.MODULE_NAME);
             importFlag = extras.getInt(Util.IMPORT_FLAG);
             mRowId = intent.getStringExtra(Util.ROW_ID);
-            mSugarBeanId = intent.getStringExtra(RestUtilConstants.BEAN_ID);
+            mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
         }
         // when the user comes from the relationships, intent.getData() won't be
         // null
@@ -721,7 +724,7 @@ public class EditModuleDetailFragment extends Fragment {
 
         Map<String, String> modifiedValues = new LinkedHashMap<String, String>();
         if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
-            modifiedValues.put(RestUtilConstants.ID, mSugarBeanId);
+            modifiedValues.put(RestConstants.ID, mSugarBeanId);
 
         Uri uri = mIntentUri;
 

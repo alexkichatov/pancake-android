@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AlarmColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.MeetingsColumns;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -22,7 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         boolean isAlarmEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Util.PREF_ALARM_STATE, false);
         Bundle extras = intent.getBundleExtra(AlarmUtils.INTENT_EXTRA_EVENT_DETAILS);
         String mRowId = extras.getString(AlarmColumns.ID);
-        String mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
+        String mModuleName = extras.getString(RestConstants.MODULE_NAME);
         if (isAlarmEnabled) {
             int eventAlarmState = AlarmUtils.isAlarmEnabled(context, mRowId);
             if (eventAlarmState == AlarmUtils.ALARM_STATE_ENABLED

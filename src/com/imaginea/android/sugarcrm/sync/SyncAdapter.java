@@ -1,5 +1,11 @@
 package com.imaginea.android.sugarcrm.sync;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.http.ParseException;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -14,24 +20,17 @@ import android.util.Log;
 
 import com.imaginea.android.sugarcrm.ModulesActivity;
 import com.imaginea.android.sugarcrm.R;
-import com.imaginea.android.sugarcrm.RestUtilConstants;
 import com.imaginea.android.sugarcrm.SugarCrmApp;
 import com.imaginea.android.sugarcrm.WizardAuthActivity;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
-import com.imaginea.android.sugarcrm.util.RestUtil;
+import com.imaginea.android.sugarcrm.rest.Rest;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
-import org.apache.http.ParseException;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 /**
- * SyncAdapter implementation for syncing sugarcrm modules on the server to sugar crm provider and
- * vice versa.
+ * SyncAdapter implementation for syncing sugarcrm modules on the server to
+ * sugar crm provider and vice versa.
  * 
  * //TODO - Stress testing for large datasets - test cases
  */
@@ -40,8 +39,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private final AccountManager mAccountManager;
 
     private final Context mContext;
-
-    private Date mLastUpdated;
 
     private int mNotiId = -1;
 
@@ -57,7 +54,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * @param autoInitialize
      *            a boolean.
      */
-    public SyncAdapter(Context context, boolean autoInitialize) {
+    public SyncAdapter(final Context context, final boolean autoInitialize) {
         super(context, autoInitialize);
         mContext = context;
         mAccountManager = AccountManager.get(context);
@@ -65,27 +62,31 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /** {@inheritDoc} */
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority,
-                                    ContentProviderClient provider, SyncResult syncResult) {
+    public void onPerformSync(final Account account, final Bundle extras,
+            final String authority, final ContentProviderClient provider,
+            final SyncResult syncResult) {
         Log.i(LOG_TAG, "onPerformSync");
         // String authtoken = null;
-        int syncType = extras.getInt(Util.SYNC_TYPE);
+        final int syncType = extras.getInt(Util.SYNC_TYPE);
 
         try {
             // use the account manager to request the credentials
-            // authtoken = mAccountManager.blockingGetAuthToken(account, Util.AUTHTOKEN_TYPE, true
+            // authtoken = mAccountManager.blockingGetAuthToken(account,
+            // Util.AUTHTOKEN_TYPE, true
             // /* notifyAuthFailure */);
             // Log.v(LOG_TAG, "authtoken:" + authtoken);
 
             /*
-             * if we are a password based system, the SugarCRM OAuth setup is not clear yet but
-             * based on preferences, we ahould select the right one -?
+             * if we are a password based system, the SugarCRM OAuth setup is
+             * not clear yet but based on preferences, we ahould select the
+             * right one -?
              */
-            String userName = account.name;
-            String password = mAccountManager.getPassword(account);
+            final String userName = account.name;
+            final String password = mAccountManager.getPassword(account);
             if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {
                 Log.v(LOG_TAG, "Sync Type name: " + syncType);
-                Log.v(LOG_TAG, "user name: " + userName + " and authority: " + authority);
+                Log.v(LOG_TAG, "user name: " + userName + " and authority: "
+                        + authority);
             }
 
             if (!Util.isNetworkOn(mContext)) {
@@ -93,73 +94,96 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 syncResult.stats.numIoExceptions++;
                 return;
             }
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
-            String url = pref.getString(Util.PREF_REST_URL, mContext.getString(R.string.defaultUrl));
-            SugarCrmApp app = ((SugarCrmApp) SugarCrmApp.app);
+            final SharedPreferences pref = PreferenceManager
+                    .getDefaultSharedPreferences(mContext);
+            final String url = pref.getString(Util.PREF_REST_URL,
+                    mContext.getString(R.string.defaultUrl));
+            final SugarCrmApp app = ((SugarCrmApp) SugarCrmApp.app);
             String sessionId = app != null ? app.getSessionId() : null;
-            if (sessionId == null || RestUtil.seamlessLogin(url, sessionId) == 0) {
-                    sessionId = RestUtil.loginToSugarCRM(url, account.name, password);
-                    app.setSessionId(sessionId);
+            if (sessionId == null
+                    || Rest.seamlessLogin(url, sessionId) == 0) {
+                sessionId = Rest.loginToSugarCRM(url, account.name,
+                        password);
+                app.setSessionId(sessionId);
             }
 
-            // TODO run this list through our local DB and see if any changes have happened and sync
+            // TODO run this list through our local DB and see if any changes
+            // have happened and sync
             // those modules and module fields
             if (!(syncType == Util.SYNC_MODULE_META_DATA || syncType == Util.SYNC_ALL_META_DATA)) {
-                if (mNotiId != -1)
+                if (mNotiId != -1) {
                     Util.notificationCancel(mContext, mNotiId);
+                }
 
-                mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.appName, R.string.appName, mContext.getString(R.string.syncing));
+                mNotiId = Util.notify(mContext, mContext
+                        .getApplicationContext().getPackageName(),
+                        ModulesActivity.class, R.string.appName,
+                        R.string.appName, mContext.getString(R.string.syncing));
             }
             switch (syncType) {
 
             case Util.SYNC_MODULE_META_DATA:
                 // use this only for testing
-                //SugarSyncManager.syncModules(mContext, account.name, sessionId);
+                // SugarSyncManager.syncModules(mContext, account.name,
+                // sessionId);
                 break;
             case Util.SYNC_ALL_META_DATA:
                 // should be used once for one time set-up
-                boolean modulesSyncd = SugarSyncManager.syncModules(mContext, account.name, sessionId);
+                final boolean modulesSyncd = SugarSyncManager.syncModules(
+                        mContext, account.name, sessionId);
                 // Log.d(LOG_TAG, "syncModules done. success: " + modulesSyncd);
 
-                // boolean aclAccessSyncd = SugarSyncManager.syncAclAccess(mContext, account.name,
+                // boolean aclAccessSyncd =
+                // SugarSyncManager.syncAclAccess(mContext, account.name,
                 // sessionId);
-                // Log.d(LOG_TAG, "ACL access aync done. success: " + aclAccessSyncd);
+                // Log.d(LOG_TAG, "ACL access aync done. success: " +
+                // aclAccessSyncd);
 
-                boolean usersSyncd = SugarSyncManager.syncUsersList(mContext, sessionId);
+                final boolean usersSyncd = SugarSyncManager.syncUsersList(
+                        mContext, sessionId);
                 // Log.d(LOG_TAG, "Users aync done. success: " + usersSyncd);
 
                 // TODO - Need to resolve SYNC issue.
                 // if (modulesSyncd && aclAccessSyncd & usersSyncd) {
                 WizardAuthActivity.resultWait.release();
                 if (modulesSyncd && usersSyncd) {
-                    Editor editor = pref.edit();
+                    final Editor editor = pref.edit();
                     editor.putBoolean(Util.SYNC_METADATA_COMPLETED, true);
                     editor.commit();
-                }                
+                }
                 break;
             case Util.SYNC_ACL_ACCESS_META_DATA:
                 // use this only for testing
-                // SugarSyncManager.syncAclAccess(mContext, account.name, sessionId);
+                // SugarSyncManager.syncAclAccess(mContext, account.name,
+                // sessionId);
                 break;
 
             case Util.SYNC_MODULES_DATA:
                 // default mode - sync all modules - from the sync screen
-                syncAllModulesData(account, extras, authority, sessionId, syncResult);
+                syncAllModulesData(account, extras, authority, sessionId,
+                        syncResult);
                 break;
             case Util.SYNC_MODULE_DATA:
-                // sync only one module - can be used once module based sync is provided
-                String moduleName = extras.getString(RestUtilConstants.MODULE_NAME);
-                syncModuleData(account, extras, authority, sessionId, moduleName, syncResult);
+                // sync only one module - can be used once module based sync is
+                // provided
+                final String moduleName = extras
+                        .getString(RestConstants.MODULE_NAME);
+                syncModuleData(account, extras, authority, sessionId,
+                        moduleName, syncResult);
                 break;
             case Util.SYNC_ALL:
                 // testing
                 SugarSyncManager.syncModules(mContext, account.name, sessionId);
-                // SugarSyncManager.syncAclAccess(mContext, account.name, sessionId);
-                syncAllModulesData(account, extras, authority, sessionId, syncResult);
+                // SugarSyncManager.syncAclAccess(mContext, account.name,
+                // sessionId);
+                syncAllModulesData(account, extras, authority, sessionId,
+                        syncResult);
                 break;
             default:
-                // if called from accounts and sync screen, we sync only module data
-                syncAllModulesData(account, extras, authority, sessionId, syncResult);
+                // if called from accounts and sync screen, we sync only module
+                // data
+                syncAllModulesData(account, extras, authority, sessionId,
+                        syncResult);
                 break;
             }
 
@@ -167,14 +191,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             syncResult.stats.numParseExceptions++;
             Log.e(LOG_TAG, "ParseException", e);
         } /*
-           * catch (OperationCanceledException e) { // TODO - whats the stats update here //
-           * syncResult.stats.++; Log.e(LOG_TAG, e.getMessage(), e); } catch (AuthenticatorException
-           * e) { // syncResult.stats.numAuthExceptions++; Log.e(LOG_TAG, e.getMessage(), e); }
-           * catch (IOException e) { syncResult.stats.numIoExceptions++; Log.e(LOG_TAG,
-           * e.getMessage(), e); }
-           */catch (SugarCrmException se) {
+           * catch (OperationCanceledException e) { // TODO - whats the stats
+           * update here // syncResult.stats.++; Log.e(LOG_TAG, e.getMessage(),
+           * e); } catch (AuthenticatorException e) { //
+           * syncResult.stats.numAuthExceptions++; Log.e(LOG_TAG,
+           * e.getMessage(), e); } catch (IOException e) {
+           * syncResult.stats.numIoExceptions++; Log.e(LOG_TAG, e.getMessage(),
+           * e); }
+           */catch (final SugarCrmException se) {
             Log.e(LOG_TAG, se.getMessage(), se);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
         }
     }
@@ -188,30 +214,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * @param sessionId
      * @param syncResult
      */
-    private void syncAllModulesData(Account account, Bundle extras, String authority,
-                                    String sessionId, SyncResult syncResult)
-                                    throws SugarCrmException {
-       
-    	List<String> moduleList = ContentUtils.getModuleList(mContext);
-      
+    private void syncAllModulesData(final Account account, final Bundle extras,
+            final String authority, final String sessionId,
+            final SyncResult syncResult) throws SugarCrmException {
+
+        final List<String> moduleList = ContentUtils.getModuleList(mContext);
+
         if (moduleList.size() == 0) {
             Log.w(LOG_TAG, "No modules to sync");
         }
         // TODO - dynamically determine the relationships and get the values
         Collections.sort(moduleList);
-        for (String moduleName : moduleList) {
-            syncModuleData(account, extras, authority, sessionId, moduleName, syncResult);
+        for (final String moduleName : moduleList) {
+            syncModuleData(account, extras, authority, sessionId, moduleName,
+                    syncResult);
         }
 
-        // update the last synced date.
-        mLastUpdated = new Date();
-        // do not use sync result status to notify, notify module specific comprehensive stats
+        new Date();
+        // do not use sync result status to notify, notify module specific
+        // comprehensive stats
         mContext.getApplicationContext();
-        String msg = mContext.getString(R.string.syncMessage);
-        if (mNotiId != -1)
+        final String msg = mContext.getString(R.string.syncMessage);
+        if (mNotiId != -1) {
             Util.notificationCancel(mContext, mNotiId);
+        }
 
-        mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, String.format(msg, moduleList.size()));
+        mNotiId = Util.notify(mContext, mContext.getApplicationContext()
+                .getPackageName(), ModulesActivity.class, R.string.syncSuccess,
+                R.string.syncSuccess, String.format(msg, moduleList.size()));
     }
 
     /**
@@ -225,31 +255,38 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * @param syncResult
      * @throws SugarCrmException
      */
-    private void syncModuleData(Account account, Bundle extras, String authority, String sessionId,
-                                    String moduleName, SyncResult syncResult)
-                                    throws SugarCrmException {
+    private void syncModuleData(final Account account, final Bundle extras,
+            final String authority, final String sessionId,
+            final String moduleName, final SyncResult syncResult)
+            throws SugarCrmException {
         Log.i(LOG_TAG, "Syncing Incoming Module Data:" + moduleName);
-        
-        int sincType = extras.getInt(Util.SYNC_TYPE);
 
-        // TODO - should be catch SugarCRMException and allow processing other modules and
+        final int sincType = extras.getInt(Util.SYNC_TYPE);
+
+        // TODO - should be catch SugarCRMException and allow processing other
+        // modules and
         // fail completely
-        SugarSyncManager.syncModulesData(mContext, account.name, sincType, sessionId, moduleName, syncResult);
+        SugarSyncManager.syncModulesData(mContext, account.name, sincType,
+                sessionId, moduleName, syncResult);
 
         /*
-         * at this point we are done with identifying the merge conflicts in the sync table for
-         * incoming module data; the remaining un-synced items in the sync table for that module can
-         * be published to the server now.
+         * at this point we are done with identifying the merge conflicts in the
+         * sync table for incoming module data; the remaining un-synced items in
+         * the sync table for that module can be published to the server now.
          */
         Log.i(LOG_TAG, "Syncing Outgoing Module Data:" + moduleName);
-        SugarSyncManager.syncOutgoingModuleData(mContext, account.name, sessionId, moduleName, syncResult);
+        SugarSyncManager.syncOutgoingModuleData(mContext, account.name,
+                sessionId, moduleName, syncResult);
 
         if (Util.SYNC_MODULE_DATA == sincType) {
-            if (mNotiId != -1)
+            if (mNotiId != -1) {
                 Util.notificationCancel(mContext, mNotiId);
+            }
 
-            mNotiId = Util.notify(mContext, mContext.getApplicationContext().getPackageName(), ModulesActivity.class, R.string.syncSuccess, R.string.syncSuccess, moduleName
-                                            + " " + mContext.getString(R.string.module));
+            mNotiId = Util.notify(mContext, mContext.getApplicationContext()
+                    .getPackageName(), ModulesActivity.class,
+                    R.string.syncSuccess, R.string.syncSuccess, moduleName
+                            + " " + mContext.getString(R.string.module));
         }
 
     }
@@ -258,8 +295,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onSyncCanceled() {
         super.onSyncCanceled();
-        // TODO - notify is part if sync framework, with the SyncResults giving details about the
-        // last sync, we perform additional steps that are specific to our app if required
+        // TODO - notify is part if sync framework, with the SyncResults giving
+        // details about the
+        // last sync, we perform additional steps that are specific to our app
+        // if required
     }
 
 }

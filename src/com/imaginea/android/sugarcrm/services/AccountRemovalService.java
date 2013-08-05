@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm;
+package com.imaginea.android.sugarcrm.services;
 
 import android.accounts.AccountManager;
 import android.app.IntentService;

@@ -10,7 +10,7 @@ public class SugarCrmException extends Exception {
 
     private String mName;
 
-    private String mDescription;
+    private final String mDescription;
 
     /**
      * <p>
@@ -22,7 +22,7 @@ public class SugarCrmException extends Exception {
      * @param desc
      *            a {@link java.lang.String} object.
      */
-    public SugarCrmException(String name, String desc) {
+    public SugarCrmException(final String name, final String desc) {
         mName = name;
         mDescription = desc;
     }
@@ -35,7 +35,7 @@ public class SugarCrmException extends Exception {
      * @param desc
      *            a {@link java.lang.String} object.
      */
-    public SugarCrmException(String desc) {
+    public SugarCrmException(final String desc) {
         mDescription = desc;
     }
 

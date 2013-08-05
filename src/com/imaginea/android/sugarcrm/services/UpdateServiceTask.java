@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm;
+package com.imaginea.android.sugarcrm.services;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,13 +16,21 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.imaginea.android.sugarcrm.ModuleFields;
+import com.imaginea.android.sugarcrm.R;
+import com.imaginea.android.sugarcrm.SugarCrmApp;
+import com.imaginea.android.sugarcrm.SugarCrmSettings;
+import com.imaginea.android.sugarcrm.R.id;
+import com.imaginea.android.sugarcrm.R.string;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
+import com.imaginea.android.sugarcrm.rest.Rest;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.sync.SyncRecord;
+import com.imaginea.android.sugarcrm.util.AsyncServiceTask;
 import com.imaginea.android.sugarcrm.util.RelationshipStatus;
-import com.imaginea.android.sugarcrm.util.RestUtil;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -76,9 +84,9 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         Bundle extras = intent.getExtras();
         mUri = intent.getData();
         // current module being updated/inserted/deleted
-        mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
-        mBeanId = extras.getString(RestUtilConstants.BEAN_ID);
-        mUpdateNameValueMap = (Map<String, String>) extras.getSerializable(RestUtilConstants.NAME_VALUE_LIST);
+        mModuleName = extras.getString(RestConstants.MODULE_NAME);
+        mBeanId = extras.getString(RestConstants.BEAN_ID);
+        mUpdateNameValueMap = (Map<String, String>) extras.getSerializable(RestConstants.NAME_VALUE_LIST);
         mCommand = extras.getInt(Util.COMMAND);
         debug();
     }
@@ -100,10 +108,10 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
             String updatedBeanId = null;
             // Check network is on
             if (netOn) {                
-                if ((sessionId == null) || (RestUtil.seamlessLogin(url, sessionId) == 0)) {
+                if ((sessionId == null) || (Rest.seamlessLogin(url, sessionId) == 0)) {
                     String userName = SugarCrmSettings.getUsername(mContext);
                     Account account = ((SugarCrmApp) SugarCrmApp.app).getAccount(userName);
-                    sessionId = RestUtil.loginToSugarCRM(url, userName, AccountManager.get(mContext).getPassword(account));
+                    sessionId = Rest.loginToSugarCRM(url, userName, AccountManager.get(mContext).getPassword(account));
                     ((SugarCrmApp) SugarCrmApp.app).setSessionId(sessionId);
                 }
                 
@@ -117,7 +125,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                             String userBeanId = mDbHelper.lookupUserBeanId(userBeanName);
                             mUpdateNameValueMap.put(ModuleFields.ASSIGNED_USER_ID, userBeanId);
                         }
-                        updatedBeanId = RestUtil.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
+                        updatedBeanId = Rest.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
                         mUpdateNameValueMap.remove(ModuleFields.ASSIGNED_USER_ID);
 
                         if (updatedBeanId != null) {
@@ -127,7 +135,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                             mBeanId = mDbHelper.lookupBeanId(mParentModuleName, rowId);
                             mLinkFieldName = mDbHelper.getLinkfieldName(mModuleName);
                             // set the relationship
-                            RelationshipStatus status = RestUtil.setRelationship(url, sessionId, mParentModuleName, mBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                            RelationshipStatus status = Rest.setRelationship(url, sessionId, mParentModuleName, mBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                             if (Log.isLoggable(TAG, Log.DEBUG)) {
                                 Log.i(TAG, "created: " + status.getCreatedCount() + " failed: "
                                                                 + status.getFailedCount()
@@ -158,7 +166,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                         mLinkFieldName = mDbHelper.getLinkfieldName(mModuleName);
 
                                         // set the relationship with the account
-                                        RelationshipStatus accountStatus = RestUtil.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                                        RelationshipStatus accountStatus = Rest.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                                         if (status.getCreatedCount() >= 1) {
                                             if (Log.isLoggable(TAG, Log.DEBUG))
                                                 Log.d(TAG, "Relationship is also set!"
@@ -199,7 +207,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                             String userBeanId = mDbHelper.lookupUserBeanId(userBeanName);
                             mUpdateNameValueMap.put(ModuleFields.ASSIGNED_USER_ID, userBeanId);
                         }
-                        updatedBeanId = RestUtil.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
+                        updatedBeanId = Rest.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
                         mUpdateNameValueMap.remove(ModuleFields.ASSIGNED_USER_ID);
 
                         if (updatedBeanId != null) {
@@ -220,7 +228,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                     mLinkFieldName = mDbHelper.getLinkfieldName(mModuleName);
 
                                     // set the relationship with the account
-                                    RelationshipStatus status = RestUtil.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                                    RelationshipStatus status = Rest.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                                     if (Log.isLoggable(TAG, Log.DEBUG))
                                         Log.d(TAG, "created: " + status.getCreatedCount()
                                                                         + " failed: "
@@ -281,7 +289,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                         }
 
                         // update the bean
-                        serverUpdatedBeanId = RestUtil.setEntry(url, sessionId, moduleName, mUpdateNameValueMap);
+                        serverUpdatedBeanId = Rest.setEntry(url, sessionId, moduleName, mUpdateNameValueMap);
                         mUpdateNameValueMap.remove(ModuleFields.ASSIGNED_USER_ID);
 
                         if (Log.isLoggable(TAG, Log.DEBUG))
@@ -343,7 +351,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                                             + " bean Id : "
                                                                             + updatedBeanId);
 
-                                        RelationshipStatus status = RestUtil.setRelationship(url, sessionId, Util.ACCOUNTS, accountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.DELETED_ITEM);
+                                        RelationshipStatus status = Rest.setRelationship(url, sessionId, Util.ACCOUNTS, accountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.DELETED_ITEM);
 
                                         if (Log.isLoggable(TAG, Log.DEBUG))
                                             Log.d(TAG, "updating delete flag for relationship is also set!"
@@ -367,7 +375,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                                     + updatedBeanId);
                                 }
                                 // set the new relationship
-                                RelationshipStatus status = RestUtil.setRelationship(url, sessionId, mParentModuleName, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                                RelationshipStatus status = Rest.setRelationship(url, sessionId, mParentModuleName, newAccountBeanId, mLinkFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                                 if (Log.isLoggable(TAG, Log.DEBUG))
                                     Log.d(TAG, "created: " + status.getCreatedCount() + " failed: "
                                                                     + status.getFailedCount()
@@ -413,7 +421,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                         }
 
                         // update the bean
-                        updatedBeanId = RestUtil.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
+                        updatedBeanId = Rest.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
                         mUpdateNameValueMap.remove(ModuleFields.ASSIGNED_USER_ID);
                         mUpdateNameValueMap.remove(SugarCRMContent.SUGAR_BEAN_ID);
 
@@ -479,7 +487,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                                                 + mDbHelper.getLinkfieldName(mModuleName)
                                                                                 + " bean Id : "
                                                                                 + updatedBeanId);
-                                            RelationshipStatus status = RestUtil.setRelationship(url, sessionId, Util.ACCOUNTS, accountBeanId, mDbHelper.getLinkfieldName(mModuleName), new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.DELETED_ITEM);
+                                            RelationshipStatus status = Rest.setRelationship(url, sessionId, Util.ACCOUNTS, accountBeanId, mDbHelper.getLinkfieldName(mModuleName), new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.DELETED_ITEM);
 
                                             if (Log.isLoggable(TAG, Log.DEBUG))
                                                 Log.d(TAG, "updating delete flag for relationship is also set!"
@@ -504,7 +512,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                     }
 
                                     // set the new relationship
-                                    RelationshipStatus status = RestUtil.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mDbHelper.getLinkfieldName(mModuleName), new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                                    RelationshipStatus status = Rest.setRelationship(url, sessionId, Util.ACCOUNTS, newAccountBeanId, mDbHelper.getLinkfieldName(mModuleName), new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                                     if (Log.isLoggable(TAG, Log.DEBUG))
                                         Log.d(TAG, "created: " + status.getCreatedCount()
                                                                         + " failed: "
@@ -548,7 +556,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                     mBeanId = mDbHelper.lookupBeanId(mModuleName, rowId);
                     mUpdateNameValueMap.put(SugarCRMContent.SUGAR_BEAN_ID, mBeanId);
                     // delete: set entry with the delete flag as '1'
-                    updatedBeanId = RestUtil.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
+                    updatedBeanId = Rest.setEntry(url, sessionId, mModuleName, mUpdateNameValueMap);
                     if (Log.isLoggable(TAG, Log.DEBUG))
                         Log.d(TAG, "updatedBeanId : " + updatedBeanId + "  mBeanId : " + mBeanId);
 

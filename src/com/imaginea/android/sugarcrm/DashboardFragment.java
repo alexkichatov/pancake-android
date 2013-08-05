@@ -12,19 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
-import com.imaginea.android.sugarcrm.tab.ModuleDetailsMultiPaneActivity;
-import com.imaginea.android.sugarcrm.tab.RecentModuleMultiPaneActivity;
-import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity;
+import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
@@ -35,17 +35,18 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
 public class DashboardFragment extends Fragment {
 
     private List<String> mModuleNames;
-    
+
     private DashboardAdapter mAdapter;
-    
+
     private View root;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+            final ViewGroup container, final Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.dashboard_fragment, container, false);
-        
+
         mAdapter = new DashboardAdapter(getActivity());
-        
+
         return root;
     }
 
@@ -53,156 +54,164 @@ public class DashboardFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mModuleNames.size() < 2) {
-        	
-        	if(mAdapter != null){
-        		mAdapter.removeAll();
-        	}           
+
+            if (mAdapter != null) {
+                mAdapter.removeAll();
+            }
             mModuleNames = ContentUtils.getModuleList(getActivity());
             mModuleNames.add(getString(R.string.recent));
-            
 
             mAdapter.addItems(mModuleNames);
         }
-        
+
     }
 
-    
     /** {@inheritDoc} */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
-        final Action homeAction = new IntentAction(DashboardFragment.this.getActivity(), null, R.drawable.pancake_logo);
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
+        final Action homeAction = new IntentAction(
+                DashboardFragment.this.getActivity(), null,
+                R.drawable.pancake_logo);
         actionBar.setHomeAction(homeAction);
         actionBar.setTitle("Pancake");
 
-        final Action settingAction = new IntentAction(DashboardFragment.this.getActivity(), createSettingsIntent(), R.drawable.settings);
+        final Action settingAction = new IntentAction(
+                DashboardFragment.this.getActivity(), createSettingsIntent(),
+                R.drawable.settings);
         actionBar.addActionItem(settingAction);
-        
-        
-        GridView gridView = (GridView)root.findViewById(R.id.gridview);
+
+        final GridView gridView = (GridView) root.findViewById(R.id.gridview);
         gridView.setAdapter(mAdapter);
-          
+
         mModuleNames = ContentUtils.getModuleList(getActivity());
         mModuleNames.add(getString(R.string.recent));
-                
+
         mAdapter.addItems(mModuleNames);
-        
+
         gridView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View view, int arg2, long arg3) {
-				viewModuleList(view);
-			}
-        	
-		});
-     
+            @Override
+            public void onItemClick(final AdapterView<?> arg0, final View view,
+                    final int arg2, final long arg3) {
+                viewModuleList(view);
+            }
+
+        });
+
     }
 
-    public void viewModuleList(View view) {
-    	 Intent myIntent;
-         String moduleName = (String) view.getTag();
-         Log.d("onClick moduleName message", moduleName);
-         
-         Context context = getActivity();
-         
-         if (moduleName.equals(getString(R.string.settings))) {
-             myIntent = new Intent(context, SugarCrmSettings.class);
-         } else if (moduleName.equals(getString(R.string.recent))) {
-             // TODO
-             if (ViewUtil.isHoneycombTablet(context)) {
-                 myIntent = new Intent(context, RecentModuleMultiPaneActivity.class);
-             } else {
-                 myIntent = new Intent(context, RecentModuleActivity.class);
-             }
-         } else {
-             if (ViewUtil.isHoneycombTablet(context)) {
-                 myIntent = new Intent(context, ModuleDetailsMultiPaneActivity.class);
+    public void viewModuleList(final View view) {
+        Intent myIntent;
+        final String moduleName = (String) view.getTag();
+        Log.d("onClick moduleName message", moduleName);
 
-                 myIntent.putExtra(Util.ROW_ID, "1");
-                 // myIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));                
-                 // ModuleDetailFragment mddetails =
-                 // ModuleDetailFragment.newInstance(position);
-                // ((BaseSinglePaneActivity) this).openActivityOrFragment(myIntent);
-             } else {
-                 myIntent = new Intent(context, ModulesActivity.class);               
-             }
-         }
-         myIntent.putExtra(RestUtilConstants.MODULE_NAME, moduleName);
-         startActivity(myIntent);
+        final Context context = getActivity();
+
+        if (moduleName.equals(getString(R.string.settings))) {
+            myIntent = new Intent(context, SugarCrmSettings.class);
+        } else if (moduleName.equals(getString(R.string.recent))) {
+            // TODO
+            if (ViewUtil.isHoneycombTablet(context)) {
+                myIntent = new Intent(context,
+                        RecentModuleMultiPaneActivity.class);
+            } else {
+                myIntent = new Intent(context, RecentModuleActivity.class);
+            }
+        } else {
+            if (ViewUtil.isHoneycombTablet(context)) {
+                myIntent = new Intent(context,
+                        ModuleDetailsMultiPaneActivity.class);
+
+                myIntent.putExtra(Util.ROW_ID, "1");
+                // myIntent.putExtra(RestUtilConstants.BEAN_ID,
+                // cursor.getString(1));
+                // ModuleDetailFragment mddetails =
+                // ModuleDetailFragment.newInstance(position);
+                // ((BaseSinglePaneActivity)
+                // this).openActivityOrFragment(myIntent);
+            } else {
+                myIntent = new Intent(context, ModulesActivity.class);
+            }
+        }
+        myIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
+        startActivity(myIntent);
     }
 
     private Intent createSettingsIntent() {
-        Intent myIntent = new Intent(DashboardFragment.this.getActivity(), SugarCrmSettings.class);
-        myIntent.putExtra(RestUtilConstants.MODULE_NAME, "settings");
+        final Intent myIntent = new Intent(
+                DashboardFragment.this.getActivity(), SugarCrmSettings.class);
+        myIntent.putExtra(RestConstants.MODULE_NAME, "settings");
         return myIntent;
     }
-    
-    
+
     private class DashboardAdapter extends BaseAdapter {
-    	
-    	
-    	private Context mContext;
-    	private ArrayList<String> mList = new ArrayList<String>();
-    		
-    	public DashboardAdapter(Context context) {
-    		mContext = context;
-    	}
 
-    	@Override
-    	public int getCount() {
-    		return mList.size();
-    	}
+        private final Context mContext;
+        private final ArrayList<String> mList = new ArrayList<String>();
 
-    	@Override
-    	public Object getItem(int arg0) {
-    		// TODO Auto-generated method stub
-    		return null;
-    	}
-    	
-    	public void addItem(String item){
-    		mList.add(item);
-    	}
-    	
-    	public void addItems(List<String> items){
-    		mList.addAll(items);
-    	}
-    	
-    	public void removeAll(){
-    		mList.clear();
-    	}
+        public DashboardAdapter(final Context context) {
+            mContext = context;
+        }
 
-    	@Override
-    	public long getItemId(int position) {
-    		// TODO Auto-generated method stub
-    		return 0;
-    	}
+        @Override
+        public int getCount() {
+            return mList.size();
+        }
 
-    	@Override
-    	public View getView(int position, View convertView, ViewGroup parent) {
-    		
-    		
-    		LinearLayout ls;
-    		
-            if (convertView == null) {  // if it's not recycled, initialize some attributes
-            	LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            	ls = (LinearLayout) inflater.inflate(R.layout.dashboard_item, null);           
+        @Override
+        public Object getItem(final int arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public void addItems(final List<String> items) {
+            mList.addAll(items);
+        }
+
+        public void removeAll() {
+            mList.clear();
+        }
+
+        @Override
+        public long getItemId(final int position) {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public View getView(final int position, final View convertView,
+                final ViewGroup parent) {
+
+            LinearLayout ls;
+
+            if (convertView == null) { // if it's not recycled, initialize some
+                                       // attributes
+                final LayoutInflater inflater = (LayoutInflater) mContext
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                ls = (LinearLayout) inflater.inflate(R.layout.dashboard_item,
+                        null);
             } else {
-            	ls = (LinearLayout) convertView;
+                ls = (LinearLayout) convertView;
             }
-            ImageView imageView = (ImageView) ls.findViewById(R.id.module_image);
-            imageView.setImageResource(ContentUtils.getModuleIcon(mList.get(position)));
-            
-            String moduleName =  mList.get(position);
-            
-            TextView textView = (TextView)ls.findViewById(R.id.module_name);
-            textView.setText(moduleName);        
-            
+            final ImageView imageView = (ImageView) ls
+                    .findViewById(R.id.module_image);
+            imageView.setImageResource(ContentUtils.getModuleIcon(mList
+                    .get(position)));
+
+            final String moduleName = mList.get(position);
+
+            final TextView textView = (TextView) ls
+                    .findViewById(R.id.module_name);
+            textView.setText(moduleName);
+
             ls.setTag(moduleName);
-                   
+
             return ls;
-    	}
+        }
 
     }
 

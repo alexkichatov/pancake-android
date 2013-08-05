@@ -1,5 +1,8 @@
 package com.imaginea.android.sugarcrm;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,18 +24,16 @@ import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 /**
- * RecentListActivity, lists the view projections for all the Recently accessed records.
+ * RecentListActivity, lists the view projections for all the Recently accessed
+ * records.
  * 
  * 
  * @author Jagadeeshwaran K
@@ -64,16 +65,17 @@ public class RecentModuleListFragment extends ListFragment {
 
     private GenericCursorAdapter mAdapter;
 
-    private String mSelections = ModuleFields.DELETED + "=?";
+    private final String mSelections = ModuleFields.DELETED + "=?";
 
-    private String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
+    private final String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
 
     private SugarCrmApp app;
 
     public final static String LOG_TAG = "RecentModuleList";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+            final ViewGroup container, final Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.common_list, container, false);
 
@@ -81,31 +83,37 @@ public class RecentModuleListFragment extends ListFragment {
 
     /** {@inheritDoc} */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         app = (SugarCrmApp) getActivity().getApplication();
-        Intent intent = getActivity().getIntent();
-        // final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
-        Bundle extras = intent.getExtras();
+        final Intent intent = getActivity().getIntent();
+        // final Intent intent =
+        // BaseActivity.fragmentArgumentsToIntent(getArguments());
+        final Bundle extras = intent.getExtras();
         mModuleName = Util.CONTACTS;
         if (extras != null) {
-            mModuleName = extras.getString(RestUtilConstants.MODULE_NAME);
+            mModuleName = extras.getString(RestConstants.MODULE_NAME);
         }
 
         // If the list is a list of related items, hide the filterImage and
         // allItems image
-        // if (intent.getData() != null && intent.getData().getPathSegments().size() >= 3) {
+        // if (intent.getData() != null &&
+        // intent.getData().getPathSegments().size() >= 3) {
         // getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
         // getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
         // }
 
         // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
         // tv.setText(mModuleName);
-        final CustomActionbar actionBar = (CustomActionbar) getActivity().findViewById(R.id.custom_actionbar);
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
         actionBar.setTitle(mModuleName);
 
-        final Action homeAction = new IntentAction(RecentModuleListFragment.this.getActivity(), new Intent(RecentModuleListFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
+        final Action homeAction = new IntentAction(
+                RecentModuleListFragment.this.getActivity(), new Intent(
+                        RecentModuleListFragment.this.getActivity(),
+                        DashboardActivity.class), R.drawable.home);
         actionBar.setHomeAction(homeAction);
 
         mListView = getListView();
@@ -114,7 +122,8 @@ public class RecentModuleListFragment extends ListFragment {
         // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
+            public void onItemClick(final AdapterView<?> arg0, final View view,
+                    final int position, final long id) {
 
                 openDetailScreen(position);
             }
@@ -142,21 +151,28 @@ public class RecentModuleListFragment extends ListFragment {
         // TODO - optimize this, if we sync up a dataset, then no need to run
         // detail projection
         // here, just do a list projection
-        Cursor cursor = getActivity().managedQuery(intent.getData(), ContentUtils.getModuleProjections(mModuleName), mSelections, mSelectionArgs, getSortOrder());
+        final Cursor cursor = getActivity().managedQuery(intent.getData(),
+                ContentUtils.getModuleProjections(mModuleName), mSelections,
+                mSelectionArgs, getSortOrder());
 
         // CRMContentObserver observer = new CRMContentObserver()
         // cursor.registerContentObserver(observer);
-        String[] moduleSel = ContentUtils.getModuleListSelections(mModuleName);
-        if (moduleSel.length >= 2)
-            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] {
-                    android.R.id.text1, android.R.id.text2 });
-        else
-            mAdapter = new GenericCursorAdapter(this.getActivity(), R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
+        final String[] moduleSel = ContentUtils
+                .getModuleListSelections(mModuleName);
+        if (moduleSel.length >= 2) {
+            mAdapter = new GenericCursorAdapter(getActivity(),
+                    R.layout.contact_listitem, cursor, moduleSel, new int[] {
+                            android.R.id.text1, android.R.id.text2 });
+        } else {
+            mAdapter = new GenericCursorAdapter(getActivity(),
+                    R.layout.contact_listitem, cursor, moduleSel,
+                    new int[] { android.R.id.text1 });
+        }
         setListAdapter(mAdapter);
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
 
-        TextView tv1 = (TextView) (mEmpty.findViewById(R.id.mainText));
+        final TextView tv1 = (TextView) (mEmpty.findViewById(R.id.mainText));
 
         if (mAdapter.getCount() == 0) {
             mListView.setVisibility(View.GONE);
@@ -170,58 +186,69 @@ public class RecentModuleListFragment extends ListFragment {
             tv1.setVisibility(View.GONE);
         }
 
-        mListFooterView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_footer, mListView, false);
+        mListFooterView = ((LayoutInflater) getActivity().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE)).inflate(
+                R.layout.list_item_footer, mListView, false);
         getListView().addFooterView(mListFooterView);
         mListFooterText = (TextView) getActivity().findViewById(R.id.status);
 
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
-        if (ViewUtil.isHoneycombTablet(getActivity()) && mAdapter.getCount() != 0)
+        if (ViewUtil.isHoneycombTablet(getActivity())
+                && mAdapter.getCount() != 0) {
             openDetailScreen(0);
+        }
 
     }
 
     /**
      * GenericCursorAdapter
      */
-    private final class GenericCursorAdapter extends SimpleCursorAdapter implements Filterable {
+    private final class GenericCursorAdapter extends SimpleCursorAdapter
+            implements Filterable {
 
         private int realoffset = 0;
 
-        private int limit = 20;
+        private final int limit = 20;
 
-        private ContentResolver mContent;
+        private final ContentResolver mContent;
 
-        public GenericCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+        public GenericCursorAdapter(final Context context, final int layout,
+                final Cursor c, final String[] from, final int[] to) {
             super(context, layout, c, from, to);
             mContent = context.getContentResolver();
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView,
+                final ViewGroup parent) {
 
-            View v = super.getView(position, convertView, parent);
-            int count = getCursor().getCount();
+            final View v = super.getView(position, convertView, parent);
+            final int count = getCursor().getCount();
             Log.d(LOG_TAG, "Get Item" + getItemId(position));
             if (!mBusy && position != 0 && position == count - 1) {
                 mBusy = true;
                 realoffset += count;
                 // Uri uri = getIntent().getData();
                 // TODO - fix this, this is no longer used
-                Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI, realoffset + "/" + limit);
+                final Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI,
+                        realoffset + "/" + limit);
                 Log.d(LOG_TAG, "Changing cursor:" + newUri.toString());
-                final Cursor cursor = getActivity().managedQuery(newUri, Contacts.LIST_PROJECTION, null, null, Contacts.DEFAULT_SORT_ORDER);
-                CRMContentObserver observer = new CRMContentObserver(new Handler() {
+                final Cursor cursor = getActivity().managedQuery(newUri,
+                        Contacts.LIST_PROJECTION, null, null,
+                        Contacts.DEFAULT_SORT_ORDER);
+                final CRMContentObserver observer = new CRMContentObserver(
+                        new Handler() {
 
-                    @Override
-                    public void handleMessage(Message msg) {
-                        super.handleMessage(msg);
-                        Log.d(LOG_TAG, "Changing cursor: in handler");
-                        changeCursor(cursor);
-                        mListFooterText.setVisibility(View.GONE);
-                        mListFooterProgress.setVisibility(View.GONE);
-                        mBusy = false;
-                    }
-                });
+                            @Override
+                            public void handleMessage(final Message msg) {
+                                super.handleMessage(msg);
+                                Log.d(LOG_TAG, "Changing cursor: in handler");
+                                changeCursor(cursor);
+                                mListFooterText.setVisibility(View.GONE);
+                                mListFooterProgress.setVisibility(View.GONE);
+                                mBusy = false;
+                            }
+                        });
                 cursor.registerContentObserver(observer);
             }
             if (mBusy) {
@@ -235,16 +262,15 @@ public class RecentModuleListFragment extends ListFragment {
         }
 
         @Override
-        public String convertToString(Cursor cursor) {
+        public String convertToString(final Cursor cursor) {
             Log.i(LOG_TAG, "convertToString : " + cursor.getString(2));
             return cursor.getString(2);
         }
 
         @Override
-        public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null) {
+        public Cursor runQueryOnBackgroundThread(final CharSequence constraint) {
+            if (getFilterQueryProvider() != null)
                 return getFilterQueryProvider().runQuery(constraint);
-            }
 
             StringBuilder buffer = null;
             String[] args = null;
@@ -256,8 +282,10 @@ public class RecentModuleListFragment extends ListFragment {
                 args = new String[] { constraint.toString().toUpperCase() + "*" };
             }
 
-            return mContent.query(ContentUtils.getModuleUri(mModuleName), ContentUtils.getModuleListProjections(mModuleName), buffer == null ? null
-                                            : buffer.toString(), args, ContentUtils.getModuleSortOrder(mModuleName));
+            return mContent.query(ContentUtils.getModuleUri(mModuleName),
+                    ContentUtils.getModuleListProjections(mModuleName),
+                    buffer == null ? null : buffer.toString(), args,
+                    ContentUtils.getModuleSortOrder(mModuleName));
         }
     }
 
@@ -266,24 +294,28 @@ public class RecentModuleListFragment extends ListFragment {
      * 
      * @param position
      */
-    void openDetailScreen(int position) {
-        Intent detailIntent = new Intent(this.getActivity(), ModuleDetailActivity.class);
+    void openDetailScreen(final int position) {
+        final Intent detailIntent = new Intent(getActivity(),
+                ModuleDetailActivity.class);
 
-        Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null) {
+        final Cursor cursor = (Cursor) getListAdapter().getItem(position);
+        if (cursor == null)
             // For some reason the requested item isn't available, do nothing
             return;
-        }
         // use the details available from cursor to open detailed view
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
-        detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(2));
-        detailIntent.putExtra(RestUtilConstants.MODULE_NAME, cursor.getString(3));
+        detailIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(2));
+        detailIntent.putExtra(RestConstants.MODULE_NAME,
+                cursor.getString(3));
         detailIntent.putExtra("Recent", true);
-        Log.d(LOG_TAG, "rowId:" + cursor.getString(1) + "BEAN_ID:" + cursor.getString(2)
-                                        + "MODULE_NAME:" + cursor.getString(3));
+        Log.d(LOG_TAG,
+                "rowId:" + cursor.getString(1) + "BEAN_ID:"
+                        + cursor.getString(2) + "MODULE_NAME:"
+                        + cursor.getString(3));
 
         if (ViewUtil.isTablet(getActivity())) {
-            ((BaseMultiPaneActivity) getActivity()).openActivityOrFragment(detailIntent);
+            ((BaseMultiPaneActivity) getActivity())
+                    .openActivityOrFragment(detailIntent);
         } else {
             startActivity(detailIntent);
         }
@@ -296,7 +328,7 @@ public class RecentModuleListFragment extends ListFragment {
         super.onPause();
     }
 
-    public void showAssignedItems(View view) {
+    public void showAssignedItems(final View view) {
         // keep this empty as the header is used from list view
     }
 
@@ -308,8 +340,11 @@ public class RecentModuleListFragment extends ListFragment {
      * @param view
      *            a {@link android.view.View} object.
      */
-    public void showAllItems(View view) {
-        Cursor cursor = getActivity().managedQuery(getActivity().getIntent().getData(), ContentUtils.getModuleProjections(mModuleName), null, null, getSortOrder());
+    public void showAllItems(final View view) {
+        final Cursor cursor = getActivity().managedQuery(
+                getActivity().getIntent().getData(),
+                ContentUtils.getModuleProjections(mModuleName), null, null,
+                getSortOrder());
         mAdapter.changeCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }
@@ -322,15 +357,17 @@ public class RecentModuleListFragment extends ListFragment {
      * @param view
      *            a {@link android.view.View} object.
      */
-    public void showHome(View view) {
-        Intent homeIntent = new Intent(this.getActivity(), DashboardActivity.class);
+    public void showHome(final View view) {
+        final Intent homeIntent = new Intent(getActivity(),
+                DashboardActivity.class);
         startActivity(homeIntent);
     }
 
     private String getSortOrder() {
         String sortOrder = null;
-        Map<String, String> sortOrderMap = app.getModuleSortOrder(mModuleName);
-        for (Entry<String, String> entry : sortOrderMap.entrySet()) {
+        final Map<String, String> sortOrderMap = app
+                .getModuleSortOrder(mModuleName);
+        for (final Entry<String, String> entry : sortOrderMap.entrySet()) {
             sortOrder = entry.getKey() + " " + entry.getValue();
         }
         return sortOrder;

@@ -1,9 +1,9 @@
-package com.imaginea.android.sugarcrm.util;
+package com.imaginea.android.sugarcrm.rest;
 
-import static com.imaginea.android.sugarcrm.RestUtilConstants.ENTRY_LIST;
-import static com.imaginea.android.sugarcrm.RestUtilConstants.JSON_EXCEPTION;
-import static com.imaginea.android.sugarcrm.RestUtilConstants.RECORDS;
-import static com.imaginea.android.sugarcrm.RestUtilConstants.RELATIONSHIP_LIST;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.ENTRY_LIST;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.JSON_EXCEPTION;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.RECORDS;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.RELATIONSHIP_LIST;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +11,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.imaginea.android.sugarcrm.util.SBParseHelper;
+import com.imaginea.android.sugarcrm.util.SugarCrmException;
 
 /**
  * <p>
@@ -212,7 +215,7 @@ public class SugarBean {
      * 
      * @param linkField
      *            a {@link java.lang.String} object.
-     * @return an array of {@link com.imaginea.android.sugarcrm.util.SugarBean} objects.
+     * @return an array of {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
      */
     public SugarBean[] getRelationshipBeans(String linkField) {
         return relationshipList.get(linkField);
