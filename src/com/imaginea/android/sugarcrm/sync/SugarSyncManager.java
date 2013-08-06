@@ -27,7 +27,6 @@ import android.util.Log;
 
 import com.imaginea.android.sugarcrm.ModuleFields;
 import com.imaginea.android.sugarcrm.R;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ACLActions;
@@ -37,10 +36,11 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Sync;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
+import com.imaginea.android.sugarcrm.rest.Rest;
+import com.imaginea.android.sugarcrm.rest.SugarBean;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Module;
 import com.imaginea.android.sugarcrm.util.RelationshipStatus;
-import com.imaginea.android.sugarcrm.util.RestUtil;
-import com.imaginea.android.sugarcrm.util.SugarBean;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
@@ -138,7 +138,7 @@ public class SugarSyncManager {
             if (projections == null || projections.length == 0)
                 break;
 
-            SugarBean[] sBeans = RestUtil.getEntryList(url, sessionId, moduleName, mQuery, orderBy, ""
+            SugarBean[] sBeans = Rest.getEntryList(url, sessionId, moduleName, mQuery, orderBy, ""
                                             + offset, projections, mLinkNameToFieldsArray, ""
                                             + maxResults, deleted);
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
@@ -362,7 +362,7 @@ public class SugarSyncManager {
      * @param moduleName
      *            a {@link java.lang.String} object.
      * @param bean
-     *            a {@link com.imaginea.android.sugarcrm.util.SugarBean} object.
+     *            a {@link com.imaginea.android.sugarcrm.rest.SugarBean} object.
      * @param batchOperation
      *            a {@link com.imaginea.android.sugarcrm.sync.BatchOperation} object.
      * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
@@ -669,7 +669,7 @@ public class SugarSyncManager {
             if (userModules == null || userModules.size() == 0) {
                 // Log.d(LOG_TAG,
                 // "No user modules available in the database. Trying to get available modules from the server.");
-                userModules = RestUtil.getAvailableModules(url, sessionId);
+                userModules = Rest.getAvailableModules(url, sessionId);
             }
             
             ContentUtils.setUserModules(context, userModules);
@@ -688,7 +688,7 @@ public class SugarSyncManager {
             try {
                 // TODO: check if the module is already there in the db. make the rest call
                 // only if it isn't
-                Module module = RestUtil.getModuleFields(url, sessionId, moduleName, fields);
+                Module module = Rest.getModuleFields(url, sessionId, moduleName, fields);
                 moduleFieldsInfo.add(module);
                 Log.i(LOG_TAG, "loaded module fields for : " + moduleName);
             } catch (SugarCrmException sce) {
@@ -788,8 +788,8 @@ public class SugarSyncManager {
 
                 // TODO - get the parents beanId - requires change to sync table
                 beanId = "";
-                updatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
-                RelationshipStatus status = RestUtil.setRelationship(url, sessionId, moduleName, beanId, relatedModuleLinkedFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                updatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                RelationshipStatus status = Rest.setRelationship(url, sessionId, moduleName, beanId, relatedModuleLinkedFieldName, new String[] { updatedBeanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                 if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
                     Log.i(LOG_TAG, "created: " + status.getCreatedCount() + " failed: "
                                                     + status.getFailedCount() + " deleted: "
@@ -811,7 +811,7 @@ public class SugarSyncManager {
             } else {
                 // insert case for an orphan module add without any relationship, the
                 // updatedBeanId is actually a new beanId returned by server
-                updatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                updatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
                 if (updatedBeanId != null) {
                     int count = databaseHelper.deleteSyncRecord(syncRecordId);
                     if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
@@ -839,9 +839,9 @@ public class SugarSyncManager {
                 beanId = cursor.getString(cursor.getColumnIndex(SugarCRMContent.SUGAR_BEAN_ID));
                 moduleItemValues.put(SugarCRMContent.SUGAR_BEAN_ID, beanId);
 
-                String serverUpdatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                String serverUpdatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
                 if (serverUpdatedBeanId.equals(beanId)) {
-                    RelationshipStatus status = RestUtil.setRelationship(url, sessionId, moduleName, parentBeanId, relatedModuleLinkedFieldName, new String[] { beanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                    RelationshipStatus status = Rest.setRelationship(url, sessionId, moduleName, parentBeanId, relatedModuleLinkedFieldName, new String[] { beanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                     if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
                         Log.i(LOG_TAG, "created: " + status.getCreatedCount() + " failed: "
                                                         + status.getFailedCount() + " deleted: "
@@ -869,7 +869,7 @@ public class SugarSyncManager {
             } else {
                 beanId = cursor.getString(cursor.getColumnIndex(SugarCRMContent.SUGAR_BEAN_ID));
                 moduleItemValues.put(SugarCRMContent.SUGAR_BEAN_ID, beanId);
-                updatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                updatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
                 if (beanId.equals(updatedBeanId)) {
 
                     int count = databaseHelper.deleteSyncRecord(syncRecordId);
@@ -895,9 +895,9 @@ public class SugarSyncManager {
                 // related BeanId
 
                 moduleItemValues.put(SugarCRMContent.SUGAR_BEAN_ID, beanId);
-                String serverUpdatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                String serverUpdatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
                 if (serverUpdatedBeanId.equals(updatedBeanId)) {
-                    RelationshipStatus status = RestUtil.setRelationship(url, sessionId, moduleName, parentBeanId, relatedModuleLinkedFieldName, new String[] { beanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
+                    RelationshipStatus status = Rest.setRelationship(url, sessionId, moduleName, parentBeanId, relatedModuleLinkedFieldName, new String[] { beanId }, new LinkedHashMap<String, String>(), Util.EXCLUDE_DELETED_ITEMS);
                     if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
                         Log.i(LOG_TAG, "created: " + status.getCreatedCount() + " failed: "
                                                         + status.getFailedCount() + " deleted: "
@@ -925,7 +925,7 @@ public class SugarSyncManager {
             } else {
                 beanId = cursor.getString(cursor.getColumnIndex(SugarCRMContent.SUGAR_BEAN_ID));
                 moduleItemValues.put(SugarCRMContent.SUGAR_BEAN_ID, beanId);
-                updatedBeanId = RestUtil.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
+                updatedBeanId = Rest.setEntry(url, sessionId, relatedModuleName, moduleItemValues);
                 if (beanId.equals(updatedBeanId)) {
 
                     int count = databaseHelper.deleteSyncRecord(syncRecordId);
@@ -976,7 +976,7 @@ public class SugarSyncManager {
             linkNameToFieldsArrayForActions.put(actionsLinkNameField, Arrays.asList(ACLActions.INSERT_PROJECTION));
 
             // this gives the user bean for the logged in user along with the acl roles associated
-            SugarBean[] userBeans = RestUtil.getEntryList(url, sessionId, moduleName, "Users.user_name='"
+            SugarBean[] userBeans = Rest.getEntryList(url, sessionId, moduleName, "Users.user_name='"
                                             + account + "'", "", "", userSelectFields, linkNameToFieldsArray, "", "");
             // userBeans always contains only one bean as we use getEntryList with the logged in
             // user name as the query parameter
@@ -995,7 +995,7 @@ public class SugarSyncManager {
                             Log.d(LOG_TAG, "roleId - " + roleId);
 
                         // get the aclRole along with the acl actions associated
-                        SugarBean roleBean = RestUtil.getEntry(url, sessionId, Util.ACLROLES, roleId, ACLRoles.INSERT_PROJECTION, linkNameToFieldsArrayForActions);
+                        SugarBean roleBean = Rest.getEntry(url, sessionId, Util.ACLROLES, roleId, ACLRoles.INSERT_PROJECTION, linkNameToFieldsArrayForActions);
                         SugarBean[] roleRelationBeans = roleBean.getRelationshipBeans(actionsLinkNameField);
                         if (roleRelationBeans != null) {
                             databaseHelper.insertActions(roleId, roleRelationBeans);
@@ -1028,7 +1028,7 @@ public class SugarSyncManager {
             String url = pref.getString(Util.PREF_REST_URL, context.getString(R.string.defaultUrl));
 
             HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
-            SugarBean[] userBeans = RestUtil.getEntryList(url, sessionId, Util.USERS, null, null, "0", Users.INSERT_PROJECTION, linkNameToFieldsArray, null, "0");
+            SugarBean[] userBeans = Rest.getEntryList(url, sessionId, Util.USERS, null, null, "0", Users.INSERT_PROJECTION, linkNameToFieldsArray, null, "0");
 
             Map<String, Map<String, String>> usersMap = new TreeMap<String, Map<String, String>>();
             for (SugarBean userBean : userBeans) {

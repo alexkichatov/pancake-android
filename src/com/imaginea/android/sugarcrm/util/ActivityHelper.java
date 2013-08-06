@@ -29,48 +29,47 @@ import com.imaginea.android.sugarcrm.DashboardActivity;
 import com.imaginea.android.sugarcrm.R;
 
 /**
- * A class that handles some common activity-related functionality in the app, such as setting up
- * the action bar. This class provides functionality useful for both phones and tablets, and does
- * not require any Android 3.0-specific features.
+ * A class that handles some common activity-related functionality in the app,
+ * such as setting up the action bar. This class provides functionality useful
+ * for both phones and tablets, and does not require any Android 3.0-specific
+ * features.
  * 
- * Modified 
+ * Modified
  */
 public class ActivityHelper {
     protected Activity mActivity;
 
     /**
-     * Factory method for creating {@link ActivityHelper} objects for a given activity. Depending on
-     * which device the app is running, either a basic helper or Honeycomb-specific helper will be
-     * returned.
+     * Factory method for creating {@link ActivityHelper} objects for a given
+     * activity. Depending on which device the app is running, either a basic
+     * helper or Honeycomb-specific helper will be returned.
      */
-    public static ActivityHelper createInstance(Activity activity) {
+    public static ActivityHelper createInstance(final Activity activity) {
         return ViewUtil.isHoneycomb() ? new ActivityHelperHoneycomb(activity)
-                                        : new ActivityHelper(activity);
+                : new ActivityHelper(activity);
     }
 
-    protected ActivityHelper(Activity activity) {
+    protected ActivityHelper(final Activity activity) {
         mActivity = activity;
     }
 
-    public void onPostCreate(Bundle savedInstanceState) {
+    public void onPostCreate(final Bundle savedInstanceState) {
         // Create the action bar
-        SimpleMenu menu = new SimpleMenu(mActivity);
+        final SimpleMenu menu = new SimpleMenu(mActivity);
         mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu);
         // TODO: call onPreparePanelMenu here as well
         for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            //addActionButtonCompatFromMenuItem(item);
         }
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // mActivity.getMenuInflater().inflate(R.menu.default_menu_items, menu);
         // TODO
         mActivity.getMenuInflater().inflate(R.menu.settings_menu, menu);
         return false;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.search:
             goSearch();
@@ -79,14 +78,13 @@ public class ActivityHelper {
         return false;
     }
 
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU)
             return true;
-        }
         return false;
     }
 
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    public boolean onKeyLongPress(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             goHome();
             return true;
@@ -95,30 +93,30 @@ public class ActivityHelper {
     }
 
     /**
-     * Method, to be called in <code>onPostCreate</code>, that sets up this activity as the home
-     * activity for the app.
+     * Method, to be called in <code>onPostCreate</code>, that sets up this
+     * activity as the home activity for the app.
      */
     public void setupHomeActivity() {
     }
 
     /**
-     * Method, to be called in <code>onPostCreate</code>, that sets up this activity as a
-     * sub-activity in the app.
+     * Method, to be called in <code>onPostCreate</code>, that sets up this
+     * activity as a sub-activity in the app.
      */
     public void setupSubActivity() {
     }
 
     /**
-     * Invoke "home" action, returning to {@link com.google.android.apps.iosched.ui.HomeActivity}.
+     * Invoke "home" action, returning to
+     * {@link com.google.android.apps.iosched.ui.HomeActivity}.
      */
     public void goHome() {
-        if (mActivity instanceof DashboardActivity) {
+        if (mActivity instanceof DashboardActivity)
             return;
-        }
 
         final Intent intent = new Intent(mActivity, DashboardActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mActivity.startActivity(intent);      
+        mActivity.startActivity(intent);
     }
 
     /**
@@ -129,15 +127,15 @@ public class ActivityHelper {
     }
 
     /**
-     * Sets up the action bar 
+     * Sets up the action bar
      */
-    public void setupActionBar(CharSequence title, int color) {
-        //TODO
+    public void setupActionBar(final CharSequence title, final int color) {
+        // TODO
     }
 
     /**
-     * Returns the {@link ViewGroup} for the action bar on phones (compatibility action bar). Can
-     * return null, and will return null on Honeycomb.
+     * Returns the {@link ViewGroup} for the action bar on phones (compatibility
+     * action bar). Can return null, and will return null on Honeycomb.
      */
     public ViewGroup getActionBarCompat() {
         return (ViewGroup) mActivity.findViewById(R.id.actionbar_compat);

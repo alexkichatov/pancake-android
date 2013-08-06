@@ -4,7 +4,7 @@ import android.app.SearchManager;
 import android.net.Uri;
 
 import com.imaginea.android.sugarcrm.ModuleFields;
-import com.imaginea.android.sugarcrm.RestUtilConstants;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
@@ -668,7 +668,7 @@ public final class SugarCRMContent {
 
         public String ID = RECORD_ID;
 
-        public String MODULE_NAME = RestUtilConstants.NAME;
+        public String MODULE_NAME = RestConstants.NAME;
         
         public String LAST_SYNC_TIME = "last_sync_time";
      }
@@ -690,13 +690,13 @@ public final class SugarCRMContent {
     public interface ModuleFieldColumns {
         public String ID = RECORD_ID;
 
-        public String NAME = RestUtilConstants.NAME;
+        public String NAME = RestConstants.NAME;
 
-        public String LABEL = RestUtilConstants.LABEL;
+        public String LABEL = RestConstants.LABEL;
 
-        public String TYPE = RestUtilConstants.TYPE;
+        public String TYPE = RestConstants.TYPE;
 
-        public String IS_REQUIRED = RestUtilConstants.REQUIRED;
+        public String IS_REQUIRED = RestConstants.REQUIRED;
 
         public String MODULE_ID = MODULE_ROW_ID;
     }
@@ -715,15 +715,15 @@ public final class SugarCRMContent {
     public interface LinkFieldColumns {
         public String ID = RECORD_ID;
 
-        public String NAME = RestUtilConstants.NAME;
+        public String NAME = RestConstants.NAME;
 
-        public String TYPE = RestUtilConstants.TYPE;
+        public String TYPE = RestConstants.TYPE;
 
-        public String RELATIONSHIP = RestUtilConstants.RELATIONSHIP;
+        public String RELATIONSHIP = RestConstants.RELATIONSHIP;
 
-        public String MODULE = RestUtilConstants.MODULE;
+        public String MODULE = RestConstants.MODULE;
 
-        public String BEAN_NAME = RestUtilConstants.BEAN_NAME;
+        public String BEAN_NAME = RestConstants.BEAN_NAME;
 
         public String MODULE_ID = MODULE_ROW_ID;
     }
@@ -737,7 +737,7 @@ public final class SugarCRMContent {
 
         public String SYNC_COMMAND = Util.SYNC_COMMAND;
 
-        public String MODULE = RestUtilConstants.MODULE;
+        public String MODULE = RestConstants.MODULE;
 
         public String RELATED_MODULE = Util.RELATED_MODULE;
 

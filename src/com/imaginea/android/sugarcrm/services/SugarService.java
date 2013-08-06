@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm;
+package com.imaginea.android.sugarcrm.services;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,11 +22,13 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.imaginea.android.sugarcrm.util.AsyncServiceTask;
 import com.imaginea.android.sugarcrm.util.CRMCustomLogFormatter;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * SugarService, follows the APIDemos pattern of command handling example of a Service
+ * SugarService, follows the APIDemos pattern of command handling example of a
+ * Service
  */
 public class SugarService extends Service {
 
@@ -54,15 +56,13 @@ public class SugarService extends Service {
 
     public static final int ONE_MINUTE = 60 * 1000;
 
-    // use better constants herer
-    private static int mStatus = 0;
-
     private static int mRecentStartId;
 
     private static Messenger mMessenger;
 
     // constants for syncing
-    // public static final String SERVICECMD = "com.imaginea.android.synccommand";
+    // public static final String SERVICECMD =
+    // "com.imaginea.android.synccommand";
 
     public static final String ACTION_START = "com.imaginea.action.ACTION_START";
 
@@ -77,20 +77,23 @@ public class SugarService extends Service {
         initLogger();
 
         /**
-         * Start up the thread running the service. Note that we create a separate thread because
-         * the service normally runs in the process's main thread, which we don't want to block.
+         * Start up the thread running the service. Note that we create a
+         * separate thread because the service normally runs in the process's
+         * main thread, which we don't want to block.
          */
-        HandlerThread thread = new HandlerThread(TAG);
+        final HandlerThread thread = new HandlerThread(TAG);
         thread.start();
 
         /**
-         * temporary hack to stop the service, If you call Service.stopSelfResult(startId) function
-         * with the most-recently received start ID before you have called it for previously
-         * received IDs, the service will be immediately stopped anyway. If you may end up
-         * processing IDs out of order (such as by dispatching them on separate threads), then you
-         * are responsible for stopping them in the same order you received them
+         * temporary hack to stop the service, If you call
+         * Service.stopSelfResult(startId) function with the most-recently
+         * received start ID before you have called it for previously received
+         * IDs, the service will be immediately stopped anyway. If you may end
+         * up processing IDs out of order (such as by dispatching them on
+         * separate threads), then you are responsible for stopping them in the
+         * same order you received them
          */
-        Thread serviceStopThread = new Thread(serviceStopperRunnable);
+        final Thread serviceStopThread = new Thread(serviceStopperRunnable);
         serviceStopThread.start();
 
         mServiceLooper = thread.getLooper();
@@ -99,10 +102,11 @@ public class SugarService extends Service {
     }
 
     /**
-     * Once the user gets his job done, this thread after a minute checks to see if any tasks are
-     * running and calls stop on service If a new startId comes in, then the taskSize will be
-     * greater than 1 as we assign the startId to recentStartId after we create anew task. If before
-     * adding the task, the stop executes, then the stopSelfResult will return false, if a new
+     * Once the user gets his job done, this thread after a minute checks to see
+     * if any tasks are running and calls stop on service If a new startId comes
+     * in, then the taskSize will be greater than 1 as we assign the startId to
+     * recentStartId after we create anew task. If before adding the task, the
+     * stop executes, then the stopSelfResult will return false, if a new
      * startId is started. Worst case a new service is created
      */
     Runnable serviceStopperRunnable = new Runnable() {
@@ -112,25 +116,29 @@ public class SugarService extends Service {
             while (true) {
                 try {
                     SystemClock.sleep(ONE_MINUTE);
-                    if (Log.isLoggable(TAG, Log.VERBOSE))
+                    if (Log.isLoggable(TAG, Log.VERBOSE)) {
                         Log.d(TAG, "Task size:" + mTaskMap.size());
+                    }
                     if (mTaskMap.size() == 0) {
-                        boolean stopped = stopSelfResult(mRecentStartId);
-                        if (Log.isLoggable(TAG, Log.VERBOSE))
+                        final boolean stopped = stopSelfResult(mRecentStartId);
+                        if (Log.isLoggable(TAG, Log.VERBOSE)) {
                             Log.d(TAG, "Service stopped:" + stopped);
-                        if (stopped == true)
+                        }
+                        if (stopped == true) {
                             break;
+                        }
                     } else {
-                        Set<Integer> keys = mTaskMap.keySet();
-                        for (Integer taskId : keys) {
+                        final Set<Integer> keys = mTaskMap.keySet();
+                        for (final Integer taskId : keys) {
                             // a check for isRunning automatically removes it
                             // from tje task list
                             if (isRunning(taskId))
-                                if (Log.isLoggable(TAG, Log.VERBOSE))
+                                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                                     Log.v(TAG, "still running" + taskId);
+                                }
                         }
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }
@@ -143,18 +151,20 @@ public class SugarService extends Service {
      *            a long.
      * @return a boolean.
      */
-    public synchronized static boolean isRunning(int transactionId) {
+    public synchronized static boolean isRunning(final int transactionId) {
 
-        AsyncServiceTask task = mTaskMap.get(transactionId);
+        final AsyncServiceTask task = mTaskMap.get(transactionId);
         // /Log.d(TAG, "task " + task);
         if (task == null)
             return false;
-        if (Log.isLoggable(TAG, Log.VERBOSE))
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.d(TAG, "Task Status:" + task.getStatus().name());
+        }
         if (task.getStatus() == AsyncServiceTask.Status.FINISHED) {
             mTaskMap.remove(transactionId);
-            if (Log.isLoggable(TAG, Log.VERBOSE))
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.d(TAG, "task removed");
+            }
             return false;
         }
         return true;
@@ -170,79 +180,70 @@ public class SugarService extends Service {
 
         // public int cancelStartId;
 
-        public ServiceHandler(Looper looper) {
+        public ServiceHandler(final Looper looper) {
             super(looper);
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            Intent intent = (Intent) msg.obj;
-            if (Log.isLoggable(TAG, Log.VERBOSE))
+        public void handleMessage(final Message msg) {
+            final Intent intent = (Intent) msg.obj;
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Message: " + msg + ", ");
-            // TODO
-            mStatus = 1;
-
+            }
             switch (msg.what) {
             // TODO cleanup the commands
             case Util.GET:
-                if (Log.isLoggable(TAG, Log.VERBOSE))
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.i(TAG, "REST API -GET received:");
-                EntryListServiceTask entryListServiceTask = new EntryListServiceTask(getBaseContext(), intent);
+                }
+                final EntryListServiceTask entryListServiceTask = new EntryListServiceTask(
+                        getBaseContext(), intent);
                 mTaskMap.put(Util.getId(), entryListServiceTask);
                 entryListServiceTask.execute(null);
                 break;
             case Util.UPDATE:
-                if (Log.isLoggable(TAG, Log.VERBOSE))
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.i(TAG, "REST API -Update received:");
-                UpdateServiceTask updateServiceTask = new UpdateServiceTask(getBaseContext(), intent);
+                }
+                UpdateServiceTask updateServiceTask = new UpdateServiceTask(
+                        getBaseContext(), intent);
                 mTaskMap.put(Util.getId(), updateServiceTask);
                 updateServiceTask.execute(null);
                 break;
             case Util.DELETE:
-                if (Log.isLoggable(TAG, Log.VERBOSE))
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.i(TAG, "REST API -Delete received:");
-                updateServiceTask = new UpdateServiceTask(getBaseContext(), intent);
+                }
+                updateServiceTask = new UpdateServiceTask(getBaseContext(),
+                        intent);
                 mTaskMap.put(Util.getId(), updateServiceTask);
                 updateServiceTask.execute(null);
                 break;
             case Util.INSERT:
-                if (Log.isLoggable(TAG, Log.VERBOSE))
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.i(TAG, "REST API -Insert received:");
-                updateServiceTask = new UpdateServiceTask(getBaseContext(), intent);
+                }
+                updateServiceTask = new UpdateServiceTask(getBaseContext(),
+                        intent);
                 mTaskMap.put(Util.getId(), updateServiceTask);
                 updateServiceTask.execute(null);
                 break;
             default:
-                if (Log.isLoggable(TAG, Log.VERBOSE))
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.i(TAG, "Unknown REST API received:");
+                }
                 break;
             }
 
             mRecentStartId = msg.arg1;
 
-            if (Log.isLoggable(TAG, Log.VERBOSE))
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Done with #" + msg.arg1);
-            // stopSelfResult(msg.arg1);
-            // stopSelf();
+                // stopSelfResult(msg.arg1);
+                // stopSelf();
+            }
         }
     };
-
-    /**
-     * cancels any of the Async ServiceTasks based on the requestId, use this to cancel any long
-     * running operations
-     * 
-     * @param requestId
-     */
-    private synchronized void cancelServiceTask(int requestId) {
-        // AsyncServiceTask task = mTaskMap.get(transactionId);
-        AsyncServiceTask task = mTaskMap.get(requestId);
-        if (task != null) {
-            task.cancel(true);
-            if (Log.isLoggable(TAG, Log.VERBOSE))
-                Log.d(TAG, "cancelServiceTask:Task is cancelled:" + task.isCancelled());
-        }
-        // task = null;
-    }
 
     /**
      * isCancelled
@@ -251,30 +252,34 @@ public class SugarService extends Service {
      *            a long.
      * @return a boolean.
      */
-    public synchronized static boolean isCancelled(int transactionId) {
+    public synchronized static boolean isCancelled(final int transactionId) {
         // AsyncServiceTask task = mTaskMap.get(transactionId);
-        AsyncServiceTask task = mTaskMap.get(transactionId);
+        final AsyncServiceTask task = mTaskMap.get(transactionId);
         if (task != null) {
-            if (Log.isLoggable(TAG, Log.VERBOSE))
-                Log.d(TAG, "isCancelled:Task is cancelled:" + task.isCancelled());
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.d(TAG,
+                        "isCancelled:Task is cancelled:" + task.isCancelled());
+            }
             return task.isCancelled();
         }
         return false;
     }
 
     /**
-     * This is the old onStart method that will be called on the pre-2.0 // platform. On 2.0 or
-     * later we override onStartCommand() so this // method will not be called.
+     * This is the old onStart method that will be called on the pre-2.0 //
+     * platform. On 2.0 or later we override onStartCommand() so this // method
+     * will not be called.
      */
     @Override
-    public void onStart(Intent intent, int startId) {
+    public void onStart(final Intent intent, final int startId) {
         super.onStart(intent, startId);
         handleStart(intent, startId);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags,
+            final int startId) {
         handleStart(intent, startId);
         return START_NOT_STICKY;
     }
@@ -282,25 +287,28 @@ public class SugarService extends Service {
     /*
      * common method to handle intents for pre2.0 and post 2.0 devices
      */
-    void handleStart(Intent intent, int startId) {
-        if (Log.isLoggable(TAG, Log.VERBOSE))
+    void handleStart(final Intent intent, final int startId) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "onStart: " + System.currentTimeMillis());
+        }
         // set the service to foreground so that we do not get killed while we
         // this is sort of deprecated in Android 2.0
         // setForeground(true);
-        if (Log.isLoggable(TAG, Log.VERBOSE))
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "Starting #" + startId + ": " + intent.getExtras());
-        Message msg = mServiceHandler.obtainMessage();
-        Bundle extras = intent.getExtras();
+        }
+        final Message msg = mServiceHandler.obtainMessage();
+        final Bundle extras = intent.getExtras();
 
-        int command = extras.getInt(Util.COMMAND);
+        final int command = extras.getInt(Util.COMMAND);
 
         msg.what = command;
         msg.arg1 = startId;
         msg.obj = intent;
         mServiceHandler.sendMessage(msg);
-        if (Log.isLoggable(TAG, Log.VERBOSE))
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "Sending: " + msg);
+        }
     }
 
     /**
@@ -308,8 +316,9 @@ public class SugarService extends Service {
      */
     private void initLogger() {
         try {
-            File storeLog = new File(Environment.getExternalStorageDirectory(), "SugarCRM"
-                                            + File.separatorChar + "Cache");
+            final File storeLog = new File(
+                    Environment.getExternalStorageDirectory(), "SugarCRM"
+                            + File.separatorChar + "Cache");
             // Log.d(TAG, "Files Dir:" + storeLog.get());
 
             if (storeLog.exists() == false) {
@@ -317,15 +326,15 @@ public class SugarService extends Service {
                 // FileOutputStream fs = new FileOutputStream(logFile);
                 // fs.close();
             }
-            File logFile = new File(storeLog, "CRMLog.txt");
-            String name = logFile.getAbsolutePath();
+            final File logFile = new File(storeLog, "CRMLog.txt");
+            final String name = logFile.getAbsolutePath();
             // if(logFile.exists())
             // logFile.renameTo(dest)
             fileHandler = new FileHandler(name, 10 * 1024, 1, false);
             fileHandler.setFormatter(new CRMCustomLogFormatter());
             // Logger.getLogger(TAG).addHandler(fileHandler);
             Logger.getLogger("CRM").addHandler(fileHandler);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
     }
@@ -345,9 +354,9 @@ public class SugarService extends Service {
      * @param str
      *            a {@link java.lang.String} object.
      */
-    public static void logStatus(String str) {
+    public static void logStatus(final String str) {
         if (fileHandler != null) {
-            Logger logger = Logger.getLogger("CRM");
+            final Logger logger = Logger.getLogger("CRM");
             logger.log(Level.INFO, str);
         }
     }
@@ -358,9 +367,9 @@ public class SugarService extends Service {
      * @param str
      *            a {@link java.lang.String} object.
      */
-    public static void logError(String str) {
+    public static void logError(final String str) {
         if (fileHandler != null) {
-            Logger logger = Logger.getLogger("CRM");
+            final Logger logger = Logger.getLogger("CRM");
             logger.log(Level.SEVERE, str);
         }
     }
@@ -369,72 +378,78 @@ public class SugarService extends Service {
     @Override
     public void onDestroy() {
 
-        if (Log.isLoggable(TAG, Log.VERBOSE))
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "onDestroy");
-        mStatus = 0;
+        }
         closeLogger();
         super.onDestroy();
     }
 
     /** {@inheritDoc} */
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         return null;
     }
 
     /**
-     * We only register one Messenger as only one Activity is connected to us at given time.modify
-     * to add to a list if we need multiple activity support -?? this will never happen in current
-     * android architecture; will happen if single screen holds two activities ???
+     * We only register one Messenger as only one Activity is connected to us at
+     * given time.modify to add to a list if we need multiple activity support
+     * -?? this will never happen in current android architecture; will happen
+     * if single screen holds two activities ???
      * 
      * @param messenger
      *            a {@link android.os.Messenger} object.
      */
-    public static void registerMessenger(Messenger messenger) {
+    public static void registerMessenger(final Messenger messenger) {
 
         // messengerList.add(messenger);
         mMessenger = messenger;
     }
 
     /**
-     * keeping the messenger in case we go ahead with multiple listeners Activities should
-     * unregister in onPause and register in onResume so that they continue to receive messages
-     * specific to them, further filtering can be done while sending messages so that unwanted
-     * messages are not sent.
+     * keeping the messenger in case we go ahead with multiple listeners
+     * Activities should unregister in onPause and register in onResume so that
+     * they continue to receive messages specific to them, further filtering can
+     * be done while sending messages so that unwanted messages are not sent.
      * 
      * @param messenger
      *            a {@link android.os.Messenger} object.
      */
-    public static void unregisterMessenger(Messenger messenger) {
+    public static void unregisterMessenger(final Messenger messenger) {
         mMessenger = null;
     }
 
     /**
-     * messages will be sent to the activity or any component that is currently registered with this
-     * service made static so can directly call this to display the status of the
+     * messages will be sent to the activity or any component that is currently
+     * registered with this service made static so can directly call this to
+     * display the status of the
      * 
      * @param what
      *            a int.
      * @param obj
      *            a {@link java.lang.Object} object.
      */
-    public static synchronized void sendMessage(int what, Object obj) {
+    public static synchronized void sendMessage(final int what, final Object obj) {
 
         if (mMessenger == null) {
-            if (Log.isLoggable(TAG, Log.VERBOSE))
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Messenger is null ");
+            }
             return;
         }
         try {
             if (mMessenger != null) {
-                if (Log.isLoggable(TAG, Log.VERBOSE))
-                    Log.v(TAG, "Sending Message using Messenger" + mMessenger.toString());
-                Message message = Message.obtain();
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG,
+                            "Sending Message using Messenger"
+                                    + mMessenger.toString());
+                }
+                final Message message = Message.obtain();
                 message.what = what;
                 message.obj = obj;
                 mMessenger.send(message);
             }
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             // This should hopefullly not happen ? as we are not remote but
             // using it within
             // same process - but some error message needs to be sent to UI

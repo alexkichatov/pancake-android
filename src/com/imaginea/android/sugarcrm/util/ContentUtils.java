@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm.provider;
+package com.imaginea.android.sugarcrm.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.imaginea.android.sugarcrm.R;
+import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Calls;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Campaigns;
@@ -31,9 +32,6 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Opportunities;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
-import com.imaginea.android.sugarcrm.util.ModuleField;
-import com.imaginea.android.sugarcrm.util.SugarCrmException;
-import com.imaginea.android.sugarcrm.util.Util;
 
 public class ContentUtils {
 	

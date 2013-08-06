@@ -16,8 +16,9 @@ import android.widget.SimpleCursorAdapter;
 
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
@@ -51,7 +52,7 @@ public class SearchActivity extends ListActivity {
 
         Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
         if (appData != null) {
-            mModuleName = appData.getString(RestUtilConstants.MODULE_NAME);
+            mModuleName = appData.getString(RestConstants.MODULE_NAME);
         }
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -66,7 +67,7 @@ public class SearchActivity extends ListActivity {
             Intent detailIntent = new Intent(this, ModuleDetailActivity.class);
             Log.i(TAG, "view uri - " + intent.getData());
             detailIntent.putExtra(Util.ROW_ID, intent.getData().getLastPathSegment());
-            detailIntent.putExtra(RestUtilConstants.MODULE_NAME, Util.ACCOUNTS);
+            detailIntent.putExtra(RestConstants.MODULE_NAME, Util.ACCOUNTS);
             detailIntent.setData(intent.getData());
             startActivity(detailIntent);
             finish();
@@ -133,8 +134,8 @@ public class SearchActivity extends ListActivity {
             Log.d(TAG, "beanId:" + cursor.getString(1) + " rowId: " + cursor.getString(0));
         }
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
-        detailIntent.putExtra(RestUtilConstants.BEAN_ID, cursor.getString(1));
-        detailIntent.putExtra(RestUtilConstants.MODULE_NAME, mModuleName);
+        detailIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(1));
+        detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
         startActivity(detailIntent);
     }
 

@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.imaginea.android.sugarcrm.RestUtilConstants;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
 
 /**
  * <p>
@@ -35,62 +35,75 @@ public class ModuleFieldsParser {
      * @throws org.json.JSONException
      *             if any.
      */
-    public ModuleFieldsParser(String jsonResponse) throws JSONException {
-        JSONObject responseObj = new JSONObject(jsonResponse);
+    public ModuleFieldsParser(final String jsonResponse) throws JSONException {
+        final JSONObject responseObj = new JSONObject(jsonResponse);
         // String moduleName = responseObj.get("module_name").toString();
 
-        JSONObject moduleFieldsJSON = (JSONObject) responseObj.get("module_fields");
+        final JSONObject moduleFieldsJSON = (JSONObject) responseObj
+                .get("module_fields");
         setModuleFields(moduleFieldsJSON);
 
         try {
-            JSONObject linkFieldsJSON = (JSONObject) responseObj.get("link_fields");
+            final JSONObject linkFieldsJSON = (JSONObject) responseObj
+                    .get("link_fields");
             setLinkFields(linkFieldsJSON);
-        } catch (ClassCastException cce) {
+        } catch (final ClassCastException cce) {
             // ignore : no linkFields
             linkFields = new ArrayList<LinkField>();
         }
 
     }
 
-    private void setModuleFields(JSONObject moduleFieldsJSON) throws JSONException {
+    private void setModuleFields(final JSONObject moduleFieldsJSON)
+            throws JSONException {
         moduleFields = new ArrayList<ModuleField>();
-        Iterator iterator = moduleFieldsJSON.keys();
+        final Iterator iterator = moduleFieldsJSON.keys();
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
-            if (Log.isLoggable(LOG_TAG, Log.VERBOSE))
+            final String key = (String) iterator.next();
+            if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {
                 Log.v(LOG_TAG, key);
-            JSONObject nameValuePairsJson = (JSONObject) moduleFieldsJSON.get(key);
+            }
+            final JSONObject nameValuePairsJson = (JSONObject) moduleFieldsJSON
+                    .get(key);
             moduleFields.add(getModuleField(nameValuePairsJson));
         }
     }
 
-    private void setLinkFields(JSONObject linkFieldsJSON) throws JSONException {
+    private void setLinkFields(final JSONObject linkFieldsJSON)
+            throws JSONException {
         linkFields = new ArrayList<LinkField>();
-        Iterator iterator = linkFieldsJSON.keys();
+        final Iterator iterator = linkFieldsJSON.keys();
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
-            if (Log.isLoggable(LOG_TAG, Log.VERBOSE))
+            final String key = (String) iterator.next();
+            if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {
                 Log.v(LOG_TAG, key);
-            JSONObject nameValuePairsJson = (JSONObject) linkFieldsJSON.get(key);
+            }
+            final JSONObject nameValuePairsJson = (JSONObject) linkFieldsJSON
+                    .get(key);
             linkFields.add(getLinkFieldAttributes(nameValuePairsJson));
         }
     }
 
-    private ModuleField getModuleField(JSONObject nameValuePairsJson) throws JSONException {
-        String name = nameValuePairsJson.getString(RestUtilConstants.NAME);
-        String type = nameValuePairsJson.getString(RestUtilConstants.TYPE);
-        String label = nameValuePairsJson.getString(RestUtilConstants.LABEL);
-        int required = nameValuePairsJson.getInt(RestUtilConstants.REQUIRED);
-        boolean isRequired = required == 0 ? false : true;
+    private ModuleField getModuleField(final JSONObject nameValuePairsJson)
+            throws JSONException {
+        final String name = nameValuePairsJson.getString(RestConstants.NAME);
+        final String type = nameValuePairsJson.getString(RestConstants.TYPE);
+        final String label = nameValuePairsJson.getString(RestConstants.LABEL);
+        final int required = nameValuePairsJson.getInt(RestConstants.REQUIRED);
+        final boolean isRequired = required == 0 ? false : true;
         return new ModuleField(name, type, label, isRequired);
     }
 
-    private LinkField getLinkFieldAttributes(JSONObject nameValuePairsJson) throws JSONException {
-        String name = nameValuePairsJson.getString(RestUtilConstants.NAME);
-        String type = nameValuePairsJson.getString(RestUtilConstants.TYPE);
-        String relationship = nameValuePairsJson.getString(RestUtilConstants.RELATIONSHIP);
-        String module = nameValuePairsJson.getString(RestUtilConstants.MODULE);
-        String beanName = nameValuePairsJson.getString(RestUtilConstants.BEAN_NAME);
+    private LinkField getLinkFieldAttributes(final JSONObject nameValuePairsJson)
+            throws JSONException {
+        final String name = nameValuePairsJson.getString(RestConstants.NAME);
+        final String type = nameValuePairsJson.getString(RestConstants.TYPE);
+        final String relationship = nameValuePairsJson
+                .getString(RestConstants.RELATIONSHIP);
+        final String module = nameValuePairsJson
+                .getString(RestConstants.MODULE);
+        final String beanName = nameValuePairsJson
+                .getString(RestConstants.BEAN_NAME);
 
         return new LinkField(name, type, relationship, module, beanName);
     }

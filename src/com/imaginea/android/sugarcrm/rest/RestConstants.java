@@ -1,4 +1,4 @@
-package com.imaginea.android.sugarcrm;
+package com.imaginea.android.sugarcrm.rest;
 
 /**
  * <p>
@@ -6,7 +6,7 @@ package com.imaginea.android.sugarcrm;
  * </p>
  * 
  */
-public interface RestUtilConstants {
+public interface RestConstants {
 
     // request params
     public static final String METHOD = "method";

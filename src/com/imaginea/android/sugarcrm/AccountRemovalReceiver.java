@@ -1,5 +1,7 @@
 package com.imaginea.android.sugarcrm;
 
+import com.imaginea.android.sugarcrm.services.AccountRemovalService;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

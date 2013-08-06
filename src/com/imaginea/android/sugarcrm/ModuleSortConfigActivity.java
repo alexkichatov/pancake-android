@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.imaginea.android.sugarcrm.provider.ContentUtils;
+import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 

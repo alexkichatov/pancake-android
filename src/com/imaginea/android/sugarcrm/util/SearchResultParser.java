@@ -1,8 +1,8 @@
 package com.imaginea.android.sugarcrm.util;
 
-import static com.imaginea.android.sugarcrm.RestUtilConstants.ENTRY_LIST;
-import static com.imaginea.android.sugarcrm.RestUtilConstants.NAME;
-import static com.imaginea.android.sugarcrm.RestUtilConstants.RECORDS;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.ENTRY_LIST;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.NAME;
+import static com.imaginea.android.sugarcrm.rest.RestConstants.RECORDS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +10,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.imaginea.android.sugarcrm.rest.SugarBean;
 
 /**
  * <p>
