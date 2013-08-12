@@ -1,35 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent" 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg"    
-    android:paddingBottom="30dip">
+    android:background="@color/grey"
+    android:orientation="vertical" >
+
     <com.imaginea.android.sugarcrm.CustomActionbar
         android:id="@+id/custom_actionbar"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-	 />
-	<!-- include android:id="@+id/header" layout="@layout/header"/-->
-  <!--  <TextView android:id="@+id/accountName"
-		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"	
-		style="@style/header_2_text_label"/>-->
-    <ScrollView 
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:layout_below="@id/custom_actionbar"
-		android:scrollbarAlwaysDrawHorizontalTrack="true"
-		android:scrollbars="horizontal|vertical"
-		>
-		<LinearLayout android:id="@+id/accountDetalsTable"
-		    android:orientation="vertical"
-		    android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent">
-		    
-			
-			
-		</LinearLayout>
-	</ScrollView>
-</RelativeLayout>
+        android:layout_height="wrap_content" />
 
+</LinearLayout>

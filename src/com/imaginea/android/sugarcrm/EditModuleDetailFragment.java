@@ -112,6 +112,8 @@ public class EditModuleDetailFragment extends Fragment {
 
     private RelativeLayout mParent;
 
+    public static boolean bInsertSuccessful = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -978,6 +980,7 @@ public class EditModuleDetailFragment extends Fragment {
                     ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
                     getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
                 } else*/
+ bInsertSuccessful = true;
                     getActivity().finish();
                 break;
             }

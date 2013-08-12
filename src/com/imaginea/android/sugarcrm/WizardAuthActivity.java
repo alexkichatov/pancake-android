@@ -33,8 +33,6 @@ import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
-//import android.accounts.AccountAuthenticatorActivity;
-
 /**
  * WizardAuthActivity, same as Wizard Activity, but with account manager
  * integration works only with android 2.0 and above-minSdkVersion>=5
@@ -249,9 +247,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
         @Override
         protected Object doInBackground(final Object... args) {
-            /*
-             * arg[0] : String - username arg[1] : String - password
-             */
+
             usr = args[0].toString();
             // TODO this settings are important - make it cleaner later to use
             // the same variables
@@ -308,10 +304,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     // incase the metadata
                     // sync never happens, or its gets killed.
                     WizardAuthActivity.resultWait.acquire();
-                    // while(!prefs.getBoolean(Util.SYNC_METADATA_COMPLETED,
-                    // false)) {
-                    // Thread.sleep(2000);
-                    // }
+
                 }
 
             } catch (final SugarCrmException sce) {
@@ -389,8 +382,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     WizardAuthActivity.this).toString();
             ContentResolver.requestSync(app.getAccount(usr),
                     SugarCRMProvider.AUTHORITY, extras);
-            // ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING,
-            // this);
+
             // TODO -this is API - level 8 - using 2 for testing
             syncHandler = ContentResolver.addStatusChangeListener(2, this);
         }

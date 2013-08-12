@@ -127,12 +127,7 @@ public class DashboardFragment extends Fragment {
                         ModuleDetailsMultiPaneActivity.class);
 
                 myIntent.putExtra(Util.ROW_ID, "1");
-                // myIntent.putExtra(RestUtilConstants.BEAN_ID,
-                // cursor.getString(1));
-                // ModuleDetailFragment mddetails =
-                // ModuleDetailFragment.newInstance(position);
-                // ((BaseSinglePaneActivity)
-                // this).openActivityOrFragment(myIntent);
+
             } else {
                 myIntent = new Intent(context, ModulesActivity.class);
             }

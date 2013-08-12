@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent" 
-    android:visibility="gone">
-	<TextView android:id="@+id/editRowLabel"
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:width="120dip"
-		android:maxLines="3"
-		android:inputType="textMultiLine"
-		style="@style/text_label" />
-	<AutoCompleteTextView android:id="@+id/editRowValue"
-		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content"
-		android:completionThreshold="2"
-		style="@style/text_row_value"  />
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:visibility="gone" >
+
+    <TextView
+        android:id="@+id/editRowLabel"
+        style="@style/text_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:width="120dip" />
+
+    <AutoCompleteTextView
+        android:id="@+id/editRowValue"
+        style="@style/text_row_value"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="2" />
+
 </LinearLayout>

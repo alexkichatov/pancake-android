@@ -271,8 +271,7 @@ public class ModuleListFragment extends ListFragment implements
                     cursor.getString(0)));
         }
 
-        editDetailsIntent.putExtra(RestConstants.BEAN_ID,
-                cursor.getString(1));
+        editDetailsIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(1));
         editDetailsIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {

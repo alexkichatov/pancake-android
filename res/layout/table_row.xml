@@ -1,25 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TableRow xmlns:android="http://schemas.android.com/apk/res/android"-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-		android:orientation="horizontal"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="fill_parent" 
-	    android:visibility="gone">
-	<TextView android:id="@+id/detailRowLabel1"
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:width="120dip"
-		android:maxLines="3"
-		android:inputType="textMultiLine"
-		style="@style/text_label" 
-		android:contentDescription="?android:text"/>
-	<TextView android:id="@+id/detailRowValue1"
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		style="@style/text_row_value"
-		android:maxLines="3"
-		android:inputType="textMultiLine" 
-		android:contentDescription="?android:text"
-		android:autoLink="web|email|map"/>
-		<!--  Phone is handled in code as any number present in the value gets converted into a phone number -->
+<!-- TableRow xmlns:android="http://schemas.android.com/apk/res/android" -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/grey"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/outerDetailLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent" >
+
+        <TextView
+            android:id="@+id/titleview"
+            style="@style/detail_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="?android:text" />
+
+        <ImageView
+            android:id="@+id/editimage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/deleteimage"
+            android:clickable="true"
+            android:onClick="imageClick"
+            android:paddingRight="20dp"
+            android:paddingTop="40dp"
+            android:src="@drawable/edit" />
+
+        <ImageView
+            android:id="@+id/deleteimage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:onClick="imageClick"
+            android:paddingTop="40dp"
+            android:src="@drawable/delete" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/detailList"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:cacheColorHint="#00000000"
+        android:drawSelectorOnTop="false"
+        android:fadeScrollbars="false"
+        android:fastScrollEnabled="true" />
+
+    <!-- Phone is handled in code as any number present in the value gets converted into a phone number -->
+
 </LinearLayout>
