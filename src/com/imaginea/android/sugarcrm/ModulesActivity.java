@@ -12,27 +12,29 @@ import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
  * 
  */
 public class ModulesActivity extends BaseSinglePaneActivity {
+
     @Override
     protected Fragment onCreatePane() {
+
         return new ModuleListFragment();
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         getActivityHelper().setupSubActivity();
     }
 
-    public void showAssignedItems(View view) {
+    public void showAssignedItems(final View view) {
         // keep this empty as the header is used from list view
         // TODO - action bar and based on UI design
     }
 
-    public void showAllItems(View view) {
+    public void showAllItems(final View view) {
         // TODO
     }
 
-    public void showHome(View view) {
+    public void showHome(final View view) {
         // TODO
     }
 }

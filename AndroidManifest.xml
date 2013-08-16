@@ -92,7 +92,7 @@
         <activity
             android:name=".SugarCrmSettings"
             android:label="@string/settings"
-            android:theme="@style/Theme.Pancake.Settings" >
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar" >
             <intent-filter>
                 <action android:name="com.imaginea.android.sugarcrm.settings" />
 
@@ -110,6 +110,10 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name=".EditModuleDetailActivity"
@@ -136,24 +140,13 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".WizardActivity"
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:label="@string/appName"
-            android:theme="@style/Theme.Pancake" >
-
-            <!--
-				No intent-filter here! This activity is only ever launched by
-				someone who explicitly knows the class name
-            -->
-        </activity>
-        <activity
             android:name=".WizardAuthActivity"
             android:clearTaskOnLaunch="true"
-            android:configChanges="keyboardHidden|orientation"
+            android:configChanges="orientation|keyboardHidden"
             android:excludeFromRecents="true"
             android:label="@string/appName"
-            android:theme="@style/Theme.Pancake" >
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name="com.imaginea.android.sugarcrm.sync.SyncConfigActivity"
@@ -184,10 +177,15 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name="com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity"
             android:label="@string/appName"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.Pancake" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

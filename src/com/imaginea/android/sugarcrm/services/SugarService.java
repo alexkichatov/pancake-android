@@ -42,6 +42,7 @@ public class SugarService extends Service {
     /**
 	 * 
 	 */
+    @SuppressWarnings("rawtypes")
     private static HashMap<Integer, AsyncServiceTask> mTaskMap = new HashMap<Integer, AsyncServiceTask>();
 
     /**

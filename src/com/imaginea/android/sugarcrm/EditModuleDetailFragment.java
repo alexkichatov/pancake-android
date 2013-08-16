@@ -1,5 +1,8 @@
 package com.imaginea.android.sugarcrm;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,7 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
+import com.imaginea.android.sugarcrm.CustomActionbar.Action;
+import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Accounts;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
@@ -43,6 +47,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.services.SugarService;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ImportContactsUtility;
 import com.imaginea.android.sugarcrm.util.ModuleField;
@@ -50,9 +55,6 @@ import com.imaginea.android.sugarcrm.util.ModuleFieldValidator;
 import com.imaginea.android.sugarcrm.util.ServiceHelper;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -112,10 +114,14 @@ public class EditModuleDetailFragment extends Fragment {
 
     private RelativeLayout mParent;
 
+    public static boolean bInsertSuccessful = false;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mParent = (RelativeLayout) inflater.inflate(R.layout.edit_details, container, false);
+        mParent = (RelativeLayout) inflater.inflate(R.layout.edit_details,
+                container, false);
 
         return mParent;
     }
@@ -125,10 +131,11 @@ public class EditModuleDetailFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(this.getActivity());
-        final Intent intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
+        mDbHelper = new DatabaseHelper(getActivity());
+        final Intent intent = BaseActivity
+                .fragmentArgumentsToIntent(getArguments());
         // Intent intent = getActivity().getIntent();
-        Bundle extras = intent.getExtras();
+        final Bundle extras = intent.getExtras();
 
         mModuleName = Util.CONTACTS;
         if (extras != null) {
@@ -156,7 +163,8 @@ public class EditModuleDetailFragment extends Fragment {
         Log.v(TAG, "mode - " + MODE);
 
         if (intent.getData() == null && MODE == Util.EDIT_ORPHAN_MODE) {
-            mIntentUri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId);
+            mIntentUri = Uri.withAppendedPath(
+                    ContentUtils.getModuleUri(mModuleName), mRowId);
             intent.setData(mIntentUri);
         } else if (intent.getData() == null && MODE == Util.NEW_ORPHAN_MODE) {
             mIntentUri = ContentUtils.getModuleUri(mModuleName);
@@ -165,14 +173,6 @@ public class EditModuleDetailFragment extends Fragment {
 
         mSelectFields = ContentUtils.getModuleProjections(mModuleName);
 
-        /*
-         * if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) { mCursor =
-         * getContentResolver().query(getIntent().getData(), mSelectFields, null, null,
-         * mDbHelper.getModuleSortOrder(mModuleName)); }
-         */
-        // startManagingCursor(mCursor);
-        // setContents();
-
         mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
 
@@ -180,17 +180,36 @@ public class EditModuleDetailFragment extends Fragment {
             importContact();
         }
 
-        final CustomActionbar actionBar = (CustomActionbar) mParent.getChildAt(0);
-        //final Action homeAction = new IntentAction(EditModuleDetailFragment.this.getActivity(), new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class), R.drawable.home);
-        actionBar.setHomeAction(new HomeAction());
-        actionBar.addActionItem(new SaveAction());       
+        setUpActionBar();
 
-        // our xml onClick items no longer work - so have to set these explicitly again- YUCK
-        /*
-         * getActivity().findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
-         * 
-         * @Override public void onClick(View v) { saveModuleItem(v); } });
-         */
+    }
+
+    private void setUpActionBar() {
+
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
+
+        final Intent myIntent = new Intent(getActivity(),
+                RecentModuleMultiPaneActivity.class);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+
+        final Action recentAction = new IntentAction(getActivity(), myIntent);
+
+        actionBar.setHomeAction(recentAction);
+        actionBar.setTitle(mModuleName);
+
+        final LinearLayout editDoneView = (LinearLayout) getActivity()
+                .findViewById(R.id.editDone);
+        editDoneView.setVisibility(View.VISIBLE);
+        editDoneView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                saveModuleItem(getActivity().getCurrentFocus());
+
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -202,11 +221,13 @@ public class EditModuleDetailFragment extends Fragment {
             mTask.cancel(true);
         }
 
-        if (mAccountCursor != null)
+        if (mAccountCursor != null) {
             mAccountCursor.close();
+        }
 
-        if (mUserCursor != null)
+        if (mUserCursor != null) {
             mUserCursor.close();
+        }
 
     }
 
@@ -224,7 +245,7 @@ public class EditModuleDetailFragment extends Fragment {
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
         int staticRowsCount;
-        
+
         Context mContext;
 
         final static int STATIC_ROW = 1;
@@ -236,8 +257,9 @@ public class EditModuleDetailFragment extends Fragment {
         final static int INPUT_TYPE = 4;
 
         LoadContentTask(Context context) {
-        	mContext = context;
-            mDetailsTable = (ViewGroup) getActivity().findViewById(R.id.moduleDetailsTable);
+            mContext = context;
+            mDetailsTable = (ViewGroup) getActivity().findViewById(
+                    R.id.moduleDetailsTable);
 
             // as the last child is the SAVE button, count - 1 has to be done.
             staticRowsCount = mDetailsTable.getChildCount() - 1;
@@ -247,21 +269,31 @@ public class EditModuleDetailFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
             final CustomActionbar tv = (CustomActionbar) mParent.getChildAt(0);
-            if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                tv.setTitle(String.format(getString(R.string.editDetailsHeader), mModuleName));
-            } else if (MODE == Util.NEW_ORPHAN_MODE || MODE == Util.NEW_RELATIONSHIP_MODE) {
-                tv.setTitle(String.format(getString(R.string.newDetailsHeader), mModuleName));
+            if (MODE == Util.EDIT_ORPHAN_MODE
+                    || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                tv.setTitle(String.format(
+                        getString(R.string.editDetailsHeader), mModuleName));
+            } else if (MODE == Util.NEW_ORPHAN_MODE
+                    || MODE == Util.NEW_RELATIONSHIP_MODE) {
+                tv.setTitle(String.format(getString(R.string.newDetailsHeader),
+                        mModuleName));
             }
 
-            mAccountCursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, null, null, null);
-            mAccountAdapter = new AccountsSuggestAdapter(getActivity().getBaseContext(), mAccountCursor);
+            mAccountCursor = getActivity().getContentResolver().query(
+                    ContentUtils.getModuleUri(Util.ACCOUNTS),
+                    Accounts.LIST_PROJECTION, null, null, null);
+            mAccountAdapter = new AccountsSuggestAdapter(getActivity()
+                    .getBaseContext(), mAccountCursor);
 
-            mUserCursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, null, null, null);
-            mUserAdapter = new UsersSuggestAdapter(getActivity().getBaseContext(), mUserCursor);
+            mUserCursor = getActivity().getContentResolver().query(
+                    ContentUtils.getModuleUri(Util.USERS),
+                    Users.DETAILS_PROJECTION, null, null, null);
+            mUserAdapter = new UsersSuggestAdapter(getActivity()
+                    .getBaseContext(), mUserCursor);
 
-            mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.loading), false);
+            mProgressDialog = ViewUtil.getProgressDialog(getActivity(),
+                    getString(R.string.loading), false);
             mProgressDialog.show();
         }
 
@@ -283,92 +315,127 @@ public class EditModuleDetailFragment extends Fragment {
                 String editTextValue = (String) values[6];
                 valueView.setText(editTextValue);
 
-                if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
-                    valueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                if (fieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
+                    valueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            String email = text.toString();
-                            if (!ModuleFieldValidator.isNotEmpty(email)
-                                                            || !ModuleFieldValidator.isEmailValid(email)) {
-                                hasError = true;
-                                valueView.setError(getString(R.string.emailValidationErrorMsg));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    final String email = text.toString();
+                                    if (!ModuleFieldValidator.isNotEmpty(email)
+                                            || !ModuleFieldValidator
+                                                    .isEmailValid(email)) {
+                                        hasError = true;
+                                        valueView
+                                                .setError(getString(R.string.emailValidationErrorMsg));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
-                if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
-                                                || fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
+                if (fieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
+                        || fieldName
+                                .equalsIgnoreCase(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
                     valueView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    valueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                    valueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            String phoneNumber = text.toString();
-                            if (ModuleFieldValidator.isNotEmpty(phoneNumber)
-                                                            && !ModuleFieldValidator.isPhoneNumberValid(phoneNumber)) {
-                                hasError = true;
-                                valueView.setError(getString(R.string.phNoValidationErrorMsg));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    final String phoneNumber = text.toString();
+                                    if (ModuleFieldValidator
+                                            .isNotEmpty(phoneNumber)
+                                            && !ModuleFieldValidator
+                                                    .isPhoneNumberValid(phoneNumber)) {
+                                        hasError = true;
+                                        valueView
+                                                .setError(getString(R.string.phNoValidationErrorMsg));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
-                if (fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
-                                                || fieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
-                    valueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                if (fieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
+                        || fieldName
+                                .equalsIgnoreCase(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
+                    valueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            if (!ModuleFieldValidator.isNotEmpty(text.toString())) {
-                                hasError = true;
-                                valueView.setError(String.format(getString(R.string.emptyValidationErrorMsg), fieldName));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    if (!ModuleFieldValidator.isNotEmpty(text
+                                            .toString())) {
+                                        hasError = true;
+                                        valueView.setError(String
+                                                .format(getString(R.string.emptyValidationErrorMsg),
+                                                        fieldName));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
                 // set the adapter to auto-suggest
                 if (!Util.ACCOUNTS.equals(mModuleName)
-                                                && fieldName.equals(ModuleFields.ACCOUNT_NAME)) {
+                        && fieldName.equals(ModuleFields.ACCOUNT_NAME)) {
                     // only if the module is directly related to Accounts,
                     // disable the account name
                     // field populating it with the corresponding account name
                     if (MODE == Util.NEW_RELATIONSHIP_MODE) {
 
                         // get the module name from the URI
-                        String module = mIntentUri.getPathSegments().get(0);
+                        final String module = mIntentUri.getPathSegments().get(
+                                0);
 
                         // only if the module is directly related with the
                         // Accounts modulemenu in
                         if (Util.ACCOUNTS.equals(module)) {
 
-                            if (mDbHelper == null)
-                                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+                            if (mDbHelper == null) {
+                                mDbHelper = new DatabaseHelper(getActivity()
+                                        .getBaseContext());
+                            }
 
                             // get the account name using the account row id in
                             // the URI
-                            int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
-                            String selection = AccountsColumns.ID + "=" + accountRowId;
-                            Cursor cursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            final int accountRowId = Integer
+                                    .parseInt(mIntentUri.getPathSegments().get(
+                                            1));
+                            final String selection = AccountsColumns.ID + "="
+                                    + accountRowId;
+                            final Cursor cursor = getActivity()
+                                    .getContentResolver()
+                                    .query(ContentUtils
+                                            .getModuleUri(Util.ACCOUNTS),
+                                            Accounts.LIST_PROJECTION,
+                                            selection, null, null);
                             cursor.moveToFirst();
-                            String accountName = cursor.getString(2);
+                            final String accountName = cursor.getString(2);
                             cursor.close();
 
                             // pre-populate the field with the account name and
@@ -381,14 +448,17 @@ public class EditModuleDetailFragment extends Fragment {
                             // auto-suggest instead of pre-populating the
                             // account name field
                             valueView.setAdapter(mAccountAdapter);
-                            valueView.setOnItemClickListener(new AccountsClickedItemListener());
+                            valueView
+                                    .setOnItemClickListener(new AccountsClickedItemListener());
                         }
                     } else {
                         // set the adapter to show the auto-suggest
                         valueView.setAdapter(mAccountAdapter);
-                        valueView.setOnItemClickListener(new AccountsClickedItemListener());
+                        valueView
+                                .setOnItemClickListener(new AccountsClickedItemListener());
 
-                        if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
+                        if (MODE == Util.EDIT_ORPHAN_MODE
+                                || MODE == Util.EDIT_RELATIONSHIP_MODE)
                             // store the account name in mAccountName if the
                             // bean is already related
                             // to an account
@@ -399,9 +469,11 @@ public class EditModuleDetailFragment extends Fragment {
                 } else if (fieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
                     // set the adapter to show the auto-suggest
                     valueView.setAdapter(mUserAdapter);
-                    valueView.setOnItemClickListener(new UsersClickedItemListener());
+                    valueView
+                            .setOnItemClickListener(new UsersClickedItemListener());
 
-                    if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    if (MODE == Util.EDIT_ORPHAN_MODE
+                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                         // store the user name in mUserName if the bean is
                         // already assigned to a
                         // user
@@ -425,94 +497,130 @@ public class EditModuleDetailFragment extends Fragment {
                 editTextValue = (String) values[6];
                 dynamicValueView.setText(editTextValue);
 
-                if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
-                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                if (dynamicFieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.EMAIL1))) {
+                    dynamicValueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            String email = text.toString();
-                            if (!ModuleFieldValidator.isNotEmpty(email)
-                                                            || !ModuleFieldValidator.isEmailValid(email)) {
-                                hasError = true;
-                                dynamicValueView.setError(getString(R.string.emailValidationErrorMsg));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    final String email = text.toString();
+                                    if (!ModuleFieldValidator.isNotEmpty(email)
+                                            || !ModuleFieldValidator
+                                                    .isEmailValid(email)) {
+                                        hasError = true;
+                                        dynamicValueView
+                                                .setError(getString(R.string.emailValidationErrorMsg));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
-                if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
-                                                || dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
+                if (dynamicFieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))
+                        || dynamicFieldName
+                                .equalsIgnoreCase(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))) {
                     dynamicValueView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                    dynamicValueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            String phoneNumber = text.toString();
-                            if (ModuleFieldValidator.isNotEmpty(phoneNumber)
-                                                            && !ModuleFieldValidator.isPhoneNumberValid(phoneNumber)) {
-                                hasError = true;
-                                dynamicValueView.setError(getString(R.string.phNoValidationErrorMsg));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    final String phoneNumber = text.toString();
+                                    if (ModuleFieldValidator
+                                            .isNotEmpty(phoneNumber)
+                                            && !ModuleFieldValidator
+                                                    .isPhoneNumberValid(phoneNumber)) {
+                                        hasError = true;
+                                        dynamicValueView
+                                                .setError(getString(R.string.phNoValidationErrorMsg));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
-                if (dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
-                                                || dynamicFieldName.equalsIgnoreCase(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
-                    dynamicValueView.setValidator(new AutoCompleteTextView.Validator() {
-                        @Override
-                        public CharSequence fixText(CharSequence invalidText) {
-                            return invalidText;
-                        }
+                if (dynamicFieldName
+                        .equalsIgnoreCase(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))
+                        || dynamicFieldName
+                                .equalsIgnoreCase(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))) {
+                    dynamicValueView
+                            .setValidator(new AutoCompleteTextView.Validator() {
+                                @Override
+                                public CharSequence fixText(
+                                        CharSequence invalidText) {
+                                    return invalidText;
+                                }
 
-                        @Override
-                        public boolean isValid(CharSequence text) {
-                            if (!ModuleFieldValidator.isNotEmpty(text.toString())) {
-                                hasError = true;
-                                dynamicValueView.setError(String.format(getString(R.string.emptyValidationErrorMsg), dynamicFieldName));
-                            }
-                            return false;
-                        }
-                    });
+                                @Override
+                                public boolean isValid(CharSequence text) {
+                                    if (!ModuleFieldValidator.isNotEmpty(text
+                                            .toString())) {
+                                        hasError = true;
+                                        dynamicValueView.setError(String
+                                                .format(getString(R.string.emptyValidationErrorMsg),
+                                                        dynamicFieldName));
+                                    }
+                                    return false;
+                                }
+                            });
                 }
 
                 // set the adapter to auto-suggest
                 if (!Util.ACCOUNTS.equals(mModuleName)
-                                                && dynamicFieldName.equals(ModuleFields.ACCOUNT_NAME)) {
+                        && dynamicFieldName.equals(ModuleFields.ACCOUNT_NAME)) {
                     /*
-                     * only if the module is directly related to Accounts, disable the account name
-                     * field populating it with the corresponding account name
+                     * only if the module is directly related to Accounts,
+                     * disable the account name field populating it with the
+                     * corresponding account name
                      */
                     if (MODE == Util.NEW_RELATIONSHIP_MODE) {
 
                         // get the module name from the URI
-                        String module = mIntentUri.getPathSegments().get(0);
+                        final String module = mIntentUri.getPathSegments().get(
+                                0);
 
                         // only if the module is directly related with the
                         // Accounts module
                         if (Util.ACCOUNTS.equals(module)) {
 
-                            if (mDbHelper == null)
-                                mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+                            if (mDbHelper == null) {
+                                mDbHelper = new DatabaseHelper(getActivity()
+                                        .getBaseContext());
+                            }
 
                             // get the account name using the account row id
                             // in
                             // the URI
-                            int accountRowId = Integer.parseInt(mIntentUri.getPathSegments().get(1));
-                            String selection = AccountsColumns.ID + "=" + accountRowId;
-                            Cursor cursor = getActivity().getContentResolver().query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, selection, null, null);
+                            final int accountRowId = Integer
+                                    .parseInt(mIntentUri.getPathSegments().get(
+                                            1));
+                            final String selection = AccountsColumns.ID + "="
+                                    + accountRowId;
+                            final Cursor cursor = getActivity()
+                                    .getContentResolver()
+                                    .query(ContentUtils
+                                            .getModuleUri(Util.ACCOUNTS),
+                                            Accounts.LIST_PROJECTION,
+                                            selection, null, null);
                             cursor.moveToFirst();
-                            String accountName = cursor.getString(2);
+                            final String accountName = cursor.getString(2);
                             cursor.close();
 
                             // pre-populate the field with the account name
@@ -527,14 +635,17 @@ public class EditModuleDetailFragment extends Fragment {
                             // auto-suggest instead of pre-populating the
                             // account name field
                             dynamicValueView.setAdapter(mAccountAdapter);
-                            dynamicValueView.setOnItemClickListener(new AccountsClickedItemListener());
+                            dynamicValueView
+                                    .setOnItemClickListener(new AccountsClickedItemListener());
                         }
                     } else {
                         // set the apadter to show the auto-suggest
                         dynamicValueView.setAdapter(mAccountAdapter);
-                        dynamicValueView.setOnItemClickListener(new AccountsClickedItemListener());
+                        dynamicValueView
+                                .setOnItemClickListener(new AccountsClickedItemListener());
 
-                        if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
+                        if (MODE == Util.EDIT_ORPHAN_MODE
+                                || MODE == Util.EDIT_RELATIONSHIP_MODE)
                             // store the account name in mAccountName if the
                             // bean is already related
                             // to an account
@@ -542,12 +653,15 @@ public class EditModuleDetailFragment extends Fragment {
                                 mAccountName = editTextValue;
                             }
                     }
-                } else if (dynamicFieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
+                } else if (dynamicFieldName
+                        .equals(ModuleFields.ASSIGNED_USER_NAME)) {
                     // set the adapter to show the auto-suggest
                     dynamicValueView.setAdapter(mUserAdapter);
-                    dynamicValueView.setOnItemClickListener(new UsersClickedItemListener());
+                    dynamicValueView
+                            .setOnItemClickListener(new UsersClickedItemListener());
 
-                    if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    if (MODE == Util.EDIT_ORPHAN_MODE
+                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                         // store the user name in mUserName if the bean is
                         // already assigned to a
                         // user
@@ -561,7 +675,7 @@ public class EditModuleDetailFragment extends Fragment {
                 break;
 
             case INPUT_TYPE:
-                AutoCompleteTextView inputTypeValueView = (AutoCompleteTextView) values[1];
+                final AutoCompleteTextView inputTypeValueView = (AutoCompleteTextView) values[1];
                 inputTypeValueView.setInputType((Integer) values[2]);
                 break;
 
@@ -571,12 +685,16 @@ public class EditModuleDetailFragment extends Fragment {
         @Override
         protected Object doInBackground(Object... params) {
             try {
-                if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                    mCursor = getActivity().getContentResolver().query(Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName), mRowId),
-                    		mSelectFields, null, null, ContentUtils.getModuleSortOrder(mModuleName));
+                if (MODE == Util.EDIT_ORPHAN_MODE
+                        || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    mCursor = getActivity().getContentResolver().query(
+                            Uri.withAppendedPath(
+                                    ContentUtils.getModuleUri(mModuleName),
+                                    mRowId), mSelectFields, null, null,
+                            ContentUtils.getModuleSortOrder(mModuleName));
                 }
                 // setContents();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.e(TAG, e.getMessage(), e);
                 return Util.FETCH_FAILED;
             }
@@ -597,19 +715,21 @@ public class EditModuleDetailFragment extends Fragment {
             setContents();
 
             // close the cursor irrespective of the result
-            if (mCursor != null && !mCursor.isClosed())
+            if (mCursor != null && !mCursor.isClosed()) {
                 mCursor.close();
+            }
 
             if (isCancelled())
                 return;
-            int retVal = (Integer) result;
+            final int retVal = (Integer) result;
             switch (retVal) {
             case Util.FETCH_FAILED:
                 break;
             case Util.FETCH_SUCCESS:
                 // set visibility for the SAVE button
-                LinearLayout parent = (LinearLayout) getActivity().findViewById(R.id.actionbar_items);
-                parent.getChildAt(0).setVisibility(View.VISIBLE);
+                final LinearLayout parent = (LinearLayout) getActivity()
+                        .findViewById(R.id.editDone);
+                parent.setVisibility(View.VISIBLE);
                 break;
             default:
             }
@@ -619,12 +739,14 @@ public class EditModuleDetailFragment extends Fragment {
 
         private void setContents() {
 
-            String[] detailsProjection = mSelectFields;
+            final String[] detailsProjection = mSelectFields;
 
-            if (mDbHelper == null)
+            if (mDbHelper == null) {
                 mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
+            }
 
-            if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+            if (MODE == Util.EDIT_ORPHAN_MODE
+                    || MODE == Util.EDIT_RELATIONSHIP_MODE) {
                 if (!isCancelled()) {
                     mCursor.moveToFirst();
                     mSugarBeanId = mCursor.getString(1); // beanId has
@@ -632,18 +754,23 @@ public class EditModuleDetailFragment extends Fragment {
                 }
             }
 
-            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater inflater = (LayoutInflater) getActivity()
+                    .getBaseContext().getSystemService(
+                            Context.LAYOUT_INFLATER_SERVICE);
 
-            Map<String, ModuleField> fieldNameVsModuleField = ContentUtils.getModuleFields(mContext, mModuleName);
-            Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
+            final Map<String, ModuleField> fieldNameVsModuleField = ContentUtils
+                    .getModuleFields(mContext, mModuleName);
+            final Map<String, String> fieldsExcludedForEdit = mDbHelper
+                    .getFieldsExcludedForEdit();
 
             int rowsCount = 0; // to keep track of number of rows being used
             for (int i = 0; i < detailsProjection.length; i++) {
                 // if the task gets cancelled
-                if (isCancelled())
+                if (isCancelled()) {
                     break;
+                }
 
-                String fieldName = detailsProjection[i];
+                final String fieldName = detailsProjection[i];
 
                 // if the field name is excluded in details screen, skip it
                 if (fieldsExcludedForEdit.containsKey(fieldName)) {
@@ -651,46 +778,59 @@ public class EditModuleDetailFragment extends Fragment {
                 }
 
                 // get the attributes of the moduleField
-                ModuleField moduleField = fieldNameVsModuleField.get(fieldName);
-
-                ViewGroup tableRow;
-                TextView textViewForLabel;
-                AutoCompleteTextView editTextForValue;
-                if (staticRowsCount > rowsCount) {
-                    tableRow = (ViewGroup) mDetailsTable.getChildAt(rowsCount);
-                    textViewForLabel = (TextView) tableRow.getChildAt(0);
-                    editTextForValue = (AutoCompleteTextView) tableRow.getChildAt(1);
-                } else {
-                    tableRow = (ViewGroup) inflater.inflate(R.layout.edit_table_row, null);
-                    textViewForLabel = (TextView) tableRow.getChildAt(0);
-                    editTextForValue = (AutoCompleteTextView) tableRow.getChildAt(1);
-                }
-
-                String label;
-                if (moduleField.isRequired()) {
-                    label = moduleField.getLabel() + " *";
-                } else {
-                    label = moduleField.getLabel();
-                }
-
-                int command = STATIC_ROW;
-                if (staticRowsCount < rowsCount) {
-                    command = DYNAMIC_ROW;
-                }
-
-                if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                    String value = mCursor.getString(mCursor.getColumnIndex(fieldName));
-                    if (!TextUtils.isEmpty(value)) {
-                        publishProgress(command, fieldName, tableRow, textViewForLabel, label, editTextForValue, value);
+                final ModuleField moduleField = fieldNameVsModuleField
+                        .get(fieldName);
+                if (moduleField != null) {
+                    ViewGroup tableRow;
+                    TextView textViewForLabel;
+                    AutoCompleteTextView editTextForValue;
+                    if (staticRowsCount > rowsCount) {
+                        tableRow = (ViewGroup) mDetailsTable
+                                .getChildAt(rowsCount);
+                        textViewForLabel = (TextView) tableRow.getChildAt(0);
+                        editTextForValue = (AutoCompleteTextView) tableRow
+                                .getChildAt(1);
                     } else {
-                        publishProgress(command, fieldName, tableRow, textViewForLabel, label, editTextForValue, "");
+                        tableRow = (ViewGroup) inflater.inflate(
+                                R.layout.edit_table_row, null);
+                        textViewForLabel = (TextView) tableRow.getChildAt(0);
+                        editTextForValue = (AutoCompleteTextView) tableRow
+                                .getChildAt(1);
                     }
-                    setInputType(editTextForValue, moduleField);
 
-                } else {
-                    publishProgress(command, fieldName, tableRow, textViewForLabel, label, editTextForValue, "");
+                    String label;
+                    if (moduleField.isRequired()) {
+                        label = moduleField.getLabel() + " *";
+                    } else {
+                        label = moduleField.getLabel();
+                    }
+
+                    int command = STATIC_ROW;
+                    if (staticRowsCount < rowsCount) {
+                        command = DYNAMIC_ROW;
+                    }
+
+                    if (MODE == Util.EDIT_ORPHAN_MODE
+                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                        final String value = mCursor.getString(mCursor
+                                .getColumnIndex(fieldName));
+                        if (!TextUtils.isEmpty(value)) {
+                            publishProgress(command, fieldName, tableRow,
+                                    textViewForLabel, label, editTextForValue,
+                                    value);
+                        } else {
+                            publishProgress(command, fieldName, tableRow,
+                                    textViewForLabel, label, editTextForValue,
+                                    "");
+                        }
+                        setInputType(editTextForValue, moduleField);
+
+                    } else {
+                        publishProgress(command, fieldName, tableRow,
+                                textViewForLabel, label, editTextForValue, "");
+                    }
+                    rowsCount++;
                 }
-                rowsCount++;
             }
 
         }
@@ -698,13 +838,16 @@ public class EditModuleDetailFragment extends Fragment {
         /*
          * takes care of basic validation automatically for some fields
          */
-        private void setInputType(TextView editTextForValue, ModuleField moduleField) {
-            if (Log.isLoggable(TAG, Log.VERBOSE))
+        private void setInputType(TextView editTextForValue,
+                ModuleField moduleField) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "ModuleField type:" + moduleField.getType());
+            }
             // TODO: there has to be a better way to get the constant
             if (moduleField.getType().equals("phone")) {
                 // editTextForValue.setInputType(InputType.TYPE_CLASS_PHONE);
-                publishProgress(INPUT_TYPE, editTextForValue, InputType.TYPE_CLASS_PHONE);
+                publishProgress(INPUT_TYPE, editTextForValue,
+                        InputType.TYPE_CLASS_PHONE);
             }
         }
     }
@@ -717,32 +860,39 @@ public class EditModuleDetailFragment extends Fragment {
      */
     public void saveModuleItem(View v) {
 
-        mProgressDialog = ViewUtil.getProgressDialog(EditModuleDetailFragment.this.getActivity(), getString(R.string.saving), false);
+        mProgressDialog = ViewUtil.getProgressDialog(
+                EditModuleDetailFragment.this.getActivity(),
+                getString(R.string.saving), false);
         mProgressDialog.show();
 
-        String[] detailsProjection = mSelectFields;
+        final String[] detailsProjection = mSelectFields;
 
-        Map<String, String> modifiedValues = new LinkedHashMap<String, String>();
-        if (MODE == Util.EDIT_ORPHAN_MODE || MODE == Util.EDIT_RELATIONSHIP_MODE)
+        final Map<String, String> modifiedValues = new LinkedHashMap<String, String>();
+        if (MODE == Util.EDIT_ORPHAN_MODE
+                || MODE == Util.EDIT_RELATIONSHIP_MODE) {
             modifiedValues.put(RestConstants.ID, mSugarBeanId);
+        }
 
-        Uri uri = mIntentUri;
+        final Uri uri = mIntentUri;
 
-        Map<String, String> fieldsExcludedForEdit = mDbHelper.getFieldsExcludedForEdit();
+        final Map<String, String> fieldsExcludedForEdit = mDbHelper
+                .getFieldsExcludedForEdit();
         int rowsCount = 0;
         for (int i = 0; i < detailsProjection.length; i++) {
 
-            String fieldName = detailsProjection[i];
+            final String fieldName = detailsProjection[i];
 
             // if the field name is excluded in details screen, skip it
             if (fieldsExcludedForEdit.containsKey(fieldName)) {
                 continue;
             }
 
-            AutoCompleteTextView editText = (AutoCompleteTextView) ((ViewGroup) mDetailsTable.getChildAt(rowsCount)).getChildAt(1);
+            final AutoCompleteTextView editText = (AutoCompleteTextView) ((ViewGroup) mDetailsTable
+                    .getChildAt(rowsCount)).getChildAt(1);
             String fieldValue = editText.getText().toString();
 
-            if (!Util.ACCOUNTS.equals(mModuleName) && fieldName.equals(ModuleFields.ACCOUNT_NAME)) {
+            if (!Util.ACCOUNTS.equals(mModuleName)
+                    && fieldName.equals(ModuleFields.ACCOUNT_NAME)) {
 
                 if (!TextUtils.isEmpty(fieldValue)) {
 
@@ -817,9 +967,10 @@ public class EditModuleDetailFragment extends Fragment {
                         // error
                         if (editText.isEnabled()) {
                             /*
-                             * if the user just enters some value without selecting((ViewGroup)
-                             * mDetailsTable.getChildAt(rowsCount)).getChildAt(1) from the
-                             * auto-suggest
+                             * if the user just enters some value without
+                             * selecting((ViewGroup)
+                             * mDetailsTable.getChildAt(rowsCount
+                             * )).getChildAt(1) from the auto-suggest
                              */
                             hasError = true;
                             editText.setError(getString(R.string.userNameErrorMsg));
@@ -827,9 +978,9 @@ public class EditModuleDetailFragment extends Fragment {
                     }
                 }
             }
-            /*if (rowsCount == 0 && fieldValue.isEmpty()) {
-                hasError = true;
-            }*/
+            /*
+             * if (rowsCount == 0 && fieldValue.isEmpty()) { hasError = true; }
+             */
             // add the fieldName : fieldValue in the ContentValues
             modifiedValues.put(fieldName, editText.getText().toString());
             rowsCount++;
@@ -838,20 +989,29 @@ public class EditModuleDetailFragment extends Fragment {
         if (!hasError) {
 
             if (MODE == Util.EDIT_ORPHAN_MODE) {
-                ServiceHelper.startServiceForUpdate(getActivity().getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
+                ServiceHelper.startServiceForUpdate(getActivity()
+                        .getBaseContext(), uri, mModuleName, mSugarBeanId,
+                        modifiedValues);
             } else if (MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                ServiceHelper.startServiceForUpdate(getActivity().getBaseContext(), uri, mModuleName, mSugarBeanId, modifiedValues);
+                ServiceHelper.startServiceForUpdate(getActivity()
+                        .getBaseContext(), uri, mModuleName, mSugarBeanId,
+                        modifiedValues);
             } else if (MODE == Util.NEW_RELATIONSHIP_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
-                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), uri, mModuleName, modifiedValues);
+                ServiceHelper.startServiceForInsert(getActivity()
+                        .getBaseContext(), uri, mModuleName, modifiedValues);
             } else if (MODE == Util.NEW_ORPHAN_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
-                ServiceHelper.startServiceForInsert(getActivity().getBaseContext(), ContentUtils.getModuleUri(mModuleName), mModuleName, modifiedValues);
+                ServiceHelper
+                        .startServiceForInsert(getActivity().getBaseContext(),
+                                ContentUtils.getModuleUri(mModuleName),
+                                mModuleName, modifiedValues);
             }
 
             // finish();
         } else {
-            ViewUtil.makeToast(getActivity().getBaseContext(), R.string.validationErrorMsg);
+            ViewUtil.makeToast(getActivity().getBaseContext(),
+                    R.string.validationErrorMsg);
             hasError = false;
             mProgressDialog.cancel();
         }
@@ -859,10 +1019,12 @@ public class EditModuleDetailFragment extends Fragment {
     }
 
     /**
-     * importContact for invoking a subactivity for picking up contact from device contacts
+     * importContact for invoking a subactivity for picking up contact from
+     * device contacts
      */
     public void importContact() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        final Intent intent = new Intent(Intent.ACTION_PICK,
+                ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(intent, Util.IMPORT_CONTACTS_REQUEST_CODE);
     }
 
@@ -881,25 +1043,46 @@ public class EditModuleDetailFragment extends Fragment {
 
     protected void getContactInfo(Intent intent) {
 
-        Cursor cursor = getActivity().managedQuery(intent.getData(), null, null, null, null);
+        final Cursor cursor = getActivity().managedQuery(intent.getData(),
+                null, null, null, null);
         while (cursor.moveToNext()) {
-            String contactId = cursor.getString(cursor.getColumnIndex(BaseColumns._ID));
+            final String contactId = cursor.getString(cursor
+                    .getColumnIndex(BaseColumns._ID));
 
-            Cursor nameCursor = getActivity().getApplicationContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, null, ContactsContract.Data.MIMETYPE
-                                            + " = ? AND "
-                                            + ContactsContract.RawContactsEntity.CONTACT_ID
-                                            + " = ? ", new String[] {
-                    ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, contactId }, null);
+            final Cursor nameCursor = getActivity()
+                    .getApplicationContext()
+                    .getContentResolver()
+                    .query(ContactsContract.Data.CONTENT_URI,
+                            null,
+                            ContactsContract.Data.MIMETYPE
+                                    + " = ? AND "
+                                    + ContactsContract.RawContactsEntity.CONTACT_ID
+                                    + " = ? ",
+                            new String[] {
+                                    ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+                                    contactId }, null);
 
             while (nameCursor.moveToNext()) {
-                String givenName = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-                String familyName = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                ((AutoCompleteTextView) mDetailsTable.findViewWithTag(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME))).setText(givenName);
-                ((AutoCompleteTextView) mDetailsTable.findViewWithTag(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.LAST_NAME))).setText(familyName);
+                final String givenName = nameCursor
+                        .getString(nameCursor
+                                .getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
+                final String familyName = nameCursor
+                        .getString(nameCursor
+                                .getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
+                ((AutoCompleteTextView) mDetailsTable
+                        .findViewWithTag(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.FIRST_NAME)))
+                        .setText(givenName);
+                ((AutoCompleteTextView) mDetailsTable
+                        .findViewWithTag(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.LAST_NAME)))
+                        .setText(familyName);
             }
             nameCursor.close();
 
-            String hasPhone = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+            String hasPhone = cursor
+                    .getString(cursor
+                            .getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
 
             if (hasPhone.equalsIgnoreCase("1")) {
                 hasPhone = "true";
@@ -908,26 +1091,47 @@ public class EditModuleDetailFragment extends Fragment {
             }
 
             if (Boolean.parseBoolean(hasPhone)) {
-                Cursor phones = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-                                                + " = " + contactId, null, null);
+                final Cursor phones = getActivity().getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                                + " = " + contactId, null, null);
                 while (phones.moveToNext()) {
-                    String contactPhno = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                    final String contactPhno = phones
+                            .getString(phones
+                                    .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    final int type = phones
+                            .getInt(phones
+                                    .getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
                     if (ContactsContract.CommonDataKinds.Phone.TYPE_WORK == type) {
-                        ((AutoCompleteTextView) mDetailsTable.findViewWithTag(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK))).setText(contactPhno);
+                        ((AutoCompleteTextView) mDetailsTable
+                                .findViewWithTag(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.PHONE_WORK)))
+                                .setText(contactPhno);
                     }
                     if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == type) {
-                        ((AutoCompleteTextView) mDetailsTable.findViewWithTag(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE))).setText(contactPhno);
+                        ((AutoCompleteTextView) mDetailsTable
+                                .findViewWithTag(ImportContactsUtility
+                                        .getModuleFieldNameForContactsField(ModuleFields.PHONE_MOBILE)))
+                                .setText(contactPhno);
                     }
                 }
                 phones.close();
             }
 
-            Cursor emails = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID
-                                            + " = " + contactId, null, null);
+            final Cursor emails = getActivity().getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = "
+                            + contactId, null, null);
             while (emails.moveToNext()) {
-                String contactEmail = emails.getString(emails.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                ((AutoCompleteTextView) mDetailsTable.findViewWithTag(ImportContactsUtility.getModuleFieldNameForContactsField(ModuleFields.EMAIL1))).setText(contactEmail);
+                final String contactEmail = emails
+                        .getString(emails
+                                .getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                ((AutoCompleteTextView) mDetailsTable
+                        .findViewWithTag(ImportContactsUtility
+                                .getModuleFieldNameForContactsField(ModuleFields.EMAIL1)))
+                        .setText(contactEmail);
             }
             emails.close();
         }
@@ -939,17 +1143,19 @@ public class EditModuleDetailFragment extends Fragment {
     // @Override
     // TODO
     /*
-     * public boolean onCreateOptionsMenu(Menu menu) { // Hold on to this // Inflate the currently
-     * selected menu XML resource. MenuItem item; item = menu.add(1, R.id.save, 1, R.string.save);
-     * item.setIcon(android.R.drawable.ic_menu_save); item.setAlphabeticShortcut('s'); return true;
-     * }
+     * public boolean onCreateOptionsMenu(Menu menu) { // Hold on to this //
+     * Inflate the currently selected menu XML resource. MenuItem item; item =
+     * menu.add(1, R.id.save, 1, R.string.save);
+     * item.setIcon(android.R.drawable.ic_menu_save);
+     * item.setAlphabeticShortcut('s'); return true; }
      */
     /** {@inheritDoc} */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         /*
-         * case R.id.save: saveModuleItem(getActivity().getCurrentFocus()); return true;
+         * case R.id.save: saveModuleItem(getActivity().getCurrentFocus());
+         * return true;
          */
         default:
             return true;
@@ -958,8 +1164,8 @@ public class EditModuleDetailFragment extends Fragment {
     }
 
     /*
-     * Status Handler, Handler updates the screen based on messages sent by the SugarService or any
-     * tasks
+     * Status Handler, Handler updates the screen based on messages sent by the
+     * SugarService or any tasks
      */
     private class StatusHandler extends Handler {
         StatusHandler() {
@@ -969,22 +1175,34 @@ public class EditModuleDetailFragment extends Fragment {
         public void handleMessage(Message message) {
             switch (message.what) {
             case R.id.status:
-                if (Log.isLoggable(TAG, Log.DEBUG))
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
                     Log.d(TAG, "Display Status");
+                }
                 mProgressDialog.cancel();
-                ViewUtil.makeToast(getActivity().getBaseContext(), (String) message.obj);
-               /* if (ViewUtil.isTablet(getActivity()) && MODE != Util.NEW_ORPHAN_MODE) {
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(EditModuleDetailFragment.this).commit();
-                    ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
-                    getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_module_detail, moduleDetailFragment, "module_detail").commit();
-                } else*/
-                    getActivity().finish();
+                ViewUtil.makeToast(getActivity().getBaseContext(),
+                        (String) message.obj);
+                /*
+                 * if (ViewUtil.isTablet(getActivity()) && MODE !=
+                 * Util.NEW_ORPHAN_MODE) {
+                 * getActivity().getSupportFragmentManager
+                 * ().beginTransaction().remove
+                 * (EditModuleDetailFragment.this).commit();
+                 * ModuleDetailFragment moduleDetailFragment = new
+                 * ModuleDetailFragment();
+                 * getActivity().getSupportFragmentManager
+                 * ().beginTransaction().add
+                 * (R.id.fragment_container_module_detail, moduleDetailFragment,
+                 * "module_detail").commit(); } else
+                 */
+                bInsertSuccessful = true;
+                getActivity().finish();
                 break;
             }
         }
     }
 
-    public static class AutoSuggestAdapter extends CursorAdapter implements Filterable {
+    public static class AutoSuggestAdapter extends CursorAdapter implements
+            Filterable {
         protected ContentResolver mContent;
 
         protected DatabaseHelper mDbHelper;
@@ -998,22 +1216,26 @@ public class EditModuleDetailFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             final LayoutInflater inflater = LayoutInflater.from(context);
-            final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.autosuggest_list_item, parent, false);
+            final LinearLayout view = (LinearLayout) inflater.inflate(
+                    R.layout.autosuggest_list_item, parent, false);
             ((TextView) view.getChildAt(0)).setText(cursor.getString(2));
             return view;
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            if (Log.isLoggable(TAG, Log.DEBUG))
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "bindView : " + cursor.getString(2));
-            ((TextView) ((LinearLayout) view).getChildAt(0)).setText(cursor.getString(2));
+            }
+            ((TextView) ((LinearLayout) view).getChildAt(0)).setText(cursor
+                    .getString(2));
         }
 
         @Override
         public String convertToString(Cursor cursor) {
-            if (Log.isLoggable(TAG, Log.DEBUG))
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "convertToString : " + cursor.getString(2));
+            }
             return cursor.getString(2);
         }
 
@@ -1027,9 +1249,8 @@ public class EditModuleDetailFragment extends Fragment {
 
         @Override
         public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null) {
+            if (getFilterQueryProvider() != null)
                 return getFilterQueryProvider().runQuery(constraint);
-            }
 
             StringBuilder buffer = null;
             String[] args = null;
@@ -1041,11 +1262,17 @@ public class EditModuleDetailFragment extends Fragment {
                 args = new String[] { constraint.toString().toUpperCase() + "*" };
             }
 
-            if (Log.isLoggable(TAG, Log.DEBUG))
-                Log.d(TAG, "constraint " + (constraint != null ? constraint.toString() : ""));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG,
+                        "constraint "
+                                + (constraint != null ? constraint.toString()
+                                        : ""));
+            }
 
-            return mContent.query(ContentUtils.getModuleUri(Util.ACCOUNTS), Accounts.LIST_PROJECTION, buffer == null ? null
-                                            : buffer.toString(), args, Accounts.DEFAULT_SORT_ORDER);
+            return mContent.query(ContentUtils.getModuleUri(Util.ACCOUNTS),
+                    Accounts.LIST_PROJECTION,
+                    buffer == null ? null : buffer.toString(), args,
+                    Accounts.DEFAULT_SORT_ORDER);
         }
     }
 
@@ -1057,9 +1284,8 @@ public class EditModuleDetailFragment extends Fragment {
 
         @Override
         public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null) {
+            if (getFilterQueryProvider() != null)
                 return getFilterQueryProvider().runQuery(constraint);
-            }
 
             StringBuilder buffer = null;
             String[] args = null;
@@ -1071,74 +1297,60 @@ public class EditModuleDetailFragment extends Fragment {
                 args = new String[] { constraint.toString().toUpperCase() + "*" };
             }
 
-            if (Log.isLoggable(TAG, Log.DEBUG))
-                Log.d(TAG, "constraint " + (constraint != null ? constraint.toString() : ""));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG,
+                        "constraint "
+                                + (constraint != null ? constraint.toString()
+                                        : ""));
+            }
 
-            return mContent.query(ContentUtils.getModuleUri(Util.USERS), Users.DETAILS_PROJECTION, buffer == null ? null
-                                            : buffer.toString(), args, null);
+            return mContent.query(ContentUtils.getModuleUri(Util.USERS),
+                    Users.DETAILS_PROJECTION,
+                    buffer == null ? null : buffer.toString(), args, null);
         }
     }
 
-    public class AccountsClickedItemListener implements AdapterView.OnItemClickListener {
+    public class AccountsClickedItemListener implements
+            AdapterView.OnItemClickListener {
 
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        public void onItemClick(AdapterView<?> adapterView, View view,
+                int position, long l) {
             try {
                 // Remembers the selected account name
-                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                final Cursor cursor = (Cursor) adapterView
+                        .getItemAtPosition(position);
                 mSelectedAccountName = cursor.getString(2);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.e(TAG, "cannot get the clicked index " + position);
             }
 
         }
     }
 
-    public class UsersClickedItemListener implements AdapterView.OnItemClickListener {
+    public class UsersClickedItemListener implements
+            AdapterView.OnItemClickListener {
 
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        public void onItemClick(AdapterView<?> adapterView, View view,
+                int position, long l) {
             try {
                 // Remembers the selected username
-                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                final Cursor cursor = (Cursor) adapterView
+                        .getItemAtPosition(position);
                 mSelectedUserName = cursor.getString(2);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.e(TAG, "cannot get the clicked index " + position);
             }
 
         }
     }
 
-    private class SaveAction extends AbstractAction {
-
-        public SaveAction() {
-            super(R.drawable.save);
-        }
-
-        @Override
-        public void performAction(View view) {
-            saveModuleItem(getActivity().getCurrentFocus());
-        }
-    }  
-    
-    private class HomeAction extends AbstractAction {
-
-        public HomeAction() {
-            super(R.drawable.home);
-        }
-
-        @Override
-        public void performAction(View view) {            
-            DialogFragment newFragment = new HomeYesNoAlertDialogFragment().newInstance(R.string.discard);
-            newFragment.show(getFragmentManager(), "HomeYesNoAlertDialog");
-        }
-    }
-    
     public class HomeYesNoAlertDialogFragment extends DialogFragment {
 
         public HomeYesNoAlertDialogFragment newInstance(int title) {
-            HomeYesNoAlertDialogFragment frag = new HomeYesNoAlertDialogFragment();
-            Bundle args = new Bundle();
+            final HomeYesNoAlertDialogFragment frag = new HomeYesNoAlertDialogFragment();
+            final Bundle args = new Bundle();
             args.putInt("title", title);
             frag.setArguments(args);
             return frag;
@@ -1147,15 +1359,28 @@ public class EditModuleDetailFragment extends Fragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-            return new AlertDialog.Builder(this.getActivity()).setTitle(R.string.discard).setMessage(R.string.discardAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    Intent intent = new Intent(EditModuleDetailFragment.this.getActivity(), DashboardActivity.class);
-                    startActivity(intent);
-                }
-            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                }
-            }).create();
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.discard)
+                    .setMessage(R.string.discardAlert)
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                        int whichButton) {
+                                    final Intent intent = new Intent(
+                                            EditModuleDetailFragment.this
+                                                    .getActivity(),
+                                            DashboardActivity.class);
+                                    startActivity(intent);
+                                }
+                            })
+                    .setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                        int whichButton) {
+                                }
+                            }).create();
         }
     }
 

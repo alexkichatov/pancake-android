@@ -8,8 +8,9 @@ import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * Convenience class to identify the selection arguments(projections) and provide a projection map
- * to retrieve column values by name instead of column number
+ * Convenience class to identify the selection arguments(projections) and
+ * provide a projection map to retrieve column values by name instead of column
+ * number
  * 
  * @author chander
  */
@@ -26,31 +27,37 @@ public final class SugarCRMContent {
 
     public static final class Accounts implements AccountsColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.ACCOUNTS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.ACCOUNTS);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME, EMAIL1,
-                CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, EMAIL1, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, PARENT_NAME, EMAIL1 };
 
-        public static final String[] SEARCH_PROJECTION = { RECORD_ID,
+        public static final String[] SEARCH_PROJECTION = {
+                RECORD_ID,
                 NAME + " AS " + (SearchManager.SUGGEST_COLUMN_TEXT_1),
-                RECORD_ID + " AS " + (SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID) };
+                RECORD_ID + " AS "
+                        + (SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID) };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, PARENT_NAME,
-                PHONE_OFFICE, PHONE_FAX, EMAIL1, WEBSITE, EMPLOYEES, TICKER_SYMBOL, ANNUAL_REVENUE,
-                BILLING_ADDRESS_STREET, BILLING_ADDRESS_STREET_2, BILLING_ADDRESS_STREET_3,
-                BILLING_ADDRESS_STREET_4, BILLING_ADDRESS_CITY, BILLING_ADDRESS_STATE,
-                BILLING_ADDRESS_POSTALCODE, BILLING_ADDRESS_COUNTRY, SHIPPING_ADDRESS_STREET,
-                SHIPPING_ADDRESS_STREET_2, SHIPPING_ADDRESS_STREET_3, SHIPPING_ADDRESS_STREET_4,
-                SHIPPING_ADDRESS_CITY, SHIPPING_ADDRESS_STATE, SHIPPING_ADDRESS_POSTALCODE,
-                SHIPPING_ADDRESS_COUNTRY, ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED,
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, PARENT_NAME, EMAIL1, PHONE_OFFICE, PHONE_FAX, WEBSITE,
+                EMPLOYEES, TICKER_SYMBOL, ANNUAL_REVENUE,
+                BILLING_ADDRESS_STREET, BILLING_ADDRESS_STREET_2,
+                BILLING_ADDRESS_STREET_3, BILLING_ADDRESS_STREET_4,
+                BILLING_ADDRESS_CITY, BILLING_ADDRESS_STATE,
+                BILLING_ADDRESS_POSTALCODE, BILLING_ADDRESS_COUNTRY,
+                SHIPPING_ADDRESS_STREET, SHIPPING_ADDRESS_STREET_2,
+                SHIPPING_ADDRESS_STREET_3, SHIPPING_ADDRESS_STREET_4,
+                SHIPPING_ADDRESS_CITY, SHIPPING_ADDRESS_STATE,
+                SHIPPING_ADDRESS_POSTALCODE, SHIPPING_ADDRESS_COUNTRY,
+                ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED,
                 DATE_MODIFIED, DELETED };
 
     }
@@ -124,8 +131,8 @@ public final class SugarCRMContent {
 
     public static final class Contacts implements ContactsColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.CONTACTS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.CONTACTS);
 
         public static final int ID_COLUMN = 0;
 
@@ -152,17 +159,18 @@ public final class SugarCRMContent {
          */
         public static final String DEFAULT_SORT_ORDER = FIRST_NAME + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, FIRST_NAME, LAST_NAME,
-                EMAIL1, CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                FIRST_NAME, LAST_NAME, EMAIL1, CREATED_BY_NAME };
 
-        public static final String[] REST_LIST_PROJECTION = { ModuleFields.ID, FIRST_NAME,
-                LAST_NAME, EMAIL1 };
+        public static final String[] REST_LIST_PROJECTION = { ModuleFields.ID,
+                FIRST_NAME, LAST_NAME, EMAIL1 };
 
-        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME, LAST_NAME };
+        public static final String[] LIST_VIEW_PROJECTION = {  LAST_NAME, FIRST_NAME, ACCOUNT_NAME, EMAIL1 };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, FIRST_NAME,
-                LAST_NAME, ACCOUNT_NAME, PHONE_MOBILE, PHONE_WORK, EMAIL1, ASSIGNED_USER_NAME,
-                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED, ACCOUNT_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                FIRST_NAME, LAST_NAME, ACCOUNT_NAME, EMAIL1, PHONE_MOBILE,
+                PHONE_WORK, ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED,
+                DATE_MODIFIED, DELETED, ACCOUNT_ID };
 
     }
 
@@ -189,7 +197,8 @@ public final class SugarCRMContent {
 
         public String DELETED = ModuleFields.DELETED;
 
-        // TODO: may move out to separate table having the contact beanId and accountId
+        // TODO: may move out to separate table having the contact beanId and
+        // accountId
         public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
@@ -271,42 +280,46 @@ public final class SugarCRMContent {
 
     public static final class Recent implements RecentColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.RECENT);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.RECENT);
 
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = ModuleFields.NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = ModuleFields.NAME
+                + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME_1, NAME_2,
-                REF_MODULE_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME_1, NAME_2, REF_MODULE_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME_1, NAME_2 };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME_1, NAME_2, REF_MODULE_NAME };
 
-        // Details projection is not needed for recent, as the record_id, bean_id and module name
+        // Details projection is not needed for recent, as the record_id,
+        // bean_id and module name
         // will be used to show the detailed view
 
     }
 
     public static final class Leads implements LeadsColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.LEADS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.LEADS);
 
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = ModuleFields.LAST_NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = ModuleFields.LAST_NAME
+                + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, FIRST_NAME, LAST_NAME,
-                CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                FIRST_NAME, LAST_NAME, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME, LAST_NAME };
+        public static final String[] LIST_VIEW_PROJECTION = {LAST_NAME, FIRST_NAME, ACCOUNT_NAME, EMAIL1};
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, FIRST_NAME,
-                LAST_NAME, LEAD_SOURCE, PHONE_WORK, PHONE_FAX, EMAIL1, ACCOUNT_NAME, TITLE,
-                ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED,
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                FIRST_NAME, LAST_NAME, ACCOUNT_NAME, EMAIL1, LEAD_SOURCE,
+                PHONE_WORK, PHONE_FAX, TITLE, ASSIGNED_USER_NAME,
+                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED,
                 ACCOUNT_ID };
 
     }
@@ -349,23 +362,24 @@ public final class SugarCRMContent {
 
     public static final class Opportunities implements OpportunitiesColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.OPPORTUNITIES);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.OPPORTUNITIES);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME,
-                OPPORTUNITY_TYPE, CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, OPPORTUNITY_TYPE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, ACCOUNT_NAME, DATE_CLOSED };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, ACCOUNT_NAME,
-                AMOUNT, DATE_CLOSED, OPPORTUNITY_TYPE, LEAD_SOURCE, SALES_STAGE, CAMPAIGN_NAME,
-                PROBABILITY, ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED,
-                DELETED, ACCOUNT_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, ACCOUNT_NAME, DATE_CLOSED, AMOUNT, OPPORTUNITY_TYPE,
+                LEAD_SOURCE, SALES_STAGE, CAMPAIGN_NAME, PROBABILITY,
+                ASSIGNED_USER_NAME, CREATED_BY_NAME, DATE_ENTERED,
+                DATE_MODIFIED, DELETED, ACCOUNT_ID };
 
     }
 
@@ -430,22 +444,23 @@ public final class SugarCRMContent {
 
     public static final class Cases implements CasesColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.CASES);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.CASES);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = DATE_MODIFIED + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME, CASE_NUMBER,
-                PRIORITY, DATE_MODIFIED, CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, CASE_NUMBER, PRIORITY, DATE_MODIFIED, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, PRIORITY, DATE_MODIFIED };
+        public static final String[] LIST_VIEW_PROJECTION = {  NAME, ACCOUNT_NAME, DATE_ENTERED };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, ACCOUNT_NAME,
-                CASE_NUMBER, PRIORITY, ASSIGNED_USER_NAME, STATUS, DESCRIPTION, RESOLUTION,
-                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, ACCOUNT_NAME, DATE_ENTERED, CASE_NUMBER, PRIORITY,
+                ASSIGNED_USER_NAME, STATUS, DESCRIPTION, RESOLUTION,
+                CREATED_BY_NAME, DATE_MODIFIED, DELETED };
 
     }
 
@@ -482,22 +497,23 @@ public final class SugarCRMContent {
 
     public static final class Calls implements CallsColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.CALLS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.CALLS);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME, START_DATE,
-                CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, START_DATE };
+        public static final String[] LIST_VIEW_PROJECTION = {NAME, START_DATE,  ASSIGNED_USER_NAME};
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, /* ACCOUNT_NAME */
-        START_DATE, DURATION_HOURS, DURATION_MINUTES, ASSIGNED_USER_NAME, DESCRIPTION,
-                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, ACCOUNT_NAME, START_DATE, ASSIGNED_USER_NAME,
+                DURATION_HOURS, DURATION_MINUTES, DESCRIPTION, CREATED_BY_NAME,
+                DATE_ENTERED, DATE_MODIFIED, DELETED };
 
     }
 
@@ -534,22 +550,24 @@ public final class SugarCRMContent {
 
     public static final class Meetings implements MeetingsColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.MEETINGS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.MEETINGS);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME, START_DATE,
-                CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, START_DATE };
+        public static final String[] LIST_VIEW_PROJECTION = {  NAME, START_DATE, DURATION_HOURS };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, /* ACCOUNT_NAME */
-        STATUS, LOCATION, START_DATE, DURATION_HOURS, DURATION_MINUTES, ASSIGNED_USER_NAME,
-                DESCRIPTION, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, START_DATE, DURATION_HOURS,/* ACCOUNT_NAME */
+                STATUS, LOCATION, DURATION_MINUTES, ASSIGNED_USER_NAME,
+                DESCRIPTION, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED,
+                DELETED };
 
     }
 
@@ -588,23 +606,24 @@ public final class SugarCRMContent {
 
     public static final class Campaigns implements CampaignColumns {
 
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.CAMPAIGNS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.CAMPAIGNS);
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
 
-        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID, NAME, START_DATE,
-                CREATED_BY_NAME };
+        public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, END_DATE, CAMPAIGN_TYPE };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID, NAME, STATUS,
-                START_DATE, END_DATE, CAMPAIGN_TYPE, BUDGET, ACTUAL_COST, EXPECTED_COST,
-                EXPECTED_REVENUE, IMPRESSIONS, OBJECTIVE, FREQUENCY, ASSIGNED_USER_NAME,
-                DESCRIPTION, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
+                NAME, START_DATE, CAMPAIGN_TYPE, STATUS, END_DATE, BUDGET,
+                ACTUAL_COST, EXPECTED_COST, EXPECTED_REVENUE, IMPRESSIONS,
+                OBJECTIVE, FREQUENCY, ASSIGNED_USER_NAME, DESCRIPTION,
+                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
 
     }
 
@@ -653,15 +672,16 @@ public final class SugarCRMContent {
 
     public static final class Modules implements ModuleColumns {
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, MODULE_NAME, LAST_SYNC_TIME };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID,
+                MODULE_NAME, LAST_SYNC_TIME };
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = MODULE_NAME + " DESC";
-        
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                + "/" + Util.MODULES);
+
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES);
     }
 
     public interface ModuleColumns {
@@ -669,22 +689,23 @@ public final class SugarCRMContent {
         public String ID = RECORD_ID;
 
         public String MODULE_NAME = RestConstants.NAME;
-        
+
         public String LAST_SYNC_TIME = "last_sync_time";
-     }
+    }
 
-    public static final class ModuleFields_TableInfo implements ModuleFieldColumns {
+    public static final class ModuleFields_TableInfo implements
+            ModuleFieldColumns {
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, NAME, LABEL, TYPE,
-                IS_REQUIRED, MODULE_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, NAME,
+                LABEL, TYPE, IS_REQUIRED, MODULE_ID };
 
         /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = NAME + " DESC";
-        
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                + "/" + Util.MODULES_FIELDS);
+
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES_FIELDS);
     }
 
     public interface ModuleFieldColumns {
@@ -703,8 +724,8 @@ public final class SugarCRMContent {
 
     public static final class LinkFields implements LinkFieldColumns {
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, NAME, TYPE, RELATIONSHIP,
-                MODULE, BEAN_NAME, MODULE_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, NAME,
+                TYPE, RELATIONSHIP, MODULE, BEAN_NAME, MODULE_ID };
 
         /**
          * The default sort order for this table
@@ -749,7 +770,8 @@ public final class SugarCRMContent {
 
     public static final class Sync implements SyncColumns {
 
-        // public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
+        // public static final Uri CONTENT_URI = Uri.parse("content://" +
+        // SugarCRMProvider.AUTHORITY
         // + "/" + Util.LEADS);
 
         public static final int ID_COLUMN = 0;
@@ -771,10 +793,12 @@ public final class SugarCRMContent {
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = ModuleFields.DATE_MODIFIED + " DESC";
+        public static final String DEFAULT_SORT_ORDER = ModuleFields.DATE_MODIFIED
+                + " DESC";
 
-        public static final String[] DETAILS_PROJECTION = { ID, SYNC_ID, SYNC_RELATED_ID,
-                SYNC_COMMAND, MODULE, RELATED_MODULE, DATE_MODIFIED, SYNC_STATUS };
+        public static final String[] DETAILS_PROJECTION = { ID, SYNC_ID,
+                SYNC_RELATED_ID, SYNC_COMMAND, MODULE, RELATED_MODULE,
+                DATE_MODIFIED, SYNC_STATUS };
 
     }
 
@@ -791,10 +815,11 @@ public final class SugarCRMContent {
     }
 
     public static final class ACLRoles implements ACLRoleColumns {
-        public static final String[] INSERT_PROJECTION = { SUGAR_BEAN_ID, NAME, TYPE, DESCRIPTION };
+        public static final String[] INSERT_PROJECTION = { SUGAR_BEAN_ID, NAME,
+                TYPE, DESCRIPTION };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, SUGAR_BEAN_ID, NAME, TYPE,
-                DESCRIPTION };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID,
+                SUGAR_BEAN_ID, NAME, TYPE, DESCRIPTION };
 
         /**
          * The default sort order for this table
@@ -819,11 +844,11 @@ public final class SugarCRMContent {
     }
 
     public static final class ACLActions implements ACLActionColumns {
-        public static final String[] INSERT_PROJECTION = { ACTION_ID, NAME, CATEGORY, ACLACCESS,
-                ACLTYPE };
+        public static final String[] INSERT_PROJECTION = { ACTION_ID, NAME,
+                CATEGORY, ACLACCESS, ACLTYPE };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, ACTION_ID, NAME, CATEGORY,
-                ACLACCESS, ACLTYPE };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID,
+                ACTION_ID, NAME, CATEGORY, ACLACCESS, ACLTYPE };
 
         /**
          * The default sort order for this table
@@ -844,14 +869,14 @@ public final class SugarCRMContent {
     }
 
     public static final class Users implements UserColumns {
-        public static final Uri CONTENT_URI = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                                        + "/" + Util.USERS);
+        public static final Uri CONTENT_URI = Uri.parse("content://"
+                + SugarCRMProvider.AUTHORITY + "/" + Util.USERS);
 
-        public static final String[] INSERT_PROJECTION = { USER_ID, USER_NAME, FIRST_NAME,
-                LAST_NAME };
-
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, USER_ID, USER_NAME,
+        public static final String[] INSERT_PROJECTION = { USER_ID, USER_NAME,
                 FIRST_NAME, LAST_NAME };
+
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, USER_ID,
+                USER_NAME, FIRST_NAME, LAST_NAME };
     }
 
     public interface ModuleFieldGroupColumns {
@@ -862,10 +887,12 @@ public final class SugarCRMContent {
         public String GROUP_ID = "group_id";
     }
 
-    public static final class ModuleFieldGroups implements ModuleFieldGroupColumns {
+    public static final class ModuleFieldGroups implements
+            ModuleFieldGroupColumns {
         public static final String[] INSERT_PROJECTION = { TITLE, GROUP_ID };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, TITLE, GROUP_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID, TITLE,
+                GROUP_ID };
     }
 
     public interface ModuleFieldSortOrderColumns {
@@ -880,12 +907,13 @@ public final class SugarCRMContent {
         public String MODULE_ID = "module_id";
     }
 
-    public static final class ModuleFieldSortOrder implements ModuleFieldSortOrderColumns {
-        public static final String[] INSERT_PROJECTION = { FIELD_SORT_ID, GROUP_ID,
-                MODULE_FIELD_ID, MODULE_ID };
+    public static final class ModuleFieldSortOrder implements
+            ModuleFieldSortOrderColumns {
+        public static final String[] INSERT_PROJECTION = { FIELD_SORT_ID,
+                GROUP_ID, MODULE_FIELD_ID, MODULE_ID };
 
-        public static final String[] DETAILS_PROJECTION = { RECORD_ID, FIELD_SORT_ID, GROUP_ID,
-                MODULE_FIELD_ID, MODULE_ID };
+        public static final String[] DETAILS_PROJECTION = { RECORD_ID,
+                FIELD_SORT_ID, GROUP_ID, MODULE_FIELD_ID, MODULE_ID };
 
         public static final String DEFAULT_SORT_ORDER = FIELD_SORT_ID + " ASC";
     }

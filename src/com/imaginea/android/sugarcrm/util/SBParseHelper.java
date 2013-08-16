@@ -9,7 +9,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 /**
  * <p>
  * SBParseHelper class.
@@ -39,7 +38,7 @@ public class SBParseHelper {
         final Map<String, String> fields = new HashMap<String, String>();
         try {
             final JSONObject nameVal = new JSONObject(nameValueList);
-            final Iterator iter = nameVal.keys();
+            final Iterator<?> iter = nameVal.keys();
             while (iter.hasNext()) {
                 final String key = (String) iter.next();
                 final String val = ((JSONObject) (nameVal.get(key))).get(VALUE)

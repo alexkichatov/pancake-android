@@ -14,8 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
@@ -45,12 +43,12 @@ public class SearchActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.common_list);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         mListView = getListView();
         mEmpty = findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
 
-        Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
+        final Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
         if (appData != null) {
             mModuleName = appData.getString(RestConstants.MODULE_NAME);
         }
@@ -64,9 +62,11 @@ public class SearchActivity extends ListActivity {
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // handles a click on a search suggestion; launches activity to show
             // the bean
-            Intent detailIntent = new Intent(this, ModuleDetailActivity.class);
+            final Intent detailIntent = new Intent(this,
+                    ModuleDetailActivity.class);
             Log.i(TAG, "view uri - " + intent.getData());
-            detailIntent.putExtra(Util.ROW_ID, intent.getData().getLastPathSegment());
+            detailIntent.putExtra(Util.ROW_ID, intent.getData()
+                    .getLastPathSegment());
             detailIntent.putExtra(RestConstants.MODULE_NAME, Util.ACCOUNTS);
             detailIntent.setData(intent.getData());
             startActivity(detailIntent);
@@ -75,40 +75,55 @@ public class SearchActivity extends ListActivity {
     }
 
     private void showResults(String query) {
-        DatabaseHelper dbHelper = new DatabaseHelper(SearchActivity.this);
-        Uri moduleUri = ContentUtils.getModuleUri(mModuleName);
+        final DatabaseHelper dbHelper = new DatabaseHelper(SearchActivity.this);
+        final Uri moduleUri = ContentUtils.getModuleUri(mModuleName);
         if (getIntent().getData() == null) {
             getIntent().setData(moduleUri);
         }
 
-        // TextView tv = (TextView) findViewById(R.id.headerText);
-        final CustomActionbar tv = (CustomActionbar) findViewById(R.id.custom_actionbar);
-        final Action homeAction = new IntentAction(this, new Intent(this, DashboardActivity.class), R.drawable.home);
-        tv.setHomeAction(homeAction);
-        tv.setTitle(mModuleName + getString(R.string.searchResultsHeaderText));
-        // findViewById(R.id.filterImage).setVisibility(View.GONE);
-        // findViewById(R.id.allItems).setVisibility(View.GONE);
+        // final CustomActionbar tv = (CustomActionbar)
+        // findViewById(R.id.custom_actionbar);
 
-        Cursor cursor = managedQuery(getIntent().getData(), ContentUtils.getModuleProjections(mModuleName), dbHelper.getModuleSelection(mModuleName, query), null, null);
+        // tv.setTitle(mModuleName +
+        // getString(R.string.searchResultsHeaderText));
 
-        // startManagingCursor(cursor);
+        final Cursor cursor = managedQuery(getIntent().getData(),
+                ContentUtils.getModuleProjections(mModuleName),
+                dbHelper.getModuleSelection(mModuleName, query), null, null);
+
         GenericCursorAdapter adapter;
         String[] moduleSel = ContentUtils.getModuleListSelections(mModuleName);
         cursor.moveToFirst();
-        if (moduleSel.length >= 2)
-            adapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] {
-                    android.R.id.text1, android.R.id.text2 });
-        else
-            adapter = new GenericCursorAdapter(this, R.layout.contact_listitem, cursor, moduleSel, new int[] { android.R.id.text1 });
+
+        int[] ids = new int[] { R.id.text1, R.id.text2, R.id.text3 };
+        moduleSel = ContentUtils.getModuleListSelections(mModuleName);
+
+        if (mModuleName.equals(Util.CONTACTS) || mModuleName.equals(Util.LEADS)) {
+            ids = new int[] { R.id.text1, R.id.textLastName, R.id.text2,
+                    R.id.text3 };
+        } else if (mModuleName.equals(Util.RECENT)) {
+            ids = new int[] { R.id.text1, R.id.text2, R.id.text5 };
+        }
+
+        if (moduleSel.length >= 2) {
+            adapter = new GenericCursorAdapter(this, R.layout.contact_listitem,
+                    null, moduleSel, ids, 0);
+        } else {
+            adapter = new GenericCursorAdapter(this, R.layout.contact_listitem,
+                    null, moduleSel, new int[] { android.R.id.text1 }, 0);
+        }
+
         mListView.setAdapter(adapter);
         setListAdapter(adapter);
 
-        if (adapter.getCount() == 0)
+        if (adapter.getCount() == 0) {
             mListView.setVisibility(View.GONE);
+        }
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> arg0, View view,
+                    int position, long id) {
                 openDetailScreen(position);
             }
         });
@@ -120,18 +135,18 @@ public class SearchActivity extends ListActivity {
      * @param position
      */
     void openDetailScreen(int position) {
-        Intent detailIntent = new Intent(SearchActivity.this, ModuleDetailActivity.class);
+        final Intent detailIntent = new Intent(SearchActivity.this,
+                ModuleDetailActivity.class);
 
-        Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null) {
+        final Cursor cursor = (Cursor) getListAdapter().getItem(position);
+        if (cursor == null)
             // For some reason the requested item isn't available, do nothing
             return;
-        }
-        // SugarBean bean = (SugarBean)
-        // getListView().getItemAtPosition(position);
         // TODO
         if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "beanId:" + cursor.getString(1) + " rowId: " + cursor.getString(0));
+            Log.d(TAG,
+                    "beanId:" + cursor.getString(1) + " rowId: "
+                            + cursor.getString(0));
         }
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
         detailIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(1));
@@ -144,28 +159,16 @@ public class SearchActivity extends ListActivity {
      */
     private static class GenericCursorAdapter extends SimpleCursorAdapter {
 
-        public GenericCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-            super(context, layout, c, from, to);
+        public GenericCursorAdapter(Context context, int layout, Cursor c,
+                String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View v = super.getView(position, convertView, parent);
+            final View v = super.getView(position, convertView, parent);
             return v;
         }
-    }
-
-    /**
-     * <p>
-     * showHome
-     * </p>
-     * 
-     * @param view
-     *            a {@link android.view.View} object.
-     */
-    public void showHome(View view) {
-        Intent homeIntent = new Intent(this, DashboardActivity.class);
-        startActivity(homeIntent);
     }
 
 }

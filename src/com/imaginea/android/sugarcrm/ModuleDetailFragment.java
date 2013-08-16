@@ -3,12 +3,10 @@ package com.imaginea.android.sugarcrm;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -41,16 +39,17 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
@@ -59,7 +58,7 @@ import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 /**
- * ModuleDetailFragment is used to show details for all modules.
+ * ModuleDetailFragment is used to show detail description for all modules.
  * 
  */
 public class ModuleDetailFragment extends Fragment {
@@ -72,10 +71,9 @@ public class ModuleDetailFragment extends Fragment {
 
     private Cursor mCursor;
 
+    private SeparatedListAdapter adapter = null;
+
     private String[] mSelectFields;
-
-    private ViewGroup mDetailsTable;
-
     private String[] mRelationshipModules;
 
     private Uri mUri;
@@ -88,7 +86,14 @@ public class ModuleDetailFragment extends Fragment {
 
     private CustomActionbar actionBar;
 
-    private RelativeLayout mParent;
+    private LinearLayout mParent;
+
+    private Bundle bundle;
+
+    final Map<String, String> HeaderItem = new HashMap<String, String>();
+
+    private LinearLayout layoutView;
+    private LayoutInflater inflater;
 
     private static final String LOG_TAG = ModuleDetailFragment.class
             .getSimpleName();
@@ -97,8 +102,11 @@ public class ModuleDetailFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater,
             final ViewGroup container, final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mParent = (RelativeLayout) inflater.inflate(R.layout.account_details,
+        mParent = (LinearLayout) inflater.inflate(R.layout.account_details,
                 container, false);
+
+        bundle = getArguments();
+
         return mParent;
     }
 
@@ -107,17 +115,34 @@ public class ModuleDetailFragment extends Fragment {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        /*
+         * As per the new UI Tablet current Design Contain Dash board Image list
+         * Fragment else it would be same dashboard activity.
+         */
+        if (!ViewUtil.isHoneycombTablet(getActivity())) {
+            getFragmentManager().findFragmentById(R.id.list_imagefrag)
+                    .getView().setVisibility(View.GONE);
+        }
+
         Intent intent = getActivity().getIntent();
         if (getFragmentManager().findFragmentById(R.id.list_frag) != null) {
             intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         }
         final Bundle extras = intent.getExtras();
-        mRowId = intent.getStringExtra(Util.ROW_ID);
-        mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
-        final boolean bRecent = intent.getBooleanExtra("Recent", false);
-        final boolean bRelation = intent.getBooleanExtra("Relation", false);
 
-        mModuleName = extras.getString(RestConstants.MODULE_NAME);
+        if (extras != null) {
+            mRowId = intent.getStringExtra(Util.ROW_ID);
+            mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
+            intent.getBooleanExtra("Recent", false);
+            intent.getBooleanExtra("Relation", false);
+            mModuleName = extras.getString(RestConstants.MODULE_NAME);
+
+        } else {
+            mRowId = bundle.getString(Util.ROW_ID);
+            mSugarBeanId = bundle.getString(RestConstants.BEAN_ID);
+            mModuleName = bundle.getString(RestConstants.MODULE_NAME);
+
+        }
 
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         if (intent.getData() == null) {
@@ -134,31 +159,47 @@ public class ModuleDetailFragment extends Fragment {
         mRelationshipModules = ContentUtils
                 .getModuleRelationshipItems(mModuleName);
 
-        if (mSugarBeanId != null) {
-            actionBar = (CustomActionbar) mParent.getChildAt(0);
-            if (!ViewUtil.isTablet(getActivity())) {
-                final Action homeAction = new IntentAction(
-                        ModuleDetailFragment.this.getActivity(), new Intent(
-                                ModuleDetailFragment.this.getActivity(),
-                                DashboardActivity.class), R.drawable.home);
-                actionBar.setHomeAction(homeAction);
-            }
-            if (!bRecent && !bRelation) {
-                actionBar.addActionItem(new EditAction());
-                actionBar.addActionItem(new DeleteAction());
-                if (mRelationshipModules.length > 0) {
-                    actionBar.addActionItem(new IntentAction(
-                            ModuleDetailFragment.this.getActivity(), null,
-                            R.drawable.relation));
-                    for (final String mModule : mRelationshipModules) {
-                        actionBar.addActionItem(new RelationAction(mModule));
-                    }
-                }
-            }
-        }
+        inflater = (LayoutInflater) getActivity().getBaseContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        layoutView = (LinearLayout) inflater.inflate(R.layout.table_row, null);
+        /* To edit the module details fileds */
+        final ImageView editImageView = (ImageView) layoutView
+                .findViewById(R.id.editimage);
+        editImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent editDetailsIntent = new Intent(getActivity(),
+                        EditModuleDetailActivity.class);
+                editDetailsIntent.putExtra(Util.ROW_ID, mRowId);
+                if (mUri != null) {
+                    editDetailsIntent.setData(mUri);
+                }
+
+                editDetailsIntent.putExtra(RestConstants.BEAN_ID, mSugarBeanId);
+                editDetailsIntent.putExtra(RestConstants.MODULE_NAME,
+                        mModuleName);
+
+                startActivity(editDetailsIntent);
+            }
+        });
+
+        /* To Delete the selected Module Details */
+        final ImageView deleteImageView = (ImageView) layoutView
+                .findViewById(R.id.deleteimage);
+        deleteImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DialogFragment newFragment = new MyYesNoAlertDialogFragment()
+                        .newInstance(R.string.delete);
+                // String lastSelectedModuleName = mModuleName;
+                newFragment.show(getFragmentManager(), "YesNoAlertDialog");
+            }
+        });
+        /* Starting a New Async task to populate the Data from the Database */
         mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
+
     }
 
     /**
@@ -189,28 +230,35 @@ public class ModuleDetailFragment extends Fragment {
         detailIntent.putExtra(RestConstants.BEAN_ID, mSugarBeanId);
         detailIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
         startActivity(detailIntent);
-        // } else {
-        // Toast.makeText(this, "Not yet supported!",
-        // Toast.LENGTH_SHORT).show();
-        // }
+
     }
 
     /** {@inheritDoc} */
     @Override
     public void onPause() {
         super.onPause();
+
         if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) {
             mTask.cancel(true);
         }
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         if (mTask != null && mTask.getStatus() != AsyncTask.Status.RUNNING) {
-            mTask = new LoadContentTask(getActivity());
-            mTask.execute(null, null, null);
+            Log.i(LOG_TAG, "is Inser Successful = "
+                    + EditModuleDetailFragment.bInsertSuccessful);
+
+            if (EditModuleDetailFragment.bInsertSuccessful == true) {
+                mTask = new LoadContentTask(getActivity());
+                mTask.execute(null, null, null);
+                EditModuleDetailFragment.bInsertSuccessful = false;
+            }
         }
+
     }
 
     /** {@inheritDoc} */
@@ -268,12 +316,12 @@ public class ModuleDetailFragment extends Fragment {
         private final List<String> mFieldsExcludedForDetails = new ArrayList<String>();
 
         private final LinkedHashMap<String, DetailsItem> detailItems = new LinkedHashMap<String, DetailsItem>();
+
         private String title;
 
         LoadContentTask(final Context context) {
             mContext = context;
-            mDetailsTable = (ViewGroup) getActivity().findViewById(
-                    R.id.accountDetalsTable);
+
         }
 
         @Override
@@ -319,16 +367,18 @@ public class ModuleDetailFragment extends Fragment {
 
         @Override
         protected Object doInBackground(final Object... params) {
-            try {
-                mCursor = getActivity().getContentResolver().query(mUri,
-                        mSelectFields, null, null,
-                        ContentUtils.getModuleSortOrder(mModuleName));
-            } catch (final Exception e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                return Util.FETCH_FAILED;
-            }
+            if (mSelectFields != null) {
+                try {
+                    mCursor = getActivity().getContentResolver().query(mUri,
+                            mSelectFields, null, null,
+                            ContentUtils.getModuleSortOrder(mModuleName));
+                } catch (final Exception e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    return Util.FETCH_FAILED;
+                }
 
-            prepareDetailItems();
+                prepareDetailItems();
+            }
 
             return Util.FETCH_SUCCESS;
         }
@@ -347,99 +397,61 @@ public class ModuleDetailFragment extends Fragment {
             }
 
             mProgressDialog.cancel();
+            mProgressDialog = null;
         }
 
         private void setupDetailViews() {
             if (actionBar != null) {
                 actionBar.setTitle(title);
             }
-
-            final LayoutInflater inflater = (LayoutInflater) getActivity()
-                    .getBaseContext().getSystemService(
-                            Context.LAYOUT_INFLATER_SERVICE);
-
-            final Set<Entry<String, DetailsItem>> entrySet = detailItems
-                    .entrySet();
-
-            final Iterator<Entry<String, DetailsItem>> iterator = entrySet
-                    .iterator();
-
-            while (iterator.hasNext()) {
-                final ViewGroup tableRow = (ViewGroup) inflater.inflate(
+            final TextView titleView;
+            if (layoutView == null) {
+                layoutView = (LinearLayout) inflater.inflate(
                         R.layout.table_row, null);
 
-                final Entry<String, DetailsItem> item = iterator.next();
-                final String label = item.getKey();
-                final DetailsItem detailObj = item.getValue();
+            }
+            /* Get the Detail fragment module header Title view */
+            titleView = (TextView) layoutView.findViewById(R.id.titleview);
 
-                final TextView textViewForLabel = (TextView) tableRow
-                        .getChildAt(1);
-                final TextView textViewForValue = (TextView) tableRow
-                        .getChildAt(2);
+            final String[] keys = detailItems.keySet().toArray(
+                    new String[detailItems.size()]);
 
-                tableRow.setVisibility(View.VISIBLE);
-                textViewForLabel.setText(label);
-
-                final String value = detailObj.getValue();
-
-                if (detailObj.getType().equals("phone")) {
-                    textViewForValue.setAutoLinkMask(Linkify.PHONE_NUMBERS);
+            if (titleView != null) {
+                final String header;
+                if (mModuleName.equals(Util.CONTACTS)
+                        || mModuleName.equals(Util.LEADS)) {
+                    Log.i(LOG_TAG, "key values" + keys[0] + " " + keys[1]);
+                    header = (detailItems.get("First Name:")).getValue() + " "
+                            + (detailItems.get("Last Name:")).getValue();
+                } else {
+                    header = (detailItems.get(keys[0])).getValue();
                 }
+                titleView.setText(header);
 
-                textViewForValue.setText(value);
+            }
+            ListView lv;
+            if (layoutView.getParent() == null) {
+                mParent.addView(layoutView);
+                lv = (ListView) layoutView.findViewById(R.id.detailList);
 
-                // handle the map
-                final String fieldName = detailObj.getFieldName();
-                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(fieldName)
-                        || ModuleFields.BILLING_ADDRESS_COUNTRY
-                                .equals(fieldName)) {
-                    if (!TextUtils.isEmpty(value)) {
-                        textViewForValue.setLinksClickable(true);
-                        textViewForValue.setClickable(true);
+            } else {
+                layoutView = null;
+                final LinearLayout layoutView = new LinearLayout(getActivity());
+                mParent.addView(layoutView);
+                lv = null;
+                lv = new ListView(getActivity());
+            }
 
-                        final SpannableString spannableString = new SpannableString(
-                                value);
-                        spannableString.setSpan(
-                                new InternalURLSpan(new OnClickListener() {
-                                    @Override
-                                    public void onClick(final View v) {
-                                        Log.i(LOG_TAG, "trying to locate - "
-                                                + value);
-                                        final Uri uri = Uri.parse("geo:0,0?q="
-                                                + URLEncoder.encode(value));
-                                        final Intent intent = new Intent(
-                                                Intent.ACTION_VIEW, uri);
-                                        intent.setData(uri);
-                                        startActivity(Intent
-                                                .createChooser(
-                                                        intent,
-                                                        getString(R.string.showAddressMsg)));
-                                    }
-                                }), 0, value.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        textViewForValue.setText(spannableString);
-
-                        // for trackball movement
-                        final MovementMethod m = textViewForValue
-                                .getMovementMethod();
-                        if ((m == null) || !(m instanceof LinkMovementMethod)) {
-                            if (textViewForValue.getLinksClickable()) {
-                                textViewForValue
-                                        .setMovementMethod(LinkMovementMethod
-                                                .getInstance());
-                            }
-                        }
-                    }
-                }
-                mDetailsTable.addView(tableRow);
+            if (adapter == null) {
+                adapter = new SeparatedListAdapter(detailItems);
+                lv.setAdapter(adapter);
             }
 
         }
 
         private void prepareDetailItems() {
-
             final String[] detailsProjection = mSelectFields;
+
             if (mCursor.moveToFirst()) {
 
                 if (mDbHelper == null) {
@@ -447,8 +459,9 @@ public class ModuleDetailFragment extends Fragment {
                             .getBaseContext());
                 }
 
-                final List<String> titleFields = Arrays.asList(ContentUtils
-                        .getModuleListSelections(mModuleName));
+                Arrays.asList(ContentUtils.getModuleListSelections(mModuleName));
+
+                Arrays.asList(ContentUtils.getModuleListSelections(mModuleName));
 
                 String value = "";
                 final Map<String, ModuleField> fieldNameVsModuleField = ContentUtils
@@ -477,20 +490,12 @@ public class ModuleDetailFragment extends Fragment {
 
                     if (moduleField != null) {
 
-                        // set the title
-                        if (titleFields.contains(fieldName)
-                                && tempValue != null) {
-
-                            title = tempValue;
-                            continue;
-                        }
-
                         String label = moduleField.getLabel();
 
-                        // check for the billing and shipping address groups
-                        // only if
-                        // the module is
-                        // 'Accounts'
+                        /*
+                         * check for the billing and shipping address groups
+                         * only if the module is 'Accounts'
+                         */
                         if (Util.ACCOUNTS.equals(mModuleName)) {
                             if (mBillingAddressGroup.contains(fieldName)) {
                                 if (fieldName
@@ -567,7 +572,6 @@ public class ModuleDetailFragment extends Fragment {
                         } else {
                             value = tempValue;
                         }
-
                         if (!TextUtils.isEmpty(value)) {
                             detailItems.put(label, new DetailsItem(fieldName,
                                     value, moduleField.getType()));
@@ -620,62 +624,8 @@ public class ModuleDetailFragment extends Fragment {
 
         @Override
         public void onClick(final View widget) {
-            Log.i("ModuleDetailFragment", "InternalURLSpan onClick");
+            Log.i(LOG_TAG, "InternalURLSpan onClick");
             mListener.onClick(widget);
-        }
-    }
-
-    private class EditAction extends AbstractAction {
-
-        public EditAction() {
-            super(R.drawable.edit);
-        }
-
-        @Override
-        public void performAction(final View view) {
-
-            final Intent editDetailsIntent = new Intent(getActivity(),
-                    EditModuleDetailActivity.class);
-            editDetailsIntent.putExtra(Util.ROW_ID, mRowId);
-            if (mUri != null) {
-                editDetailsIntent.setData(mUri);
-            }
-
-            editDetailsIntent.putExtra(RestConstants.BEAN_ID, mSugarBeanId);
-            editDetailsIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
-
-            startActivity(editDetailsIntent);
-
-            /*
-             * ModuleDetailFragment details = (ModuleDetailFragment)
-             * getFragmentManager().findFragmentByTag("module_detail"); //if
-             * (details != null) {
-             * 
-             * We can display everything in-place with fragments. Have the list
-             * highlight this item and show the data. Make new fragment to show
-             * this selection.
-             * 
-             * // getListView().setItemChecked(position, true); //
-             * ((BaseMultiPaneActivity)
-             * getActivity()).openActivityOrFragment(editDetailsIntent);
-             * 
-             * //} else { startActivity(editDetailsIntent); // }
-             */
-        }
-    }
-
-    private class DeleteAction extends AbstractAction {
-
-        public DeleteAction() {
-            super(R.drawable.delete);
-        }
-
-        @Override
-        public void performAction(final View view) {
-
-            final DialogFragment newFragment = new MyYesNoAlertDialogFragment()
-                    .newInstance(R.string.delete);
-            newFragment.show(getFragmentManager(), "YesNoAlertDialog");
         }
     }
 
@@ -693,18 +643,6 @@ public class ModuleDetailFragment extends Fragment {
         @Override
         public void onChange(final boolean selfChange) {
             super.onChange(selfChange);
-        }
-    }
-
-    private class RelationAction extends AbstractAction {
-
-        public RelationAction(final String title) {
-            super(R.drawable.relation, title);
-        }
-
-        @Override
-        public void performAction(final View view) {
-            openListScreen(getTitle());
         }
     }
 
@@ -756,19 +694,33 @@ public class ModuleDetailFragment extends Fragment {
                                                     null);
 
                                     if (ViewUtil.isTablet(getActivity())) {
+
                                         getActivity()
                                                 .getSupportFragmentManager()
                                                 .beginTransaction()
                                                 .remove(ModuleDetailFragment.this)
                                                 .commit();
+
                                         final ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
-                                        getActivity()
-                                                .getSupportFragmentManager()
+                                        final Bundle args = new Bundle();
+                                        args.putString(
+                                                RestConstants.MODULE_NAME,
+                                                mModuleName);
+                                        int rowId = Integer.parseInt(mRowId);
+                                        rowId = rowId - 1;
+
+                                        args.putString(Util.ROW_ID,
+                                                Integer.toString(rowId));
+                                        args.putString(RestConstants.BEAN_ID,
+                                                mSugarBeanId);
+                                        moduleDetailFragment.setArguments(args);
+                                        getFragmentManager()
                                                 .beginTransaction()
-                                                .add(R.id.fragment_container_module_detail,
-                                                        moduleDetailFragment,
-                                                        "module_detail")
+                                                .replace(
+                                                        R.id.fragment_container_module_detail,
+                                                        moduleDetailFragment)
                                                 .commit();
+
                                     } else {
                                         ModuleDetailFragment.this.getActivity()
                                                 .finish();
@@ -785,6 +737,219 @@ public class ModuleDetailFragment extends Fragment {
                                 }
                             }).create();
         }
+    }
+
+    void openDetailScreen(String rowId) {
+
+        final Intent detailIntent = new Intent(getActivity(),
+                ModuleDetailActivity.class);
+
+        Uri uri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName),
+                mRowId);
+        uri = Uri.withAppendedPath(uri, mModuleName);
+        detailIntent.setData(uri);
+        detailIntent.putExtra(Util.ROW_ID, rowId);
+        detailIntent.putExtra(RestConstants.BEAN_ID, mSugarBeanId);
+        detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
+
+        if (ViewUtil.isTablet(getActivity())) {
+
+            ((BaseMultiPaneActivity) getActivity())
+                    .openActivityOrFragment(detailIntent);
+
+        } else {
+            startActivity(detailIntent);
+        }
+    }
+
+    private class SeparatedListAdapter extends BaseAdapter {
+
+        private final LinkedHashMap<String, DetailsItem> mData;
+        final LayoutInflater inflater = (LayoutInflater) getActivity()
+                .getBaseContext().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+        public TextView headerview1;
+        public TextView headerview2;
+        public ImageView assignedIconView;
+        public TextView lableView;
+        public TextView summryView;
+        String[] mKeys;
+        int listItem_1 = 1;
+        int listItem_2 = 2;
+        int listItem_3 = 3;
+
+        public SeparatedListAdapter(
+                final LinkedHashMap<String, DetailsItem> data) {
+
+            mData = data;
+            mKeys = mData.keySet().toArray(new String[data.size()]);
+
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            getItemViewType(position);
+            if (position == 0) {
+                convertView = inflater.inflate(
+                        R.layout.detaillist_item_section, null);
+
+                headerview1 = (TextView) convertView
+                        .findViewById(R.id.headerview1);
+                headerview2 = (TextView) convertView
+                        .findViewById(R.id.headerview2);
+
+            } else {
+                convertView = inflater.inflate(R.layout.detaillist_item, null);
+                lableView = (TextView) convertView
+                        .findViewById(R.id.list_item_entry_lable);
+                summryView = (TextView) convertView
+                        .findViewById(R.id.list_item_summary);
+                assignedIconView = (ImageView) convertView
+                        .findViewById(R.id.list_assigned_icon);
+
+            }
+
+            if (position == 0) {
+
+                /* set the Header Fileds */
+                if (headerview1 != null) {
+                    Log.i(LOG_TAG, "Module Name =" + mModuleName);
+                    int pos;
+                    /*
+                     * if the module is leads or contact then the First header
+                     * contain first name + last name do pos = position + 2
+                     * (position[0] = first name & position[1] = Last name
+                     */
+                    if (mModuleName.equals(Util.CONTACTS)
+                            || mModuleName.equals(Util.LEADS)) {
+                        pos = position + listItem_2;
+                    } else {
+                        pos = position + listItem_1;
+
+                    }
+                    headerview1.setText((mData.get(mKeys[pos])).getValue()
+                            .toString());
+                }
+
+                if (headerview2 != null) {
+                    if (mModuleName.equals(Util.CONTACTS)
+                            || mModuleName.equals(Util.LEADS)) {
+                        headerview2.setText((mData.get(mKeys[listItem_3]))
+                                .getValue().toString());
+                    } else {
+                        headerview2.setText((mData.get(mKeys[listItem_2]))
+                                .getValue().toString());
+                    }
+                }
+
+            } else {
+                /* set the filed to the text view */
+                final String field = mKeys[position];
+                final String value = (mData.get(mKeys[position])).getValue()
+                        .toString();
+
+                if (mModuleName.equals(Util.CONTACTS)
+                        || mModuleName.equals(Util.LEADS)) {
+                    if (position == listItem_1 || position == listItem_2
+                            || position == listItem_3) {
+                        lableView.setHeight(0);
+                        summryView.setHeight(0);
+                        return convertView;
+
+                    }
+                } else {
+                    if (position == listItem_1 || position == listItem_2) {
+                        lableView.setHeight(0);
+                        summryView.setHeight(0);
+                        return convertView;
+
+                    }
+                }
+
+                if (lableView != null) {
+                    lableView.setText(field);
+                }
+
+                /* set the field value to the view */
+                if (summryView != null) {
+                    summryView.setText(value);
+                }
+
+                if (field.equalsIgnoreCase("Assigned to:")
+                        || field.equalsIgnoreCase("Assigned to")) {
+                    assignedIconView.setVisibility(View.VISIBLE);
+                } else {
+                    assignedIconView.setVisibility(View.GONE);
+                }
+
+                if (field.contains("phone")) {
+                    summryView.setAutoLinkMask(Linkify.PHONE_NUMBERS);
+                }
+                // handle the map
+                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(field)
+                        || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(field)) {
+                    if (!TextUtils.isEmpty(value)) {
+                        summryView.setLinksClickable(true);
+                        summryView.setClickable(true);
+
+                        final SpannableString spannableString = new SpannableString(
+                                value);
+                        spannableString.setSpan(
+                                new InternalURLSpan(new OnClickListener() {
+                                    @Override
+                                    public void onClick(final View v) {
+                                        Log.i(LOG_TAG, "trying to locate - "
+                                                + value);
+                                        final Uri uri = Uri.parse("geo:0,0?q="
+                                                + URLEncoder.encode(value));
+                                        final Intent intent = new Intent(
+                                                Intent.ACTION_VIEW, uri);
+                                        intent.setData(uri);
+                                        startActivity(Intent
+                                                .createChooser(
+                                                        intent,
+                                                        getString(R.string.showAddressMsg)));
+                                    }
+                                }), 0, value.length(),
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                        summryView.setText(spannableString);
+
+                        // for trackball movement
+                        final MovementMethod m = summryView.getMovementMethod();
+                        if ((m == null) || !(m instanceof LinkMovementMethod)) {
+                            if (summryView.getLinksClickable()) {
+                                summryView.setMovementMethod(LinkMovementMethod
+                                        .getInstance());
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+            return convertView;
+        }
+
+        @Override
+        public long getItemId(final int position) {
+            // TODO Auto-generated method stub
+            return position;
+        }
+
+        @Override
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return mData.size();
+        }
+
+        @Override
+        public Object getItem(final int position) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 
 }

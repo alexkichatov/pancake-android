@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="actionbar_height">45dp</dimen>
+    <dimen name="actionbar_height">69dp</dimen>
     <dimen name="actionbar_width">50dp</dimen>
     <dimen name="deatailscreen_textsize">18sp</dimen>
     <dimen name="dashboarditem_textsize">18sp</dimen>

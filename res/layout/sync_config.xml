@@ -1,121 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	  android:id="@+id/sync_config"        
-	  android:orientation="vertical"
-	  android:layout_width="fill_parent"
-	  android:layout_height="fill_parent"
-	  android:background="@drawable/bg">
-	<com.imaginea.android.sugarcrm.CustomActionbar
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sync_config"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <!--
+     <com.imaginea.android.sugarcrm.CustomActionbar
         android:id="@+id/custom_actionbar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
 	 />
-	<ScrollView 
-	    android:id="@+id/scroll_view"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent">	    
-   
-    <!-- WHEN -->
-    <LinearLayout android:id="@+id/when_container"
-        android:orientation="vertical"
+    -->
+
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"            
-        >
-        
-        <LinearLayout 
+        android:layout_height="fill_parent" >
+
+        <!-- WHEN -->
+
+        <LinearLayout
+            android:id="@+id/when_container"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:orientation="horizontal"
-            >
-            
-            <TextView 
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    style="@style/text_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/noOfrecords" />
+
+                <Spinner
+                    android:id="@+id/recordsSize_spinner"
+                    style="@style/text_row_value"
+                    android:layout_width="100dp"
+                    android:layout_height="45dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/what_label"
+                style="@style/text_label"
                 android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:text="@string/noOfrecords"
-	        	style="@style/text_label"/>   
-	        	
-            <Spinner
-	       		    android:id="@+id/recordsSize_spinner"
-	        		android:layout_width="100dp" 
-	        		android:layout_height="45dp"
-	        		style="@style/text_row_value"/>
-            
+                android:layout_height="wrap_content"
+                android:text="@string/dateFilters" />
+
+            <TextView
+                android:id="@+id/startDate_label"
+                style="@style/text_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/startDate" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/start_date"
+                    style="@style/button_style"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:gravity="left|center_vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/endDate_label"
+                style="@style/text_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/endDate" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/end_date"
+                    style="@style/button_style"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:gravity="left|center_vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/startSync"
+                    style="@style/button_style"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
+                    android:onClick="startSync"
+                    android:text="@string/syncNow" />
+
+                <Button
+                    android:id="@+id/syncLater"
+                    style="@style/button_style"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
+                    android:onClick="syncLater"
+                    android:text="@string/syncLater" />
+
+                <Button
+                    android:id="@+id/cancelSync"
+                    style="@style/button_style"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
+                    android:onClick="cancelSync"
+                    android:text="@string/syncCancel"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
-		<TextView android:id="@+id/what_label"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/dateFilters"
-	        style="@style/text_label"/>   
-        
+    </ScrollView>
 
-		<TextView android:id="@+id/startDate_label"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/startDate"
-	        style="@style/text_label"/> 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <Button android:id="@+id/start_date"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                android:gravity="left|center_vertical"
-                style="@style/button_style"/>              
-
-        </LinearLayout>   
-        <TextView android:id="@+id/endDate_label"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/endDate"
-	        style="@style/text_label"/> 
-          <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-          
-
-            <Button android:id="@+id/end_date"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
-                style="@style/button_style"
-                
-                android:gravity="left|center_vertical"/>                
-
-         </LinearLayout>  
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-         <Button android:id="@+id/startSync"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content" 
-                android:layout_weight="2"              
-                android:gravity="center_vertical"
-                android:onClick="startSync"
-                android:text="@string/syncNow"
-                style="@style/button_style"/> 
-      	<Button android:id="@+id/syncLater"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"   
-                android:layout_weight="2"            
-                android:gravity="center_vertical"
-                android:onClick="syncLater"
-                android:text="@string/syncLater"
-                style="@style/button_style"/> 
-        <Button android:id="@+id/cancelSync"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"   
-                android:layout_weight="2"            
-                android:gravity="center_vertical"
-                android:onClick="cancelSync"
-                android:visibility="gone"
-                android:text="@string/syncCancel"
-                style="@style/button_style"/> 
-                </LinearLayout>  
-    </LinearLayout>
-   </ScrollView>   
 </LinearLayout>

@@ -15,12 +15,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-/**
- * Common utilties and constants required by everyone
- * 
- * @author Vasavi
- * @author chander
- */
 public class Util {
 
     private static int mRequestId = 0;
@@ -72,11 +66,11 @@ public class Util {
     public static final String PREF_REST_URL = "restUrl";
 
     public static final String PREF_USERNAME = "usr";
-    
+
     public static final String PREF_FETCH_RECORDS_SIZE = "records_size";
 
     public static final String PREF_PASSWORD = "pwd";
-    
+
     public static final String PREF_STATUS = "prefStatus";
 
     public static final String PREF_ALARM_STATE = "alarm";
@@ -103,33 +97,33 @@ public class Util {
 
     // module names
     public static final String ACCOUNTS = "Accounts";
-    
+
     public static final String ACCOUNTS_CASES = "Accounts_cases";
-    
+
     public static final String ACCOUNTS_CONTACTS = "Accounts_contacts";
-    
+
     public static final String ACCOUNTS_OPPORTUNITIES = "Accounts_opportunities";
-    
+
     public static final String ACL_ACTIONS = "Acl_actions";
-    
+
     public static final String ACL_ROLES = "Acl_roles";
-    
+
     public static final String ALARMS = "Alarms";
 
     public static final String CONTACTS = "Contacts";
-    
+
     public static final String CONTACTS_CASES = "Contacts_cases";
-    
+
     public static final String CONTACTS_OPPORTUNITIES = "Contacts_opportunities";
 
     public static final String LEADS = "Leads";
-    
+
     public static final String LINK_FIELDS = "Link_fields";
 
     public static final String OPPORTUNITIES = "Opportunities";
-    
+
     public static final String MODULES = "Modules";
-    
+
     public static final String MODULES_FIELDS = "Module_fields";
 
     public static final String MEETINGS = "Meetings";
@@ -149,7 +143,7 @@ public class Util {
     public static final String STATUS = "Status";
 
     public static final String RECENT = "Recent";
-    
+
     public static final String SYNC_TABLE = "Sync_table";
 
     public static final String IMPORT_FLAG = "importFlag";
@@ -216,6 +210,10 @@ public class Util {
 
     private static final String LOG_TAG = Util.class.getSimpleName();
 
+    public static final String PREF_SORT_MODULE = "module";
+    public static final String PREF_SORT_MODULE_FILED = "module_filed";
+    public static final String PREF_SORT_ORDER = "sortby";
+
     /**
      * <p>
      * MD5, calculate the MD5 hash of a string
@@ -229,28 +227,29 @@ public class Util {
      */
     public static String MD5(String text) throws SugarCrmException {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            final MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(text.getBytes("iso-8859-1"), 0, text.length());
-            byte[] md5hash = md.digest();
+            final byte[] md5hash = md.digest();
             return convertToHex(md5hash);
-        } catch (UnsupportedEncodingException ue) {
+        } catch (final UnsupportedEncodingException ue) {
             throw new SugarCrmException(ue.getMessage());
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new SugarCrmException(e.getMessage());
         }
 
     }
 
     private static String convertToHex(byte[] data) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         for (int i = 0; i < data.length; i++) {
             int halfbyte = (data[i] >>> 4) & 0x0F;
             int two_halfs = 0;
             do {
-                if ((0 <= halfbyte) && (halfbyte <= 9))
+                if ((0 <= halfbyte) && (halfbyte <= 9)) {
                     buf.append((char) ('0' + halfbyte));
-                else
+                } else {
                     buf.append((char) ('a' + (halfbyte - 10)));
+                }
                 halfbyte = data[i] & 0x0F;
             } while (two_halfs++ < 1);
         }
@@ -258,8 +257,8 @@ public class Util {
     }
 
     /**
-     * changed from private to public so that anyone requiring unique requestIds for Pending Intents
-     * can get it
+     * changed from private to public so that anyone requiring unique requestIds
+     * for Pending Intents can get it
      * 
      * @return a int.
      */
@@ -277,16 +276,22 @@ public class Util {
      */
     public static boolean isNetworkOn(Context context) {
         boolean networkOn = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        final NetworkInfo networkInfo = connectivityManager
+                .getActiveNetworkInfo();
         if (networkInfo != null) {
 
-            Log.d(LOG_TAG, "network state name:" + networkInfo.getState().name());
-            Log.d(LOG_TAG, "NetworkInfo.State.CONNECTED name:" + NetworkInfo.State.CONNECTED.name()
-                                            + " " + networkInfo.isConnected());
+            Log.d(LOG_TAG, "network state name:"
+                    + networkInfo.getState().name());
+            Log.d(LOG_TAG,
+                    "NetworkInfo.State.CONNECTED name:"
+                            + NetworkInfo.State.CONNECTED.name() + " "
+                            + networkInfo.isConnected());
 
-            if (networkInfo.getState().name().equals(NetworkInfo.State.CONNECTED.name())) {
+            if (networkInfo.getState().name()
+                    .equals(NetworkInfo.State.CONNECTED.name())) {
                 networkOn = true;
             }
         }
@@ -295,11 +300,12 @@ public class Util {
     }
 
     /**
-     * Post notification, the package name of the context should be same as that of any activity you
-     * want to start.
+     * Post notification, the package name of the context should be same as that
+     * of any activity you want to start.
      * 
      * @param context
-     *            - context of the component posting notification, can be an activity/service etc
+     *            - context of the component posting notification, can be an
+     *            activity/service etc
      * @param clazz
      *            class of the optional activity that can be started
      * @param message
@@ -310,20 +316,24 @@ public class Util {
      * @param titleRes
      *            a int.
      */
-    public static synchronized int notify(Context context, Class<Activity> clazz,
-                                    int tickerTextRes, int titleRes, String message) {
+    public static synchronized int notify(Context context,
+            Class<Activity> clazz, int tickerTextRes, int titleRes,
+            String message) {
 
         // ComponentName comp = new ComponentName(context, clazz);
-        return notify(context, context.getPackageName(), clazz, tickerTextRes, titleRes, message);
+        return notify(context, context.getPackageName(), clazz, tickerTextRes,
+                titleRes, message);
 
     }
 
     /**
-     * Post notification, the package name should be same as that of any activity clazz you want to
-     * start and the context passed can be in any other package
+     * Post notification, the package name should be same as that of any
+     * activity clazz you want to start and the context passed can be in any
+     * other package
      * 
      * @param context
-     *            - context of the component posting notification, can be an activity/service etc
+     *            - context of the component posting notification, can be an
+     *            activity/service etc
      * @param clazz
      *            class of the optional activity that can be started
      * @param packageName
@@ -337,37 +347,49 @@ public class Util {
      * 
      * @return ID of notification so it can be cancelled/updated
      */
-    public static synchronized int notify(Context context, String packageName, Class clazz,
-                                    int tickerTextRes, int titleRes, String message) {
-        CharSequence tickerText = context.getResources().getText(tickerTextRes);
-        CharSequence title = context.getResources().getText(titleRes);
+    public static synchronized int notify(Context context, String packageName,
+            Class clazz, int tickerTextRes, int titleRes, String message) {
+        final CharSequence tickerText = context.getResources().getText(
+                tickerTextRes);
+        final CharSequence title = context.getResources().getText(titleRes);
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        ComponentName comp = new ComponentName(packageName, clazz.getSimpleName());
-        Intent intent = new Intent().setComponent(comp);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        Notification n = new Notification(android.R.drawable.stat_notify_sync_noanim, tickerText, System.currentTimeMillis());
+        final NotificationManager nm = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        final ComponentName comp = new ComponentName(packageName,
+                clazz.getSimpleName());
+        final Intent intent = new Intent().setComponent(comp);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        final Notification n = new Notification(
+                android.R.drawable.stat_notify_sync_noanim, tickerText,
+                System.currentTimeMillis());
         n.setLatestEventInfo(context, title, message, pendingIntent);
-        int id = getId();
+        final int id = getId();
         nm.notify(id, n);
         return id;
     }
 
-    public static synchronized int notify(Context context, Intent intent, String ticker,
-                                    String title, String message) {
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        Notification n = new Notification(android.R.drawable.stat_notify_sync_noanim, ticker, System.currentTimeMillis());
+    public static synchronized int notify(Context context, Intent intent,
+            String ticker, String title, String message) {
+        final NotificationManager nm = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        final Notification n = new Notification(
+                android.R.drawable.stat_notify_sync_noanim, ticker,
+                System.currentTimeMillis());
         n.setLatestEventInfo(context, title, message, pendingIntent);
         n.flags = Notification.FLAG_AUTO_CANCEL;
         n.defaults |= Notification.DEFAULT_SOUND;
-        int id = getId();
+        final int id = getId();
         nm.notify(0, n);
         return id;
     }
 
     public static synchronized void notificationCancel(Context context, int id) {
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        final NotificationManager nm = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancel(id);
     }
+
 }

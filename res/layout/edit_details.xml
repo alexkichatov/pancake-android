@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"   
+    android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg"
     android:paddingBottom="20dip" >
 
     <com.imaginea.android.sugarcrm.CustomActionbar
         android:id="@+id/custom_actionbar"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-	 />
+        android:layout_height="@dimen/actionbar_height" />
 
-  <!--  <TextView
+    <!--
+        <TextView
         android:id="@+id/accountName"
         style="@style/header_2_text_label"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/custom_actionbar" /> -->
+        android:layout_below="@id/custom_actionbar" />
+    -->
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -25,36 +25,37 @@
         android:layout_below="@id/custom_actionbar"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:scrollbars="horizontal|vertical" >
-        
-	   <LinearLayout
-	       android:id="@+id/moduleDetailsTable"
-	       android:layout_width="fill_parent"
-	       android:layout_height="fill_parent"
-	       android:orientation="vertical" >
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	
-	       <include layout="@layout/edit_table_row" />
-	   </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/moduleDetailsTable"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+
+            <include layout="@layout/edit_table_row" />
+        </LinearLayout>
     </ScrollView>
+
 </RelativeLayout>

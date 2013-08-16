@@ -1,16 +1,22 @@
 <resources>
 
-    <style name="Theme.Pancake" parent="android:style/Theme.Light.NoTitleBar"></style>
+    <style name="Theme.Pancake" parent="android:Theme.Holo.Light">
+        <item name="android:windowNoTitle">true</item>
+    </style>
 
-    <style name="Theme.Pancake.Settings" parent="android:style/Theme.Light"></style>
+    
+  <!--   <style name="Theme.Pancake.Settings" parent="android:style/Theme.Dialog">
+          <item name="android:windowNoTitle">true</item>
+    </style> -->
+    
+    
     
     <style name="header_text_label">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingLeft">10dip</item>
         <item name="android:paddingTop">5dip</item>
-        <item name="android:layout_marginLeft">5dip</item>
+       <!--  <item name="android:layout_marginLeft">5dip</item> -->
         <item name="android:layout_marginRight">5dip</item>
         <item name="android:gravity">center_vertical</item>
     </style>

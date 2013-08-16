@@ -10,8 +10,8 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
 import com.imaginea.android.sugarcrm.ModuleFields;
-import com.imaginea.android.sugarcrm.util.RestUtil;
-import com.imaginea.android.sugarcrm.util.SugarBean;
+import com.imaginea.android.sugarcrm.rest.Rest;
+import com.imaginea.android.sugarcrm.rest.SugarBean;
 
 /**
  * ContactsApiTest, tests the rest api calls
@@ -26,7 +26,8 @@ public class ContactsApiTest extends RestAPITest {
 
     String[] customFields = new String[] { "a", "b" };
 
-    String[] selectFields = { ModuleFields.FIRST_NAME, ModuleFields.LAST_NAME, ModuleFields.EMAIL1 };
+    String[] selectFields = { ModuleFields.FIRST_NAME, ModuleFields.LAST_NAME,
+            ModuleFields.EMAIL1 };
 
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
@@ -45,7 +46,7 @@ public class ContactsApiTest extends RestAPITest {
     @SmallTest
     public void testEntriesByDate() throws Exception {
         int offset = 0;
-        int maxResults = 20;
+        final int maxResults = 20;
         SugarBean[] sBeans = getSugarBeansFilterByDate(offset, maxResults);
         assertNotNull(sBeans);
         assertTrue(sBeans.length > 0);
@@ -62,15 +63,15 @@ public class ContactsApiTest extends RestAPITest {
 
     @SmallTest
     public void testContactsList() throws Exception {
-        int offset = 0;
-        int maxResults = 10;
+        final int offset = 0;
+        final int maxResults = 10;
         // String[] selectFields = new String[] {};
-        SugarBean[] sBeans = getSugarBeans(offset, maxResults);
+        final SugarBean[] sBeans = getSugarBeans(offset, maxResults);
         assertNotNull(sBeans);
         assertTrue(sBeans.length > 0);
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-            for (SugarBean sBean : sBeans) {
+            for (final SugarBean sBean : sBeans) {
                 assertNotNull(sBean);
                 Log.d(LOG_TAG, sBean.getBeanId());
                 Log.d(LOG_TAG, sBean.getFieldValue(ModuleFields.EMAIL1));
@@ -81,7 +82,7 @@ public class ContactsApiTest extends RestAPITest {
     @LargeTest
     public void testEntireContactList() throws Exception {
         int offset = 0;
-        int maxResults = 20;
+        final int maxResults = 20;
         // String[] selectFields = new String[] {};
         SugarBean[] sBeans = getSugarBeans(offset, maxResults);
         assertNotNull(sBeans);
@@ -98,39 +99,42 @@ public class ContactsApiTest extends RestAPITest {
     }
 
     /**
-     * demonstrates the usage of RestUtil for contacts List. ModuleFields.NAME or FULL_NAME is not
-     * returned by Sugar CRM. The fields that are not returned by SugarCRM can be automated, but not
-     * yet generated
+     * demonstrates the usage of RestUtil for contacts List. ModuleFields.NAME
+     * or FULL_NAME is not returned by Sugar CRM. The fields that are not
+     * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
      * @param maxResults
      * @return
      * @throws Exception
      */
-    private SugarBean[] getSugarBeans(int offset, int maxResults) throws Exception {
-        String query = "", orderBy = "";
+    private SugarBean[] getSugarBeans(final int offset, final int maxResults)
+            throws Exception {
+        final String query = "", orderBy = "";
 
-        int deleted = 0;
+        final int deleted = 0;
 
-        SugarBean[] sBeans = RestUtil.getEntryList(url, mSessionId, moduleName, query, orderBy, offset
-                                        + "", selectFields, linkNameToFieldsArray, maxResults + "", deleted
-                                        + "");
+        final SugarBean[] sBeans = Rest.getEntryList(url, mSessionId,
+                moduleName, query, orderBy, offset + "", selectFields,
+                linkNameToFieldsArray, maxResults + "", deleted + "");
         return sBeans;
     }
 
-    private SugarBean[] getSugarBeansFilterByDate(int offset, int maxResults) throws Exception {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        java.util.Date date = new java.util.Date();
+    private SugarBean[] getSugarBeansFilterByDate(final int offset,
+            final int maxResults) throws Exception {
+        final DateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+        final java.util.Date date = new java.util.Date();
         date.setDate(date.getDate() - 1);
 
-        String query = moduleName + "." + ModuleFields.DATE_MODIFIED + ">'"
-                                        + dateFormat.format(date) + "'";
-        String orderBy = "";
-        int deleted = 0;
+        final String query = moduleName + "." + ModuleFields.DATE_MODIFIED
+                + ">'" + dateFormat.format(date) + "'";
+        final String orderBy = "";
+        final int deleted = 0;
 
-        SugarBean[] sBeans = RestUtil.getEntryList(url, mSessionId, moduleName, query, orderBy, offset
-                                        + "", selectFields, linkNameToFieldsArray, maxResults + "", deleted
-                                        + "");
+        final SugarBean[] sBeans = Rest.getEntryList(url, mSessionId,
+                moduleName, query, orderBy, offset + "", selectFields,
+                linkNameToFieldsArray, maxResults + "", deleted + "");
         return sBeans;
     }
 

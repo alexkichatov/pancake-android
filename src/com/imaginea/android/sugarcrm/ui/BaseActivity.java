@@ -28,38 +28,42 @@ import com.imaginea.android.sugarcrm.util.ActivityHelper;
 
 /**
  * A base activity that defers common functionality across app activities to an
- * {@link ActivityHelper}. This class shouldn't be used directly; instead, activities should inherit
- * from {@link BaseSinglePaneActivity} or {@link BaseMultiPaneActivity}.
+ * {@link ActivityHelper}. This class shouldn't be used directly; instead,
+ * activities should inherit from {@link BaseSinglePaneActivity} or
+ * {@link BaseMultiPaneActivity}.
  */
 public abstract class BaseActivity extends FragmentActivity {
     final ActivityHelper mActivityHelper = ActivityHelper.createInstance(this);
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        //This is commented becuause currently using custom action bar.
-//        mActivityHelper.onPostCreate(savedInstanceState);
+        // This is commented becuause currently using custom action bar.
+        // mActivityHelper.onPostCreate(savedInstanceState);
     }
 
     @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    public boolean onKeyLongPress(final int keyCode, final KeyEvent event) {
         return mActivityHelper.onKeyLongPress(keyCode, event)
-                                        || super.onKeyLongPress(keyCode, event);
+                || super.onKeyLongPress(keyCode, event);
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return mActivityHelper.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+        return mActivityHelper.onKeyDown(keyCode, event)
+                || super.onKeyDown(keyCode, event);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mActivityHelper.onCreateOptionsMenu(menu) || super.onCreateOptionsMenu(menu);
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        return mActivityHelper.onCreateOptionsMenu(menu)
+                || super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mActivityHelper.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        return mActivityHelper.onOptionsItemSelected(item)
+                || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -70,24 +74,25 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     /**
-     * Takes a given intent and either starts a new activity to handle it (the default behavior), or
-     * creates/updates a fragment (in the case of a multi-pane activity) that can handle the intent.
+     * Takes a given intent and either starts a new activity to handle it (the
+     * default behavior), or creates/updates a fragment (in the case of a
+     * multi-pane activity) that can handle the intent.
      * 
      * Must be called from the main (UI) thread.
      */
-    public void openActivityOrFragment(Intent intent) {
+    public void openActivityOrFragment(final Intent intent) {
         // Default implementation simply calls startActivity
         startActivity(intent);
     }
 
     /**
-     * Converts an intent into a {@link Bundle} suitable for use as fragment arguments.
+     * Converts an intent into a {@link Bundle} suitable for use as fragment
+     * arguments.
      */
-    public static Bundle intentToFragmentArguments(Intent intent) {
-        Bundle arguments = new Bundle();
-        if (intent == null) {
+    public static Bundle intentToFragmentArguments(final Intent intent) {
+        final Bundle arguments = new Bundle();
+        if (intent == null)
             return arguments;
-        }
 
         final Uri data = intent.getData();
         if (data != null) {
@@ -105,11 +110,10 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Converts a fragment arguments bundle into an intent.
      */
-    public static Intent fragmentArgumentsToIntent(Bundle arguments) {
-        Intent intent = new Intent();
-        if (arguments == null) {
+    public static Intent fragmentArgumentsToIntent(final Bundle arguments) {
+        final Intent intent = new Intent();
+        if (arguments == null)
             return intent;
-        }
 
         final Uri data = arguments.getParcelable("_uri");
         if (data != null) {

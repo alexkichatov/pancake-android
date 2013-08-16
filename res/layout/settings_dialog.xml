@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/head1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="@string/login"
+        android:textColor="@android:color/white" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp" >
+
+        <EditText
+            android:id="@+id/crmUrl"
+            style="@style/edit_text_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/restUrl"
+            android:inputType="textUri"
+            android:maxLines="1"
+            android:paddingTop="20dp" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/loginUsername"
+            style="@style/edit_text_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/crmUrl"
+            android:hint="@string/username"
+            android:inputType="text"
+            android:singleLine="true" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#e2e2e2" />
+
+    <TextView
+        android:id="@+id/head2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="@string/notification"
+        android:textColor="@android:color/white" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp" >
+
+        <CheckBox
+            android:id="@+id/enableAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/alarmText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/enableAlarm"
+            android:text="@string/enablealarm"
+            android:textAppearance="?android:attr/textAppearanceLarge" >
+        </TextView>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#e2e2e2" />
+
+    <TextView
+        android:id="@+id/head3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="@string/sorting"
+        android:textColor="@android:color/white" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/sorting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp" 
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp" >
+
+        <Spinner
+            android:id="@+id/orderByModule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp" />
+
+        <Spinner
+            android:id="@+id/orderByName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/orderByModule"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp" />
+
+        <Spinner
+            android:id="@+id/orderBysort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/orderByName"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#e2e2e2" />
+
+    <TextView
+        android:id="@+id/head4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="@string/synchrnizing"
+        android:textColor="@android:color/white" >
+    </TextView>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp" >
+
+        <Spinner
+            android:id="@+id/recordsize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp"
+            android:paddingTop="20dp" />
+
+        <Button
+            android:id="@+id/startDate"
+            style="?android:attr/spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/recordsize"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp"
+            android:paddingTop="20dp"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/endDate"
+            style="?android:attr/spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/startDate"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp"
+            android:paddingTop="20dp"
+            android:textColor="@android:color/black" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp" >
+
+        <Button
+            android:id="@+id/dialogButtonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingBottom="20dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="20dp"
+            android:text="@string/cancel"
+            android:textColor="@android:color/black" >
+        </Button>
+
+        <Button
+            android:id="@+id/dialogButtonOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/dialogButtonCancel"
+            android:paddingBottom="20dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="20dp"
+            android:text="Apply"
+            android:textColor="@android:color/black" />
+    </RelativeLayout>
+
+</LinearLayout>

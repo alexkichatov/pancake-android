@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 
@@ -29,13 +28,9 @@ public class SugarCRMOperations {
 
     private final BatchOperation mBatchOperation;
 
-    private final DatabaseHelper databaseHelper;
-
     private boolean mYield;
 
     private long mRawId;
-
-    private int mBackReference;
 
     private boolean mIsNewId;
 
@@ -139,7 +134,6 @@ public class SugarCRMOperations {
         mModuleName = "";
         mYield = true;
         mBatchOperation = batchOperation;
-        databaseHelper = new DatabaseHelper(context);
     }
 
     /**
@@ -163,7 +157,6 @@ public class SugarCRMOperations {
             final String relationModuleName, final String accountName,
             final BatchOperation batchOperation) {
         this(context, batchOperation);
-        mBackReference = mBatchOperation.size();
         mModuleName = moduleName;
         mRelatedModuleName = relationModuleName;
         mIsNewId = true;
@@ -189,7 +182,6 @@ public class SugarCRMOperations {
     public SugarCRMOperations(final Context context, final String moduleName,
             final String accountName, final BatchOperation batchOperation) {
         this(context, batchOperation);
-        mBackReference = mBatchOperation.size();
         mModuleName = moduleName;
         mIsNewId = true;
         // mBuilder = newInsertCpo(contentUri, true).withValues(mValues);

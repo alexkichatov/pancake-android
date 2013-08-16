@@ -5,17 +5,17 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.test.AndroidTestCase;
 
-import com.imaginea.android.sugarcrm.util.RestUtil;
+import com.imaginea.android.sugarcrm.rest.Rest;
 
 /**
  * 
  * Extend this class for module specific unit tests.
  * 
- * Since this test doesn't need a {@link android.content.Context}, or any other dependencies
- * injected, it simply extends the standard {@link TestCase}.
+ * Since this test doesn't need a {@link android.content.Context}, or any other
+ * dependencies injected, it simply extends the standard {@link TestCase}.
  * 
- * See {@link com.imaginea.android.sugarcrm.AllTests} for documentation on running all tests and
- * individual tests in this application.
+ * See {@link com.imaginea.android.sugarcrm.AllTests} for documentation on
+ * running all tests and individual tests in this application.
  */
 public class RestAPITest extends AndroidTestCase {
 
@@ -49,7 +49,7 @@ public class RestAPITest extends AndroidTestCase {
 
     public void authenticate() throws Exception {
 
-        mSessionId = RestUtil.loginToSugarCRM(url, userName, password);
+        mSessionId = Rest.loginToSugarCRM(url, userName, password);
         assertNotNull(mSessionId);
     }
 }
