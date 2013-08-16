@@ -8,6 +8,11 @@ package com.imaginea.android.sugarcrm.util;
  */
 public class SugarCrmException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     private String mName;
 
     private final String mDescription;

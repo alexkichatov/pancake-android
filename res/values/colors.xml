@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<drawable name="screen_background_black">#ff000000</drawable>
-	<drawable name="translucent_background">#99000000</drawable>
-	<drawable name="transparent_background">#00000000</drawable>
-	<drawable name="android_title_bar">#999999</drawable>
 
-	<color name="white">#0106000b</color>
-	<color name="translucent_dark">#99000000</color>
-	<color name="translucenter_dark">#bf000000</color>
-	<color name="bright_foreground_dark">#ffffffff</color>
-	<color name="blue">#4e8ccf</color>
-	<color name="red">#FF0000</color>
-	
-	<color name="actionbar_text">#ff29549f</color>
+    <drawable name="screen_background_black">#ff000000</drawable>
+    <drawable name="translucent_background">#99000000</drawable>
+    <drawable name="transparent_background">#00000000</drawable>
+    <drawable name="android_title_bar">#999999</drawable>
 
+    <color name="white">#0106000b</color>
+    <color name="red_splash">#Eb5055</color>
+    <color name="translucent_dark">#99000000</color>
+    <color name="translucenter_dark">#bf000000</color>
+    <color name="bright_foreground_dark">#ffffffff</color>
+    <color name="blue">#4e8ccf</color>
+    <color name="red">#FF0000</color>
+    <color name="actionbar_text">#ff29549f</color>
     <color name="body_text_1">#ff000000</color>
     <color name="body_text_2">#99000000</color>
     <color name="body_text_disabled">#66000000</color>
-
     <color name="body_text_1_inverse">#ffffffff</color>
     <color name="body_text_2_inverse">#99ffffff</color>
-
     <color name="accent_1">#ff29549f</color>
     <color name="hyperlink">#ffff549f</color>
     <color name="background_1">#ffffffff</color>
-
     <color name="whats_on_separator">#4d000000</color>
-
     <color name="all_track_color">#ff222222</color>
-
     <color name="block_column_1">#ff0fabff</color>
     <color name="block_column_2">#ffdf1831</color>
     <color name="block_column_3">#ff009939</color>
     <color name="grey">#EDEDED</color>
-    
     <color name="actionbar_background_start">#96cdfc</color>
     <color name="actionbar_background_end">#439eef</color>
     <color name="actionbar_background_item_pressed_start">#23c5f1</color>
     <color name="actionbar_background_item_pressed_end">#23c5f1</color>
+    <color name="listview_row1">#EDEDED</color>
+    <color name="listview_row2">#F6F6F6</color>
+    <color name="calls">#68c39f</color>
+    <color name="meeting">#EB5055</color>
+    <color name="cases">#4766B5</color>
+    <color name="contacts">#68c39f</color>
+    <color name="opportunities">#9E81D5</color>
+    <color name="account">#00B2CE</color>
+    <color name="leads">#5C97DD</color>
+    <color name="recents">#68c39f</color>
+    <color name="campaigns">#E67F5C</color>
 </resources>

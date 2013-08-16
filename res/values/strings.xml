@@ -7,19 +7,21 @@
 		Opportunities and other modules of Sugar CRM</string>
     <string name="home">Home</string>
 
+    <!-- ActionBar Items -->
+    <string name="addNew">ADD NEW</string>
+    <string name="editDone">Done</string>
     <!-- Sugar CRM Settings -->
     <string name="userSummary">The username you use to log in to Sugar</string>
     <string name="pwdSummary">The password associated to your username</string>
     <string name="urlSummary">The REST URL of SugarCRM</string>
+    <string name="notification">NOTIFICATION</string>
+    <string name="sorting">SORTING</string>
+    <string name="synchrnizing">SYNCHRONIZING</string>
+     <string name="enablealarm">Enable Alarm</string>
 
     <!-- default values for settings -->
-    <!--
-		string
-		name="default_url">http://demo.sugarcrm.com/sugarcrm/service/v2/rest.php</string
-		http://192.168.10.90/sugarcrm/service/v2/rest.php
-    -->
 
-    <string name="defaultUrl">http://ec2-50-16-40-64.compute-1.amazonaws.com/sugarcrm/service/v2/rest.php</string>
+    <string name="defaultUrl">http://50.16.5.141/html/sugarcrm/service/v2/rest.php</string>
     <string name="defaultUser">will</string>
     <string name="defaultPwd">will</string>
 
@@ -40,15 +42,16 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="rememberPassword">Remember Password</string>
-    <string name="signIn">Sign in</string>
+    <string name="signIn">TAKE ME IN</string>
     <string name="validFieldMsg">Please enter a valid </string>
     <string name="authenticatingMsg">Authenticating\u2026</string>
     <string name="configureAppMsg">Configuring application\u2026</string>
     <string name="appNotConfigMsg">Application did not configure cleanly, please try
 		again !!!</string>
-	<string name="connecting">Connecting to server&#8230;</string>
-	
+    <string name="connecting">Connecting to server&#8230;</string>
+
     <!-- Wizard -->
+    <string name="logo_title">PANCAKE</string>
     <string name="restUrl">Enter your Sugar-CRM REST url</string>
     <string name="wizard_url_status_message">REST Url</string>
     <string name="back">Back</string>
@@ -135,10 +138,9 @@
     <string name="saving">Saving &#8230;</string>
     <string name="loading">Loading &#8230;</string>
     <string name="showAddressMsg">Show Map</string>
-    
     <string name="info">Info</string>
     <string name="syncMsg">Sync started. Please check notification bar for sync progress.</string>
     <string name="syncProgressMsg">Sync in progress. Please check notification bar for sync completion.</string>
-    <string name="networkUnavailable">Network Data Unavailable</string>    
+    <string name="networkUnavailable">Network Data Unavailable</string>
 
 </resources>

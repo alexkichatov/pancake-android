@@ -91,20 +91,20 @@ public abstract class BaseMultiPaneActivity extends BaseActivity {
      * fragment can act in place of an activity.
      */
     protected class FragmentReplaceInfo {
-        private final Class mFragmentClass;
+        private final Class<?> mFragmentClass;
 
         private final String mFragmentTag;
 
         private final int mContainerId;
 
-        public FragmentReplaceInfo(final Class fragmentClass,
+        public FragmentReplaceInfo(final Class<?> fragmentClass,
                 final String fragmentTag, final int containerId) {
             mFragmentClass = fragmentClass;
             mFragmentTag = fragmentTag;
             mContainerId = containerId;
         }
 
-        public Class getFragmentClass() {
+        public Class<?> getFragmentClass() {
             return mFragmentClass;
         }
 

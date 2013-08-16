@@ -8,10 +8,9 @@
 
     <TextView
         android:id="@+id/list_item_entry_lable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         style="@style/detail_list_label"
-/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -23,15 +22,17 @@
             android:id="@+id/list_assigned_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="12dp"
-            android:src="@drawable/add"
+            android:layout_gravity="center"
+            android:paddingLeft="10dp"
+            android:src="@drawable/ico_assignee"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/list_item_summary"
+            style="@style/detail_list_value"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-           style="@style/detail_list_value" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </LinearLayout>

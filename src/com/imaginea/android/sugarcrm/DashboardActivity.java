@@ -58,11 +58,6 @@ public class DashboardActivity extends BaseSinglePaneActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final String usr = SugarCrmSettings.getUsername(this);
-        if (usr == null) {
-            startActivityForResult(new Intent(this, WizardAuthActivity.class),
-                    Util.LOGIN_REQUEST_CODE);
-        }
     }
 
     /** {@inheritDoc} */
@@ -104,8 +99,10 @@ public class DashboardActivity extends BaseSinglePaneActivity {
     void showDashboard() {
         Log.d("DashbooardActivity", "show dashboard called");
         if (ViewUtil.isHoneycombTablet(DashboardActivity.this)) {
+            finish();
             final Intent myIntent = new Intent(DashboardActivity.this,
                     RecentModuleMultiPaneActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
             startActivity(myIntent);
         } else {

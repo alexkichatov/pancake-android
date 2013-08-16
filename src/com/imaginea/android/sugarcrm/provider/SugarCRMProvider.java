@@ -2255,6 +2255,7 @@ public class SugarCRMProvider extends ContentProvider {
 
     static Map<String, String> getProjectionMap(final String tableName,
             final String[] projections) {
+        @SuppressWarnings("unchecked")
         Map<String, String> projectionMap = mProjectionMaps.get(tableName);
         if (projectionMap != null)
             return projectionMap;
@@ -2266,6 +2267,7 @@ public class SugarCRMProvider extends ContentProvider {
         return projectionMap;
     }
 
+    @SuppressWarnings("rawtypes")
     static Map<String, Map> mProjectionMaps = new HashMap<String, Map>();
 
     static {

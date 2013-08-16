@@ -19,8 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
@@ -71,18 +69,16 @@ public class DashboardFragment extends Fragment {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final CustomActionbar actionBar = (CustomActionbar) getActivity()
-                .findViewById(R.id.custom_actionbar);
-        final Action homeAction = new IntentAction(
-                DashboardFragment.this.getActivity(), null,
-                R.drawable.pancake_logo);
-        actionBar.setHomeAction(homeAction);
-        actionBar.setTitle("Pancake");
-
-        final Action settingAction = new IntentAction(
-                DashboardFragment.this.getActivity(), createSettingsIntent(),
-                R.drawable.settings);
-        actionBar.addActionItem(settingAction);
+        /*
+         * final CustomActionbar actionBar = (CustomActionbar) getActivity()
+         * .findViewById(R.id.custom_actionbar); final Action homeAction = new
+         * IntentAction( DashboardFragment.this.getActivity(), null);
+         * actionBar.setHomeAction(homeAction); actionBar.setTitle("Pancake");
+         * 
+         * final Action settingAction = new IntentAction(
+         * DashboardFragment.this.getActivity(), createSettingsIntent());
+         * actionBar.addActionItem(settingAction);
+         */
 
         final GridView gridView = (GridView) root.findViewById(R.id.gridview);
         gridView.setAdapter(mAdapter);
@@ -134,13 +130,6 @@ public class DashboardFragment extends Fragment {
         }
         myIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
         startActivity(myIntent);
-    }
-
-    private Intent createSettingsIntent() {
-        final Intent myIntent = new Intent(
-                DashboardFragment.this.getActivity(), SugarCrmSettings.class);
-        myIntent.putExtra(RestConstants.MODULE_NAME, "settings");
-        return myIntent;
     }
 
     private class DashboardAdapter extends BaseAdapter {

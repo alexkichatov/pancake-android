@@ -25,7 +25,7 @@ public class EditModuleDetailActivity extends BaseSinglePaneActivity {
         super.onPostCreate(savedInstanceState);
         getActivityHelper().setupSubActivity();
     }
-    
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -34,18 +34,28 @@ public class EditModuleDetailActivity extends BaseSinglePaneActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    
-    
-   public Dialog onCreateDialog(int id) {
 
-       return new AlertDialog.Builder(this).setTitle(id).setMessage(R.string.discardAlert).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int whichButton) {
-               finish(); 
-           }
-       }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int whichButton) {
+    @Override
+    public Dialog onCreateDialog(int id) {
 
-           }
-       }).create();
-   }
+        return new AlertDialog.Builder(this)
+                .setTitle(id)
+                .setMessage(R.string.discardAlert)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                    int whichButton) {
+                                finish();
+                            }
+                        })
+                .setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                    int whichButton) {
+
+                            }
+                        }).create();
+    }
 }

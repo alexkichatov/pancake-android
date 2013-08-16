@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
+import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
@@ -91,30 +93,13 @@ public class RecentModuleListFragment extends ListFragment {
         // final Intent intent =
         // BaseActivity.fragmentArgumentsToIntent(getArguments());
         final Bundle extras = intent.getExtras();
+
         mModuleName = Util.CONTACTS;
         if (extras != null) {
             mModuleName = extras.getString(RestConstants.MODULE_NAME);
         }
 
-        // If the list is a list of related items, hide the filterImage and
-        // allItems image
-        // if (intent.getData() != null &&
-        // intent.getData().getPathSegments().size() >= 3) {
-        // getActivity().findViewById(R.id.filterImage).setVisibility(View.GONE);
-        // getActivity().findViewById(R.id.allItems).setVisibility(View.GONE);
-        // }
-
-        // TextView tv = (TextView) getActivity().findViewById(R.id.headerText);
-        // tv.setText(mModuleName);
-        final CustomActionbar actionBar = (CustomActionbar) getActivity()
-                .findViewById(R.id.custom_actionbar);
-        actionBar.setTitle(mModuleName);
-
-        final Action homeAction = new IntentAction(
-                RecentModuleListFragment.this.getActivity(), new Intent(
-                        RecentModuleListFragment.this.getActivity(),
-                        DashboardActivity.class), R.drawable.home);
-        actionBar.setHomeAction(homeAction);
+        setUpActionBar();
 
         mListView = getListView();
 
@@ -134,6 +119,8 @@ public class RecentModuleListFragment extends ListFragment {
         mListView.setFocusable(true);
         mEmpty = getActivity().findViewById(R.id.empty);
         mListView.setEmptyView(mEmpty);
+        mListView.setFastScrollEnabled(false);
+        mListView.setScrollbarFadingEnabled(true);
         // registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
@@ -157,12 +144,19 @@ public class RecentModuleListFragment extends ListFragment {
 
         // CRMContentObserver observer = new CRMContentObserver()
         // cursor.registerContentObserver(observer);
+        int[] ids = new int[] { R.id.text1, R.id.text2, R.id.text3, R.id.text5 };
+
+        if (mModuleName.equals(Util.CONTACTS) || mModuleName.equals(Util.LEADS)) {
+            ids = new int[] { R.id.text1, R.id.textLastName, R.id.text2,
+                    R.id.text3, R.id.text5 };
+        } else if (mModuleName.equals(Util.RECENT)) {
+            ids = new int[] { R.id.text1, R.id.text2, R.id.text5 };
+        }
         final String[] moduleSel = ContentUtils
                 .getModuleListSelections(mModuleName);
         if (moduleSel.length >= 2) {
             mAdapter = new GenericCursorAdapter(getActivity(),
-                    R.layout.contact_listitem, cursor, moduleSel, new int[] {
-                            android.R.id.text1, android.R.id.text2 });
+                    R.layout.contact_listitem, cursor, moduleSel, ids);
         } else {
             mAdapter = new GenericCursorAdapter(getActivity(),
                     R.layout.contact_listitem, cursor, moduleSel,
@@ -200,6 +194,52 @@ public class RecentModuleListFragment extends ListFragment {
 
     }
 
+    private void setUpActionBar() {
+
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
+
+        final Intent myIntent = new Intent(getActivity(),
+                RecentModuleMultiPaneActivity.class);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+
+        final Action recentAction = new IntentAction(getActivity(), myIntent);
+
+        actionBar.setHomeAction(recentAction);
+        actionBar.setTitle(mModuleName);
+
+        final ImageView settingsView = (ImageView) getActivity().findViewById(
+                R.id.settings);
+        settingsView.setVisibility(View.VISIBLE);
+        /* Set Action to Settings Button */
+        final Action settingsAction = new IntentAction(
+                RecentModuleListFragment.this.getActivity(),
+                createSettingsIntent());
+        actionBar.setSettingAction(settingsAction);
+
+        final ImageView syncView = (ImageView) getActivity().findViewById(
+                R.id.sync);
+        syncView.setVisibility(View.VISIBLE);
+        syncView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO
+
+            }
+        });
+
+    }
+
+    private Intent createSettingsIntent() {
+        final Intent myIntent = new Intent(
+                RecentModuleListFragment.this.getActivity(),
+                SugarCrmSettings.class);
+        myIntent.putExtra(RestConstants.MODULE_NAME, "settings");
+        return myIntent;
+    }
+
     /**
      * GenericCursorAdapter
      */
@@ -224,6 +264,7 @@ public class RecentModuleListFragment extends ListFragment {
 
             final View v = super.getView(position, convertView, parent);
             final int count = getCursor().getCount();
+
             Log.d(LOG_TAG, "Get Item" + getItemId(position));
             if (!mBusy && position != 0 && position == count - 1) {
                 mBusy = true;
@@ -257,6 +298,34 @@ public class RecentModuleListFragment extends ListFragment {
                 mListFooterText.setText("Loading...");
                 // Non-null tag means the view still needs to load it's data
                 // text.setTag(this);
+            }
+
+            final TextView moduleTextView = (TextView) v
+                    .findViewById(R.id.text5);
+            if (moduleTextView != null) {
+                final String moduleName = moduleTextView.getText().toString();
+                Log.e("Module", "value for moduel name : " + moduleName);
+                Log.e(LOG_TAG,
+                        "Module name from textview:: "
+                                + moduleTextView.getText());
+                moduleTextView.setBackgroundColor(getResources().getColor(
+                        ContentUtils.getModuleColor(moduleName)));
+            }
+
+            if (position % 2 == 0) {
+                v.setBackgroundColor(getResources().getColor(
+                        R.color.listview_row1));
+                if (moduleTextView != null) {
+                    moduleTextView.setTextColor(getResources().getColor(
+                            R.color.listview_row1));
+                }
+            } else {
+                v.setBackgroundColor(getResources().getColor(
+                        R.color.listview_row2));
+                if (moduleTextView != null) {
+                    moduleTextView.setTextColor(getResources().getColor(
+                            R.color.listview_row1));
+                }
             }
             return v;
         }
@@ -305,8 +374,7 @@ public class RecentModuleListFragment extends ListFragment {
         // use the details available from cursor to open detailed view
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
         detailIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(2));
-        detailIntent.putExtra(RestConstants.MODULE_NAME,
-                cursor.getString(3));
+        detailIntent.putExtra(RestConstants.MODULE_NAME, cursor.getString(3));
         detailIntent.putExtra("Recent", true);
         Log.d(LOG_TAG,
                 "rowId:" + cursor.getString(1) + "BEAN_ID:"

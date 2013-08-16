@@ -3,7 +3,6 @@
     android:id="@+id/home"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg"
     android:orientation="vertical" >
 
     <!-- include layout="@layout/header" /-->

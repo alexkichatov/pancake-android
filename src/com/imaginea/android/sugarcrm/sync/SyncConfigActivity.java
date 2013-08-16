@@ -69,9 +69,12 @@ public class SyncConfigActivity extends Activity {
         final CustomActionbar actionBar = (CustomActionbar) findViewById(R.id.custom_actionbar);
 
         final Action homeAction = new IntentAction(this, new Intent(this,
-                DashboardActivity.class), R.drawable.home);
-        actionBar.setHomeAction(homeAction);
-        actionBar.setTitle(getString(R.string.syncSettings));
+                DashboardActivity.class));
+        if(actionBar != null){
+        	actionBar.setHomeAction(homeAction);
+            actionBar.setTitle(getString(R.string.syncSettings));
+        }
+        
 
         mRecordsSizeSpinner = (Spinner) findViewById(R.id.recordsSize_spinner);
         final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
@@ -119,7 +122,6 @@ public class SyncConfigActivity extends Activity {
      * @param v
      *            a {@link android.view.View} object.
      */
-    @SuppressWarnings("deprecation")
     public void startSync(final View v) {
         final Bundle extras = new Bundle();
         // extras.putInt(key, value)

@@ -16,6 +16,8 @@
             style="@style/detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/editimage"
             android:contentDescription="?android:text" />
 
         <ImageView
@@ -26,8 +28,6 @@
             android:layout_toLeftOf="@+id/deleteimage"
             android:clickable="true"
             android:onClick="imageClick"
-            android:paddingRight="20dp"
-            android:paddingTop="40dp"
             android:src="@drawable/edit" />
 
         <ImageView
@@ -36,11 +36,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="30dp"
             android:adjustViewBounds="true"
             android:clickable="true"
             android:onClick="imageClick"
-            android:paddingTop="40dp"
             android:src="@drawable/delete" />
     </RelativeLayout>
 
@@ -53,7 +51,7 @@
         android:layout_marginRight="30dp"
         android:layout_weight="1"
         android:background="#FFFFFF"
-        android:cacheColorHint="#00000000"
+        android:cacheColorHint="@android:color/transparent"
         android:drawSelectorOnTop="false"
         android:fadeScrollbars="false"
         android:fastScrollEnabled="true" />

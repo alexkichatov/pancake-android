@@ -57,7 +57,7 @@ public class ModuleFieldsParser {
     private void setModuleFields(final JSONObject moduleFieldsJSON)
             throws JSONException {
         moduleFields = new ArrayList<ModuleField>();
-        final Iterator iterator = moduleFieldsJSON.keys();
+        final Iterator<?> iterator = moduleFieldsJSON.keys();
         while (iterator.hasNext()) {
             final String key = (String) iterator.next();
             if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {
@@ -72,7 +72,7 @@ public class ModuleFieldsParser {
     private void setLinkFields(final JSONObject linkFieldsJSON)
             throws JSONException {
         linkFields = new ArrayList<LinkField>();
-        final Iterator iterator = linkFieldsJSON.keys();
+        final Iterator<?> iterator = linkFieldsJSON.keys();
         while (iterator.hasNext()) {
             final String key = (String) iterator.next();
             if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {

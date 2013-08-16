@@ -38,7 +38,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, EMAIL1, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, PARENT_NAME, EMAIL1 };
 
         public static final String[] SEARCH_PROJECTION = {
                 RECORD_ID,
@@ -165,8 +165,7 @@ public final class SugarCRMContent {
         public static final String[] REST_LIST_PROJECTION = { ModuleFields.ID,
                 FIRST_NAME, LAST_NAME, EMAIL1 };
 
-        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME,
-                LAST_NAME };
+        public static final String[] LIST_VIEW_PROJECTION = {  LAST_NAME, FIRST_NAME, ACCOUNT_NAME, EMAIL1 };
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 FIRST_NAME, LAST_NAME, ACCOUNT_NAME, EMAIL1, PHONE_MOBILE,
@@ -293,7 +292,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME_1, NAME_2, REF_MODULE_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME_1, NAME_2 };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME_1, NAME_2, REF_MODULE_NAME };
 
         // Details projection is not needed for recent, as the record_id,
         // bean_id and module name
@@ -315,8 +314,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 FIRST_NAME, LAST_NAME, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME,
-                LAST_NAME };
+        public static final String[] LIST_VIEW_PROJECTION = {LAST_NAME, FIRST_NAME, ACCOUNT_NAME, EMAIL1};
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 FIRST_NAME, LAST_NAME, ACCOUNT_NAME, EMAIL1, LEAD_SOURCE,
@@ -375,7 +373,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, OPPORTUNITY_TYPE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, ACCOUNT_NAME, DATE_CLOSED };
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, ACCOUNT_NAME, DATE_CLOSED, AMOUNT, OPPORTUNITY_TYPE,
@@ -457,8 +455,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, CASE_NUMBER, PRIORITY, DATE_MODIFIED, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, PRIORITY,
-                DATE_MODIFIED };
+        public static final String[] LIST_VIEW_PROJECTION = {  NAME, ACCOUNT_NAME, DATE_ENTERED };
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, ACCOUNT_NAME, DATE_ENTERED, CASE_NUMBER, PRIORITY,
@@ -511,7 +508,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, START_DATE };
+        public static final String[] LIST_VIEW_PROJECTION = {NAME, START_DATE,  ASSIGNED_USER_NAME};
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, ACCOUNT_NAME, START_DATE, ASSIGNED_USER_NAME,
@@ -564,7 +561,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME, START_DATE };
+        public static final String[] LIST_VIEW_PROJECTION = {  NAME, START_DATE, DURATION_HOURS };
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, START_DATE, DURATION_HOURS,/* ACCOUNT_NAME */
@@ -620,7 +617,7 @@ public final class SugarCRMContent {
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, START_DATE, CREATED_BY_NAME };
 
-        public static final String[] LIST_VIEW_PROJECTION = { NAME };
+        public static final String[] LIST_VIEW_PROJECTION = { NAME, END_DATE, CAMPAIGN_TYPE };
 
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
                 NAME, START_DATE, CAMPAIGN_TYPE, STATUS, END_DATE, BUDGET,

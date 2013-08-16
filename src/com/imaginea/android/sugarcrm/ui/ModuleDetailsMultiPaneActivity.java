@@ -1,5 +1,6 @@
 package com.imaginea.android.sugarcrm.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,5 +86,15 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity {
 
     public void showHome(final View view) {
         // TODO
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
+       
     }
 }

@@ -8,8 +8,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,11 +31,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
 import com.imaginea.android.sugarcrm.CustomActionbar.Action;
 import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
@@ -41,6 +46,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
+import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ServiceHelper;
@@ -76,15 +82,13 @@ public class ModuleListFragment extends ListFragment implements
 
     private int mSortColumnIndex;
 
-    private int MODE = Util.LIST_MODE;
-
     private String mSelections = ModuleFields.DELETED + "=?";
 
     private String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
 
     private SugarCrmApp app;
 
-    private boolean bRelationItem = true;
+    private final boolean bRelationItem = true;
 
     public final static String LOG_TAG = ModuleListFragment.class
             .getSimpleName();
@@ -102,6 +106,9 @@ public class ModuleListFragment extends ListFragment implements
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        /* Dummy Holder Object to hold previously selected list row state */
+        final ListItemView listItemView = new ListItemView(null, 0);
+
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         app = (SugarCrmApp) getActivity().getApplication();
         final Intent intent = getActivity().getIntent();
@@ -116,35 +123,32 @@ public class ModuleListFragment extends ListFragment implements
 
         mIntentUri = intent.getData();
 
-        final CustomActionbar actionBar = (CustomActionbar) getActivity()
-                .findViewById(R.id.custom_actionbar);
-
-        final Action homeAction = new IntentAction(
-                ModuleListFragment.this.getActivity(), new Intent(
-                        ModuleListFragment.this.getActivity(),
-                        DashboardActivity.class), R.drawable.home);
-        actionBar.setHomeAction(homeAction);
-        actionBar.setTitle(mModuleName);
-
-        if (mIntentUri == null || mIntentUri.getPathSegments().size() < 3) {
-            actionBar.addActionItem(new IntentAction(ModuleListFragment.this
-                    .getActivity(), AddAction(), R.drawable.add));
-            actionBar.addActionItem(new SearchAction());
-            actionBar.addActionItem(new SortAction());
-            actionBar.addActionItem(new SyncAction());
-            actionBar.addActionItem(new ShowAllAction());
-            actionBar.addActionItem(new ShowAssignedAction());
-
-            bRelationItem = false;
-        }
-
         mListView = getListView();
 
-        // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> arg0, final View view,
                     final int position, final long id) {
+                Log.e(LOG_TAG, "item clicked::" + position);
+
+                view.setBackgroundColor(getResources().getColor(
+                        ContentUtils.getModuleColor(mModuleName)));
+
+                if (listItemView.getView() != null) {
+                    // check for odd or even to set alternate colors to the row
+                    // background
+                    if (listItemView.getPosition() % 2 == 0) {
+                        listItemView.getView().setBackgroundColor(
+                                getResources().getColor(R.color.listview_row1));
+                    } else {
+                        listItemView.getView().setBackgroundColor(
+                                getResources().getColor(R.color.listview_row2));
+                    }
+                }
+
+                /* Update current row to the holder object */
+                listItemView.setView(view);
+                listItemView.setPosition(position);
                 addToRecent(position);
                 openDetailScreen(position);
             }
@@ -153,6 +157,8 @@ public class ModuleListFragment extends ListFragment implements
         // button code in the layout - 1.6 SDK feature to specify onClick
         mListView.setItemsCanFocus(true);
         mListView.setFocusable(true);
+        mListView.setFastScrollEnabled(false);
+        mListView.setScrollbarFadingEnabled(true);
 
         final View empty = getActivity().findViewById(R.id.empty);
         final TextView tv1 = (TextView) (empty.findViewById(R.id.mainText));
@@ -161,26 +167,32 @@ public class ModuleListFragment extends ListFragment implements
 
         registerForContextMenu(getListView());
 
-        if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-            Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
-        }
-
         mModuleUri = ContentUtils.getModuleUri(mModuleName);
         if (mIntentUri == null) {
             intent.setData(mModuleUri);
             mIntentUri = mModuleUri;
         }
 
+        int[] ids = new int[] { R.id.text1, R.id.text2, R.id.text3 };
         mModuleFields = ContentUtils.getModuleListSelections(mModuleName);
+
+        if (mModuleName.equals(Util.CONTACTS) || mModuleName.equals(Util.LEADS)) {
+            ids = new int[] { R.id.text1, R.id.textLastName, R.id.text2,
+                    R.id.text3 };
+        } else if (mModuleName.equals(Util.RECENT)) {
+            ids = new int[] { R.id.text1, R.id.text2, R.id.text5 };
+        }
+
+        Log.e(LOG_TAG, mModuleName + " Fields length::" + mModuleFields.length);
         if (mModuleFields.length >= 2) {
-            mAdapter = new SimpleCursorAdapter(getActivity(),
-                    R.layout.contact_listitem, null, mModuleFields, new int[] {
-                            android.R.id.text1, android.R.id.text2 }, 0);
+            mAdapter = new CustomCursorAdapter(getActivity(),
+                    R.layout.contact_listitem, null, mModuleFields, ids, 0);
         } else {
-            mAdapter = new SimpleCursorAdapter(getActivity(),
+            mAdapter = new CustomCursorAdapter(getActivity(),
                     R.layout.contact_listitem, null, mModuleFields,
                     new int[] { android.R.id.text1 }, 0);
         }
+
         setListAdapter(mAdapter);
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
@@ -212,8 +224,138 @@ public class ModuleListFragment extends ListFragment implements
                 fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
             }
         }
+        /* Action bar related modification */
+        setUpActionBar();
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    private void setUpActionBar() {
+
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
+
+        final Intent myIntent = new Intent(getActivity(),
+                RecentModuleMultiPaneActivity.class);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+
+        final Action recentAction = new IntentAction(
+                ModuleListFragment.this.getActivity(), myIntent);
+
+        actionBar.setHomeAction(recentAction);
+        actionBar.setTitle(mModuleName);
+
+        final ImageView settingsView = (ImageView) getActivity().findViewById(
+                R.id.settings);
+        settingsView.setVisibility(View.VISIBLE);
+
+        /* Set Action to Settings Button */
+        final Action settingsAction = new IntentAction(
+                ModuleListFragment.this.getActivity(), createSettingsIntent());
+        actionBar.setSettingAction(settingsAction);
+
+        final ImageView syncView = (ImageView) getActivity().findViewById(
+                R.id.sync);
+        syncView.setVisibility(View.VISIBLE);
+        syncView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                SyncAction(v);
+
+            }
+        });
+
+        final ImageView searchView = (ImageView) getActivity().findViewById(
+                R.id.search);
+        searchView.setVisibility(View.VISIBLE);
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                onSearchRequested();
+
+            }
+        });
+
+        final LinearLayout addNewView = (LinearLayout) getActivity()
+                .findViewById(R.id.addNew);
+        addNewView.setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.add);
+        /* Set Action to Add Button */
+        final Action addAction = new IntentAction(
+                ModuleListFragment.this.getActivity(), AddAction());
+        actionBar.setAddAction(addAction);
+
+        getResources().getConfiguration();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            final TextView addNewTextView = (TextView) getActivity()
+                    .findViewById(R.id.addNewText);
+            addNewTextView.setVisibility(View.GONE);
+        }
+
+        final Spinner spinnerView = (Spinner) getActivity().findViewById(
+                R.id.orderBySpinner);
+        spinnerView.setVisibility(View.VISIBLE);
+        final Map<String, String> mSortOrder = app
+                .getModuleSortOrder(mModuleName);
+
+        if (mSortOrder != null) {
+            for (final Entry<String, String> entry : mSortOrder.entrySet()) {
+                for (mSortColumnIndex = 0; mSortColumnIndex < mModuleFieldsChoice.length;) {
+                    if (fieldMap.get(mModuleFieldsChoice[mSortColumnIndex])
+                            .equals(entry.getKey())) {
+                        break;
+                    }
+                    mSortColumnIndex++;
+                }
+            }
+        }
+        if (mSortColumnIndex == mModuleFieldsChoice.length) {
+            mSortColumnIndex = 0;
+        }
+
+        // String[] mModules = (String[]) mSortOrder.keySet().toArray(new
+        // String[mSortOrder.size()]);
+
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                mModuleFieldsChoice);
+        spinnerView.setAdapter(spinnerArrayAdapter);
+        spinnerView
+                .setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView,
+                            View selectedItemView, int position, long id) {
+                        // your code here
+                        final String sortOrder = mModuleFields[position]
+                                + " ASC";
+                        app.setModuleSortOrder(mModuleName,
+                                fieldMap.get(mModuleFieldsChoice[position]),
+                                "ASC");
+                        Log.e(LOG_TAG, "Sort order::" + sortOrder);
+                        sortList(sortOrder);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // your code here
+                    }
+
+                });
+        final View separator2 = getActivity().findViewById(
+                R.id.actionbar_homeseperator2);
+        separator2.setVisibility(View.VISIBLE);
+
+    }
+
+    private Intent createSettingsIntent() {
+        final Intent myIntent = new Intent(
+                ModuleListFragment.this.getActivity(), SugarCrmSettings.class);
+        myIntent.putExtra(RestConstants.MODULE_NAME, "settings");
+        return myIntent;
     }
 
     /**
@@ -280,21 +422,6 @@ public class ModuleListFragment extends ListFragment implements
 
         startActivity(editDetailsIntent);
 
-        /*
-         * ModuleDetailFragment details = (ModuleDetailFragment)
-         * getFragmentManager().findFragmentByTag("module_detail"); //if
-         * (details != null) {
-         * 
-         * We can display everything in-place with fragments. Have the list
-         * highlight this item and show the data. Make new fragment to show this
-         * selection.
-         * 
-         * // getListView().setItemChecked(position, true); //
-         * ((BaseMultiPaneActivity)
-         * getActivity()).openActivityOrFragment(editDetailsIntent);
-         * 
-         * //} else { startActivity(editDetailsIntent); // }
-         */
     }
 
     /**
@@ -453,11 +580,7 @@ public class ModuleListFragment extends ListFragment implements
     }
 
     private void sortList(final String sortOrder) {
-        String selection = null;
-        if (MODE == Util.ASSIGNED_ITEMS_MODE) {
-            final String userName = SugarCrmSettings.getUsername(getActivity());
-            selection = ModuleFields.ASSIGNED_USER_NAME + "='" + userName + "'";
-        }
+        final String selection = null;
         mSelections = selection;
         mSelectionArgs = null;
         getLoaderManager().restartLoader(0, null, this);
@@ -535,6 +658,35 @@ public class ModuleListFragment extends ListFragment implements
                 getActivity().getString(R.string.email)));
     }
 
+    private Intent AddAction() {
+        final Intent myIntent = new Intent(getActivity(),
+                EditModuleDetailActivity.class);
+        myIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
+        return myIntent;
+
+    }
+
+    public void SyncAction(final View view) {
+        if (!Util.isNetworkOn(getActivity().getBaseContext())) {
+            Toast.makeText(getActivity(), R.string.networkUnavailable,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            final SugarCrmApp app = (SugarCrmApp) getActivity()
+                    .getApplication();
+            final String usr = SugarCrmSettings.getUsername(getActivity())
+                    .toString();
+            if (ContentResolver.isSyncActive(app.getAccount(usr),
+                    SugarCRMProvider.AUTHORITY)) {
+                final DialogFragment newFragment = new ModuleListAlertDialogFragment(
+                        R.string.info);
+                newFragment.show(getFragmentManager(), "dialog");
+                return;
+            }
+            startModuleSync();
+
+        }
+    }
+
     private void startModuleSync() {
         Log.d(LOG_TAG, "startModuleSync");
         final Bundle extras = new Bundle();
@@ -547,145 +699,6 @@ public class ModuleListFragment extends ListFragment implements
                 ModuleListFragment.this.getActivity()).toString();
         ContentResolver.requestSync(app.getAccount(usr),
                 SugarCRMProvider.AUTHORITY, extras);
-    }
-
-    /*
-     * // Task to sync individual module class ModuleSyncTask extends
-     * AsyncTask<Object, Object, Object> {
-     * 
-     * boolean hasExceptions = false;
-     * 
-     * SharedPreferences prefs;
-     * 
-     * ProgressDialog mProgressDialog;
-     * 
-     * @Override protected void onPreExecute() { super.onPreExecute(); prefs =
-     * PreferenceManager
-     * .getDefaultSharedPreferences(ModuleListFragment.this.getActivity());
-     * mProgressDialog =
-     * ViewUtil.getProgressDialog(ModuleListFragment.this.getActivity(),
-     * "Syncing...", true); mProgressDialog.show(); }
-     * 
-     * @Override protected Object doInBackground(Object... args) {
-     * startModuleSync(); return true; }
-     * 
-     * @Override protected void onCancelled() { super.onCancelled(); }
-     * 
-     * @Override protected void onPostExecute(Object sessionId) {
-     * super.onPostExecute(sessionId); if (isCancelled()) return;
-     * 
-     * mProgressDialog.cancel(); mProgressDialog = null; }
-     * 
-     * @SuppressWarnings("deprecation") private void startModuleSync() {
-     * Log.d(LOG_TAG, "startModuleSync"); Bundle extras = new Bundle();
-     * extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
-     * extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULE_DATA);
-     * extras.putString(RestUtilConstants.MODULE_NAME, mModuleName); SugarCrmApp
-     * app = (SugarCrmApp)
-     * ModuleListFragment.this.getActivity().getApplication(); final String usr
-     * =
-     * SugarCrmSettings.getUsername(ModuleListFragment.this.getActivity()).toString
-     * (); ContentResolver.requestSync(app.getAccount(usr),
-     * SugarCRMProvider.AUTHORITY, extras); } }
-     */
-    private Intent AddAction() {
-        final Intent myIntent = new Intent(getActivity(),
-                EditModuleDetailActivity.class);
-        myIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
-        return myIntent;
-    }
-
-    private class SearchAction extends AbstractAction {
-
-        public SearchAction() {
-            super(R.drawable.search);
-        }
-
-        @Override
-        public void performAction(final View view) {
-            onSearchRequested();
-        }
-    }
-
-    private class SortAction extends AbstractAction {
-
-        public SortAction() {
-            super(R.drawable.more, "Sort");
-        }
-
-        @Override
-        public void performAction(final View view) {
-            final DialogFragment newFragment = new ModuleListAlertDialogFragment(
-                    R.string.sortBy);
-            newFragment.show(getFragmentManager(), "dialog");
-        }
-    }
-
-    private class SyncAction extends AbstractAction {
-
-        public SyncAction() {
-            super(R.drawable.more, "Sync");
-        }
-
-        @Override
-        public void performAction(final View view) {
-            if (!Util.isNetworkOn(getActivity().getBaseContext())) {
-                Toast.makeText(getActivity(), R.string.networkUnavailable,
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                final SugarCrmApp app = (SugarCrmApp) getActivity()
-                        .getApplication();
-                final String usr = SugarCrmSettings.getUsername(getActivity())
-                        .toString();
-                if (ContentResolver.isSyncActive(app.getAccount(usr),
-                        SugarCRMProvider.AUTHORITY)) {
-                    final DialogFragment newFragment = new ModuleListAlertDialogFragment(
-                            R.string.info);
-                    newFragment.show(getFragmentManager(), "dialog");
-                    return;
-                }
-                startModuleSync();
-                // mSyncTask = new ModuleSyncTask();
-                // mSyncTask.execute();
-            }
-        }
-    }
-
-    private class ShowAllAction extends AbstractAction {
-
-        public ShowAllAction() {
-            super(R.drawable.more, "All");
-        }
-
-        @Override
-        public void performAction(final View view) {
-
-            MODE = Util.LIST_MODE;
-            mSelections = null;
-            mSelectionArgs = null;
-
-            getLoaderManager().restartLoader(0, null, ModuleListFragment.this);
-        }
-    }
-
-    private class ShowAssignedAction extends AbstractAction {
-
-        public ShowAssignedAction() {
-            super(R.drawable.more, "Assigned");
-        }
-
-        @Override
-        public void performAction(final View view) {
-
-            MODE = Util.ASSIGNED_ITEMS_MODE;
-            final String userName = SugarCrmSettings.getUsername(getActivity());
-            final String selection = ModuleFields.ASSIGNED_USER_NAME + "='"
-                    + userName + "'";
-
-            mSelections = selection;
-            mSelectionArgs = null;
-            getLoaderManager().restartLoader(0, null, ModuleListFragment.this);
-        }
     }
 
     @Override
@@ -850,6 +863,58 @@ public class ModuleListFragment extends ListFragment implements
             }
             return null;
 
+        }
+    }
+
+    private class CustomCursorAdapter extends SimpleCursorAdapter {
+
+        public CustomCursorAdapter(Context context, int layout, Cursor c,
+                String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            // get reference to the row
+            final View view = super.getView(position, convertView, parent);
+            // check for odd or even to set alternate colors to the row
+            // background
+            if (position % 2 == 0) {
+                view.setBackgroundColor(getResources().getColor(
+                        R.color.listview_row1));
+            } else {
+                view.setBackgroundColor(getResources().getColor(
+                        R.color.listview_row2));
+            }
+            return view;
+        }
+    }
+
+    private class ListItemView {
+        private View view;
+
+        public void setView(View view) {
+            this.view = view;
+        }
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        public View getView() {
+            return view;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        private int position;
+
+        public ListItemView(View view, int position) {
+            this.view = view;
+            this.position = position;
         }
     }
 }

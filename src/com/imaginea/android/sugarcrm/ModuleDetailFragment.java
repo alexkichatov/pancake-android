@@ -45,13 +45,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.AbstractAction;
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
+import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
@@ -90,6 +88,8 @@ public class ModuleDetailFragment extends Fragment {
 
     private LinearLayout mParent;
 
+    private Bundle bundle;
+
     final Map<String, String> HeaderItem = new HashMap<String, String>();
 
     private LinearLayout layoutView;
@@ -105,6 +105,8 @@ public class ModuleDetailFragment extends Fragment {
         mParent = (LinearLayout) inflater.inflate(R.layout.account_details,
                 container, false);
 
+        bundle = getArguments();
+
         return mParent;
     }
 
@@ -112,6 +114,7 @@ public class ModuleDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         /*
          * As per the new UI Tablet current Design Contain Dash board Image list
          * Fragment else it would be same dashboard activity.
@@ -126,12 +129,20 @@ public class ModuleDetailFragment extends Fragment {
             intent = BaseActivity.fragmentArgumentsToIntent(getArguments());
         }
         final Bundle extras = intent.getExtras();
-        mRowId = intent.getStringExtra(Util.ROW_ID);
-        mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
-        final boolean bRecent = intent.getBooleanExtra("Recent", false);
-        final boolean bRelation = intent.getBooleanExtra("Relation", false);
 
-        mModuleName = extras.getString(RestConstants.MODULE_NAME);
+        if (extras != null) {
+            mRowId = intent.getStringExtra(Util.ROW_ID);
+            mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
+            intent.getBooleanExtra("Recent", false);
+            intent.getBooleanExtra("Relation", false);
+            mModuleName = extras.getString(RestConstants.MODULE_NAME);
+
+        } else {
+            mRowId = bundle.getString(Util.ROW_ID);
+            mSugarBeanId = bundle.getString(RestConstants.BEAN_ID);
+            mModuleName = bundle.getString(RestConstants.MODULE_NAME);
+
+        }
 
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
         if (intent.getData() == null) {
@@ -148,26 +159,6 @@ public class ModuleDetailFragment extends Fragment {
         mRelationshipModules = ContentUtils
                 .getModuleRelationshipItems(mModuleName);
 
-        if (mSugarBeanId != null) {
-            actionBar = (CustomActionbar) mParent.getChildAt(0);
-            if (!ViewUtil.isTablet(getActivity())) {
-                final Action homeAction = new IntentAction(
-                        ModuleDetailFragment.this.getActivity(), new Intent(
-                                ModuleDetailFragment.this.getActivity(),
-                                DashboardActivity.class), R.drawable.home);
-                actionBar.setHomeAction(homeAction);
-            }
-            if (!bRecent && !bRelation) {
-                if (mRelationshipModules.length > 0) {
-                    actionBar.addActionItem(new IntentAction(
-                            ModuleDetailFragment.this.getActivity(), null,
-                            R.drawable.relation));
-                    for (final String mModule : mRelationshipModules) {
-                        actionBar.addActionItem(new RelationAction(mModule));
-                    }
-                }
-            }
-        }
         inflater = (LayoutInflater) getActivity().getBaseContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -208,6 +199,7 @@ public class ModuleDetailFragment extends Fragment {
         /* Starting a New Async task to populate the Data from the Database */
         mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
+
     }
 
     /**
@@ -329,7 +321,7 @@ public class ModuleDetailFragment extends Fragment {
 
         LoadContentTask(final Context context) {
             mContext = context;
-          
+
         }
 
         @Override
@@ -375,16 +367,18 @@ public class ModuleDetailFragment extends Fragment {
 
         @Override
         protected Object doInBackground(final Object... params) {
-            try {
-                mCursor = getActivity().getContentResolver().query(mUri,
-                        mSelectFields, null, null,
-                        ContentUtils.getModuleSortOrder(mModuleName));
-            } catch (final Exception e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                return Util.FETCH_FAILED;
-            }
+            if (mSelectFields != null) {
+                try {
+                    mCursor = getActivity().getContentResolver().query(mUri,
+                            mSelectFields, null, null,
+                            ContentUtils.getModuleSortOrder(mModuleName));
+                } catch (final Exception e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    return Util.FETCH_FAILED;
+                }
 
-            prepareDetailItems();
+                prepareDetailItems();
+            }
 
             return Util.FETCH_SUCCESS;
         }
@@ -403,16 +397,21 @@ public class ModuleDetailFragment extends Fragment {
             }
 
             mProgressDialog.cancel();
+            mProgressDialog = null;
         }
 
         private void setupDetailViews() {
             if (actionBar != null) {
                 actionBar.setTitle(title);
             }
+            final TextView titleView;
+            if (layoutView == null) {
+                layoutView = (LinearLayout) inflater.inflate(
+                        R.layout.table_row, null);
 
+            }
             /* Get the Detail fragment module header Title view */
-            final TextView titleView = (TextView) layoutView
-                    .findViewById(R.id.titleview);
+            titleView = (TextView) layoutView.findViewById(R.id.titleview);
 
             final String[] keys = detailItems.keySet().toArray(
                     new String[detailItems.size()]);
@@ -430,9 +429,10 @@ public class ModuleDetailFragment extends Fragment {
                 titleView.setText(header);
 
             }
-            ListView lv = (ListView) layoutView.findViewById(R.id.detailList);
+            ListView lv;
             if (layoutView.getParent() == null) {
                 mParent.addView(layoutView);
+                lv = (ListView) layoutView.findViewById(R.id.detailList);
 
             } else {
                 layoutView = null;
@@ -646,18 +646,6 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
-    private class RelationAction extends AbstractAction {
-
-        public RelationAction(final String title) {
-            super(R.drawable.relation, title);
-        }
-
-        @Override
-        public void performAction(final View view) {
-            openListScreen(getTitle());
-        }
-    }
-
     public class MyYesNoAlertDialogFragment extends DialogFragment {
 
         public MyYesNoAlertDialogFragment newInstance(final int title) {
@@ -712,25 +700,26 @@ public class ModuleDetailFragment extends Fragment {
                                                 .beginTransaction()
                                                 .remove(ModuleDetailFragment.this)
                                                 .commit();
-                                        /*
-                                         * final ModuleDetailFragment
-                                         * moduleDetailFragment = new
-                                         * ModuleDetailFragment(); getActivity()
-                                         * .getSupportFragmentManager()
-                                         * .beginTransaction() .add(R.id.
-                                         * fragment_container_module_detail,
-                                         * moduleDetailFragment,
-                                         * "module_detail") .commit();
-                                         */
-                                        Intent myIntent;
-                                        myIntent = new Intent(
-                                                getActivity(),
-                                                ModuleDetailsMultiPaneActivity.class);
-                                        myIntent.putExtra(Util.ROW_ID, "1");
-                                        myIntent.putExtra(
+
+                                        final ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+                                        final Bundle args = new Bundle();
+                                        args.putString(
                                                 RestConstants.MODULE_NAME,
                                                 mModuleName);
-                                        startActivity(myIntent);
+                                        int rowId = Integer.parseInt(mRowId);
+                                        rowId = rowId - 1;
+
+                                        args.putString(Util.ROW_ID,
+                                                Integer.toString(rowId));
+                                        args.putString(RestConstants.BEAN_ID,
+                                                mSugarBeanId);
+                                        moduleDetailFragment.setArguments(args);
+                                        getFragmentManager()
+                                                .beginTransaction()
+                                                .replace(
+                                                        R.id.fragment_container_module_detail,
+                                                        moduleDetailFragment)
+                                                .commit();
 
                                     } else {
                                         ModuleDetailFragment.this.getActivity()
@@ -747,6 +736,29 @@ public class ModuleDetailFragment extends Fragment {
                                         final int whichButton) {
                                 }
                             }).create();
+        }
+    }
+
+    void openDetailScreen(String rowId) {
+
+        final Intent detailIntent = new Intent(getActivity(),
+                ModuleDetailActivity.class);
+
+        Uri uri = Uri.withAppendedPath(ContentUtils.getModuleUri(mModuleName),
+                mRowId);
+        uri = Uri.withAppendedPath(uri, mModuleName);
+        detailIntent.setData(uri);
+        detailIntent.putExtra(Util.ROW_ID, rowId);
+        detailIntent.putExtra(RestConstants.BEAN_ID, mSugarBeanId);
+        detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
+
+        if (ViewUtil.isTablet(getActivity())) {
+
+            ((BaseMultiPaneActivity) getActivity())
+                    .openActivityOrFragment(detailIntent);
+
+        } else {
+            startActivity(detailIntent);
         }
     }
 
@@ -777,8 +789,6 @@ public class ModuleDetailFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             getItemViewType(position);
-            Log.i(LOG_TAG, "getView() : position = " + position + "size ="
-                    + mData.size() + "Convertview = " + convertView);
             if (position == 0) {
                 convertView = inflater.inflate(
                         R.layout.detaillist_item_section, null);
@@ -835,7 +845,6 @@ public class ModuleDetailFragment extends Fragment {
             } else {
                 /* set the filed to the text view */
                 final String field = mKeys[position];
-                Log.i(LOG_TAG, "field Name =" + field);
                 final String value = (mData.get(mKeys[position])).getValue()
                         .toString();
 
@@ -873,7 +882,7 @@ public class ModuleDetailFragment extends Fragment {
                     assignedIconView.setVisibility(View.GONE);
                 }
 
-                if (field.equalsIgnoreCase("phone")) {
+                if (field.contains("phone")) {
                     summryView.setAutoLinkMask(Linkify.PHONE_NUMBERS);
                 }
                 // handle the map

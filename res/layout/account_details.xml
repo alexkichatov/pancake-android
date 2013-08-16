@@ -5,9 +5,6 @@
     android:background="@color/grey"
     android:orientation="vertical" >
 
-    <com.imaginea.android.sugarcrm.CustomActionbar
-        android:id="@+id/custom_actionbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+   
 
 </LinearLayout>
