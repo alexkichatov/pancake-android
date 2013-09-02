@@ -15,7 +15,6 @@
 
 package com.imaginea.android.sugarcrm;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +47,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -142,6 +140,9 @@ public class ModuleListFragment extends ListFragment implements
 
     /** The b relation item. */
     private final boolean bRelationItem = true;
+
+    /** The cursor. */
+    private Cursor c;
 
     public final static String LOG_TAG = ModuleListFragment.class
             .getSimpleName();
@@ -279,6 +280,19 @@ public class ModuleListFragment extends ListFragment implements
 
         setUpActionBar();
 
+        /* open details screen with 1st row highlighted */
+
+        c = getActivity().managedQuery(ContentUtils.getModuleUri(mModuleName),
+                ContentUtils.getModuleProjections(mModuleName), mSelections,
+                mSelectionArgs, getSortOrder());
+        final Intent detailIntent = new Intent(getActivity(),
+                ModuleDetailActivity.class);
+        detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
+
+        /* open details screen with 1st row highlighted */
+        Util.OpenDetailScreenWithSelectedRow(getActivity(), c, detailIntent,
+                false);
+
         getLoaderManager().initLoader(0, null, this);
 
     }
@@ -355,22 +369,20 @@ public class ModuleListFragment extends ListFragment implements
 
         /* Action bar related modification */
         setUpActionBar();
-        Log.e(LOG_TAG, mModuleName + " Now restart Loader");
         mSelections = null;
         mSelectionArgs = null;
         getLoaderManager().restartLoader(0, null, this);
 
-        /* open details screen with 1st row highlighted */
-
+        c = getActivity().managedQuery(mIntentUri,
+                ContentUtils.getModuleProjections(mModuleName), mSelections,
+                mSelectionArgs, getSortOrder());
         final Intent detailIntent = new Intent(getActivity(),
                 ModuleDetailActivity.class);
-        detailIntent.putExtra(Util.ROW_ID, "1");
-        detailIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
-        if (ViewUtil.isTablet(getActivity())) {
-            ((BaseMultiPaneActivity) getActivity())
-                    .openActivityOrFragment(detailIntent);
+        detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
 
-        }
+        /* open details screen with 1st row highlighted */
+        Util.OpenDetailScreenWithSelectedRow(getActivity(), c, detailIntent,
+                false);
 
     }
 
@@ -467,6 +479,22 @@ public class ModuleListFragment extends ListFragment implements
 
         /* Set up Spinner for sorting based on Device and Orientation */
         setupSortingOption();
+        /*
+         * Set the AddNew Item in Action BAr Visibility to True or dalse based
+         * on orientation
+         */
+        final View separator2 = getActivity().findViewById(
+                R.id.actionbar_homeseperator2);
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                onLandscapeChange();
+                separator2.setVisibility(View.VISIBLE);
+            } else {
+                onPortraitChange();
+                separator2.setVisibility(View.GONE);
+            }
+
+        }
 
     }
 
@@ -474,105 +502,61 @@ public class ModuleListFragment extends ListFragment implements
      * Setup sorting option.
      */
     private void setupSortingOption() {
-        if (ViewUtil.isHoneycombTablet(getActivity())) {
-            if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                onLandscapeChange();
-            } else {
-                onPortraitChange();
-            }
 
-            final Spinner spinnerView = (Spinner) getActivity().findViewById(
-                    R.id.orderBySpinner);
-            spinnerView.setVisibility(View.VISIBLE);
+        /* Dynamically inflate menu items for the "sort by" fields */
+        final LinearLayout orderByParent = (LinearLayout) getActivity()
+                .findViewById(R.id.orderByListContainer);
 
-            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                    getActivity(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    mModuleFieldsChoice);
-            spinnerView.setAdapter(spinnerArrayAdapter);
-            spinnerView
-                    .setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parentView,
-                                View selectedItemView, int position, long id) {
-                            // your code here
-                            final String sortOrder = mModuleFields[position]
-                                    + " ASC";
-                            app.setModuleSortOrder(
-                                    mModuleName,
-                                    fieldMap.get(mModuleFieldsChoice[position]),
-                                    "ASC");
-                            sortList(sortOrder);
-                        }
+        orderByParent.removeAllViews();
+        final TextView sortby = new TextView(getActivity());
+        sortby.setText("Sort By");
+        sortby.setTextColor(getResources().getColor(R.color.sortby_text_color));
+        sortby.setLayoutParams(new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        sortby.setBackgroundColor(getResources().getColor(
+                R.color.menu_background));
+        int x = (int) (15 * getResources().getDisplayMetrics().density);
+        int y = (int) (10 * getResources().getDisplayMetrics().density);
+        sortby.setPadding(x, 5, x, 5);
 
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parentView) {
-                            // your code here
-                        }
-
-                    });
-            final View separator2 = getActivity().findViewById(
-                    R.id.actionbar_homeseperator2);
-            separator2.setVisibility(View.VISIBLE);
-        } else {
-            /* Dynamically inflate menu items for the "sort by" fields */
-            final LinearLayout orderByParent = (LinearLayout) getActivity()
-                    .findViewById(R.id.orderByListContainer);
-
-            orderByParent.removeAllViews();
-            final TextView sortby = new TextView(getActivity());
-            sortby.setText("Sort By");
-            sortby.setTextColor(getResources().getColor(
-                    R.color.sortby_text_color));
-            sortby.setLayoutParams(new LinearLayout.LayoutParams(
+        orderByParent.addView(sortby);
+        int i = 0;
+        for (final String fieldName : mModuleFieldsChoice) {
+            final TextView tv = new TextView(getActivity());
+            tv.setText(fieldName);
+            tv.setTag(mModuleFields[i]);
+            tv.setTextAppearance(getActivity(),
+                    android.R.style.TextAppearance_Small);
+            tv.setBackgroundResource(R.drawable.selector);
+            tv.setTextColor(getResources().getColorStateList(R.color.textcolor));
+            // android.R.style.TextAppearance_Medium
+            tv.setLayoutParams(new LinearLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            sortby.setBackgroundColor(getResources().getColor(
-                    R.color.menu_background));
-            int x = (int) (15 * getResources().getDisplayMetrics().density);
-            int y = (int) (10 * getResources().getDisplayMetrics().density);
-            sortby.setPadding(x, 5, x, 5);
+            x = (int) (20 * getResources().getDisplayMetrics().density);
+            y = (int) (5 * getResources().getDisplayMetrics().density);
+            tv.setPadding(x, y, x, y);
+            tv.setOnClickListener(new View.OnClickListener() {
+                final LinearLayout menuLayout = (LinearLayout) getActivity()
+                        .findViewById(R.id.settings_menu);
+                final View transparentView = getActivity().findViewById(
+                        R.id.transparent_view);
 
-            orderByParent.addView(sortby);
-            int i = 0;
-            for (final String fieldName : mModuleFieldsChoice) {
-                final TextView tv = new TextView(getActivity());
-                tv.setText(fieldName);
-                tv.setTag(mModuleFields[i]);
-                tv.setTextAppearance(getActivity(),
-                        android.R.style.TextAppearance_Small);
-                tv.setBackgroundResource(R.drawable.selector);
-                tv.setTextColor(getResources().getColorStateList(
-                        R.color.textcolor));
-                // android.R.style.TextAppearance_Medium
-                tv.setLayoutParams(new LinearLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                x = (int) (20 * getResources().getDisplayMetrics().density);
-                y = (int) (5 * getResources().getDisplayMetrics().density);
-                tv.setPadding(x, y, x, y);
-                tv.setOnClickListener(new View.OnClickListener() {
-                    final LinearLayout menuLayout = (LinearLayout) getActivity()
-                            .findViewById(R.id.settings_menu);
-                    final View transparentView = getActivity().findViewById(
-                            R.id.transparent_view);
-
-                    @Override
-                    public void onClick(View v) {
-                        final String sortOrder = tv.getTag().toString()
-                                + " ASC";
-                        app.setModuleSortOrder(mModuleName,
-                                fieldMap.get(tv.getText().toString()), "ASC");
-                        Log.e(LOG_TAG, "SORT :" + sortOrder);
-                        Log.e(LOG_TAG, "field choice: "
-                                + tv.getText().toString());
-                        sortList(sortOrder);
-                        menuLayout.setVisibility(View.GONE);
-                        transparentView.setVisibility(View.GONE);
-                    }
-                });
-                i++;
-                orderByParent.addView(tv);
-            }
+                @Override
+                public void onClick(View v) {
+                    final String sortOrder = tv.getTag().toString() + " ASC";
+                    app.setModuleSortOrder(mModuleName,
+                            fieldMap.get(tv.getText().toString()), "ASC");
+                    Log.e(LOG_TAG, "SORT :" + sortOrder);
+                    Log.e(LOG_TAG, "field choice: " + tv.getText().toString());
+                    sortList(sortOrder);
+                    menuLayout.setVisibility(View.GONE);
+                    transparentView.setVisibility(View.GONE);
+                }
+            });
+            i++;
+            orderByParent.addView(tv);
         }
+
     }
 
     /**
@@ -587,7 +571,6 @@ public class ModuleListFragment extends ListFragment implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 menuLayout.setVisibility(View.GONE);
                 transparentView.setVisibility(View.GONE);
             }
@@ -1077,15 +1060,25 @@ public class ModuleListFragment extends ListFragment implements
         mSelections = null;
         mSelectionArgs = null;
         getLoaderManager().restartLoader(0, null, this);
+        if (ViewUtil.isTablet(getActivity())) {
+            c = getActivity().managedQuery(mIntentUri,
+                    ContentUtils.getModuleProjections(mModuleName),
+                    mSelections, mSelectionArgs, getSortOrder());
+            final Intent detailIntent = new Intent(getActivity(),
+                    ModuleDetailActivity.class);
+            detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
+
+            /* open details screen with 1st row highlighted */
+            Util.OpenDetailScreenWithSelectedRow(getActivity(), c,
+                    detailIntent, false);
+
+        }
     }
 
     void addToRecent(final int position) {
         final ContentValues modifiedValues = new ContentValues();
         // push the selected record into recent table
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        Log.i(LOG_TAG,
-                "in Addto Recent position2 has value =" + cursor.getString(2)
-                        + " and position 3 has value = " + cursor.getString(3));
         // now insert into recent table
         modifiedValues.put(RecentColumns.ACTUAL_ID, cursor.getInt(0) + "");
         modifiedValues.put(RecentColumns.BEAN_ID, cursor.getString(1));
@@ -1206,8 +1199,7 @@ public class ModuleListFragment extends ListFragment implements
         if (mCurFilter != null) {
             Log.i(LOG_TAG, "onCreate Loader query filter not null");
             mSelections = mDbHelper.getModuleSelection(mModuleName, mCurFilter);
-            Log.i("showResults", "onCreateLoader   Query = " + mSelections
-                    + "mSelectionArgs =" + Arrays.toString(mSelectionArgs));
+
             mSelectionArgs = null;
         }
 

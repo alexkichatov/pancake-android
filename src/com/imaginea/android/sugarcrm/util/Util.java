@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -41,6 +42,7 @@ import com.imaginea.android.sugarcrm.SugarCrmSettings;
 import com.imaginea.android.sugarcrm.WizardAuthActivity;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 
 /**
  * The Class Util.
@@ -647,6 +649,45 @@ public class Util {
                 .getResources().getDrawable(resourcesId[1]));
 
         return states;
+    }
+
+    /**
+     * Open detail screen with selected row.
+     * 
+     * @param c
+     *            the c
+     * @param cursor
+     *            the cursor
+     * @param detailIntent
+     *            the detail intent
+     * @param bRecent
+     *            the b recent
+     */
+    public static void OpenDetailScreenWithSelectedRow(Context c,
+            Cursor cursor, Intent detailIntent, boolean bRecent) {
+        if (cursor.getCount() > 0) {
+            cursor.moveToNext();
+
+            if (bRecent) {
+                detailIntent.putExtra("Recent", true);
+                /* open details screen with 1st row highlighted */
+                detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
+                detailIntent.putExtra(RestConstants.BEAN_ID,
+                        cursor.getString(2));
+                detailIntent.putExtra(RestConstants.MODULE_NAME,
+                        cursor.getString(3));
+
+            } else {
+                detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
+                detailIntent.putExtra(RestConstants.BEAN_ID,
+                        cursor.getString(1));
+            }
+        }
+        if (ViewUtil.isTablet(c)) {
+            ((BaseMultiPaneActivity) c).openActivityOrFragment(detailIntent);
+
+        }
+
     }
 
 }

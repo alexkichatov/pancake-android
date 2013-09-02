@@ -68,5 +68,6 @@
     <color name="sigin_button_pressed">#B80611</color>
     <color name="sortby_text_color">#8c8e95</color>
     <color name="menuitem_devider">#525661</color>
+    <color name="addnew_text_color">#B0B1B6</color>
 
 </resources>

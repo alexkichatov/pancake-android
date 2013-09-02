@@ -162,9 +162,9 @@ public class RecentModuleListFragment extends ListFragment {
             mIntentUri = mModuleUri;
         }
         // Perform a managed query. The Activity will handle closing and
-        // requerying the cursor
+        // re querying the cursor
         // when needed.
-        // TODO - optimize this, if we sync up a dataset, then no need to run
+        // TODO - optimize this, if we sync up a data set, then no need to run
         // detail projection
         // here, just do a list projection
         final Cursor cursor = getActivity().managedQuery(intent.getData(),
@@ -226,6 +226,13 @@ public class RecentModuleListFragment extends ListFragment {
                 && mAdapter.getCount() != 0) {
 
         }
+
+        /* open details screen with 1st row highlighted */
+
+        final Intent detailIntent = new Intent(getActivity(),
+                ModuleDetailActivity.class);
+        Util.OpenDetailScreenWithSelectedRow(getActivity(), cursor,
+                detailIntent, true);
 
     }
 
@@ -415,7 +422,6 @@ public class RecentModuleListFragment extends ListFragment {
 
             final TextView text3 = (TextView) v.findViewById(R.id.text3);
             text3.setVisibility(View.GONE);
-            Log.d(LOG_TAG, "Get Item" + getItemId(position));
             if (!mBusy && position != 0 && position == count - 1) {
                 mBusy = true;
                 realoffset += count;
@@ -454,10 +460,6 @@ public class RecentModuleListFragment extends ListFragment {
                     .findViewById(R.id.text5);
             final String moduleName = moduleTextView.getText().toString();
             if (moduleTextView != null) {
-                Log.e("Module", "value for moduel name : " + moduleName);
-                Log.e(LOG_TAG,
-                        "Module name from textview:: "
-                                + moduleTextView.getText());
                 moduleTextView.setBackgroundColor(getResources().getColor(
                         ContentUtils.getRecentModulelablesColors(moduleName)));
             }
