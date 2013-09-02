@@ -428,7 +428,6 @@ public class ModuleListFragment extends ListFragment implements
 
             @Override
             public void onClick(View v) {
-                syncView.setImageResource(R.drawable.ico_m_actionbar_refresh_pressed);
                 SyncAction(v);
 
             }
@@ -523,7 +522,8 @@ public class ModuleListFragment extends ListFragment implements
             orderByParent.removeAllViews();
             final TextView sortby = new TextView(getActivity());
             sortby.setText("Sort By");
-            sortby.setTextColor(getResources().getColor(android.R.color.white));
+            sortby.setTextColor(getResources().getColor(
+                    R.color.sortby_text_color));
             sortby.setLayoutParams(new LinearLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             sortby.setBackgroundColor(getResources().getColor(
