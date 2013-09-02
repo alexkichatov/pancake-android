@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Muralidaran.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : SugarBean 
+ * Description : 
+                This  class is SugarBean
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.rest;
 
 import static com.imaginea.android.sugarcrm.rest.RestConstants.ENTRY_LIST;
@@ -16,97 +31,119 @@ import com.imaginea.android.sugarcrm.util.SBParseHelper;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 
 /**
- * <p>
- * SugarBean class.
- * </p>
- * 
+ * The Class SugarBean.
  */
 public class SugarBean {
 
+    /** The bean id. */
     private String beanId;
 
+    /** The module name. */
     private String moduleName;
 
+    /** The entry list. */
     private Map<String, String> entryList;
 
+    /** The relationship list. */
     private Map<String, SugarBean[]> relationshipList;
 
     /**
-     * <p>
-     * Constructor for SugarBean.
-     * </p>
+     * Instantiates a new sugar bean.
      */
     public SugarBean() {
     }
 
     /**
-     * <p>
-     * Constructor for SugarBean.
-     * </p>
+     * Instantiates a new sugar bean.
      * 
      * @param jsonResponse
-     *            a {@link java.lang.String} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     *            the json response
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public SugarBean(String jsonResponse) throws SugarCrmException {
         try {
-            JSONObject responseObj = new JSONObject(jsonResponse);
-            JSONArray entryListJson = responseObj.getJSONArray(ENTRY_LIST);
-            JSONArray relationshipListJson = responseObj.getJSONArray(RELATIONSHIP_LIST);
+            final JSONObject responseObj = new JSONObject(jsonResponse);
+            final JSONArray entryListJson = responseObj
+                    .getJSONArray(ENTRY_LIST);
+            final JSONArray relationshipListJson = responseObj
+                    .getJSONArray(RELATIONSHIP_LIST);
 
-            JSONObject jsonObject = (JSONObject) entryListJson.get(0);
+            final JSONObject jsonObject = (JSONObject) entryListJson.get(0);
             setBeanId(jsonObject.get("id").toString());
-            String nameValueList = jsonObject.get("name_value_list").toString();
+            final String nameValueList = jsonObject.get("name_value_list")
+                    .toString();
             setEntryList(SBParseHelper.getNameValuePairs(nameValueList));
 
-            Map<String, SugarBean[]> relationshipList = getRelationshipBeans(relationshipListJson);
+            final Map<String, SugarBean[]> relationshipList = getRelationshipBeans(relationshipListJson);
             setRelationshipList(relationshipList);
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             throw new SugarCrmException(JSON_EXCEPTION, e.getMessage());
         }
     }
 
-    private Map<String, SugarBean[]> getRelationshipBeans(JSONArray mRelationshipListJson)
-                                    throws SugarCrmException {
-        Map<String, SugarBean[]> relationshipList = new HashMap<String, SugarBean[]>();
+    /**
+     * Gets the relationship beans.
+     * 
+     * @param mRelationshipListJson
+     *            the m relationship list json
+     * @return the relationship beans
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     */
+    private Map<String, SugarBean[]> getRelationshipBeans(
+            JSONArray mRelationshipListJson) throws SugarCrmException {
+        final Map<String, SugarBean[]> relationshipList = new HashMap<String, SugarBean[]>();
         try {
             if (mRelationshipListJson.length() != 0) {
-                JSONArray relationshipJson = mRelationshipListJson.getJSONArray(0);
+                final JSONArray relationshipJson = mRelationshipListJson
+                        .getJSONArray(0);
                 if (relationshipJson.length() != 0) {
                     for (int i = 0; i < relationshipJson.length(); i++) {
-                        JSONObject relationshipModule = relationshipJson.getJSONObject(i);
-                        String linkFieldName = relationshipModule.getString("name");
-                        String recordsJson = relationshipModule.get(RECORDS).toString();
-                        SugarBean[] sugarBeans = getSugarBeans(recordsJson);
+                        final JSONObject relationshipModule = relationshipJson
+                                .getJSONObject(i);
+                        final String linkFieldName = relationshipModule
+                                .getString("name");
+                        final String recordsJson = relationshipModule.get(
+                                RECORDS).toString();
+                        final SugarBean[] sugarBeans = getSugarBeans(recordsJson);
                         relationshipList.put(linkFieldName, sugarBeans);
                     }
                 }
             }
-        } catch (JSONException jsone) {
+        } catch (final JSONException jsone) {
             throw new SugarCrmException(jsone.getMessage());
         }
         return relationshipList;
     }
 
-    private SugarBean[] getSugarBeans(String recordsJson) throws SugarCrmException {
+    /**
+     * Gets the sugar beans.
+     * 
+     * @param recordsJson
+     *            the records json
+     * @return the sugar beans
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     */
+    private SugarBean[] getSugarBeans(String recordsJson)
+            throws SugarCrmException {
         try {
-            JSONArray recordsArray = new JSONArray(recordsJson);
-            SugarBean[] sugarBeans = new SugarBean[recordsArray.length()];
+            final JSONArray recordsArray = new JSONArray(recordsJson);
+            final SugarBean[] sugarBeans = new SugarBean[recordsArray.length()];
             for (int i = 0; i < recordsArray.length(); i++) {
                 sugarBeans[i] = new SugarBean();
-                sugarBeans[i].setEntryList(SBParseHelper.getNameValuePairs(recordsArray.get(i).toString()));
+                sugarBeans[i].setEntryList(SBParseHelper
+                        .getNameValuePairs(recordsArray.get(i).toString()));
             }
             return sugarBeans;
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             throw new SugarCrmException(e.getMessage());
         }
     }
 
     /**
-     * <p>
      * Getter for the field <code>beanId</code>.
-     * </p>
      * 
      * @return a {@link java.lang.String} object.
      */
@@ -115,9 +152,8 @@ public class SugarBean {
     }
 
     /**
-     * <p>
+     * 
      * Setter for the field <code>beanId</code>.
-     * </p>
      * 
      * @param beanId
      *            a {@link java.lang.String} object.
@@ -127,9 +163,7 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>moduleName</code>.
-     * </p>
      * 
      * @return a {@link java.lang.String} object.
      */
@@ -138,9 +172,8 @@ public class SugarBean {
     }
 
     /**
-     * <p>
+     * 
      * Setter for the field <code>moduleName</code>.
-     * </p>
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -150,9 +183,7 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>entryList</code>.
-     * </p>
      * 
      * @return a {@link java.util.Map} object.
      */
@@ -161,21 +192,17 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * Setter for the field <code>entryList</code>.
-     * </p>
      * 
      * @param map
      *            a {@link java.util.Map} object.
      */
     public void setEntryList(Map<String, String> map) {
-        this.entryList = map;
+        entryList = map;
     }
 
     /**
-     * <p>
      * getFieldValue
-     * </p>
      * 
      * @param fieldName
      *            a {@link java.lang.String} object.
@@ -186,9 +213,7 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>relationshipList</code>.
-     * </p>
      * 
      * @return a {@link java.util.Map} object.
      */
@@ -197,9 +222,7 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * Setter for the field <code>relationshipList</code>.
-     * </p>
      * 
      * @param relationshipList
      *            a {@link java.util.Map} object.
@@ -209,13 +232,12 @@ public class SugarBean {
     }
 
     /**
-     * <p>
      * getRelationshipBeans
-     * </p>
      * 
      * @param linkField
      *            a {@link java.lang.String} object.
-     * @return an array of {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
+     * @return an array of {@link com.imaginea.android.sugarcrm.rest.SugarBean}
+     *         objects.
      */
     public SugarBean[] getRelationshipBeans(String linkField) {
         return relationshipList.get(linkField);

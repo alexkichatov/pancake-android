@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c)
+ *   {DATE} 27/08/2013
+ *   {INITIAL COPYRIGHT OWNER} Asha , Muralidaran
+ *   All rights reserved. This program and the accompanying materials
+ *   are made available under the terms of the Eclipse Public License v1.0
+ *   which accompanies this distribution, and is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ *  
+ *   Contributors::
+ *                  Asha, Muralidaran- initial API and implementation and/or initial documentation
+ *   Project Name : SugarCrm Pancake
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.sync;
 
 import java.util.Collections;
@@ -32,16 +46,19 @@ import com.imaginea.android.sugarcrm.util.Util;
  * SyncAdapter implementation for syncing sugarcrm modules on the server to
  * sugar crm provider and vice versa.
  * 
- * //TODO - Stress testing for large datasets - test cases
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
+    /** The m account manager. */
     private final AccountManager mAccountManager;
 
+    /** The m context. */
     private final Context mContext;
 
+    /** The m noti id. */
     private int mNotiId = -1;
 
+    /** The Constant LOG_TAG. */
     private static final String LOG_TAG = "SyncAdapter";
 
     /**
@@ -66,15 +83,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             final String authority, final ContentProviderClient provider,
             final SyncResult syncResult) {
         Log.i(LOG_TAG, "onPerformSync");
-        // String authtoken = null;
         final int syncType = extras.getInt(Util.SYNC_TYPE);
 
         try {
-            // use the account manager to request the credentials
-            // authtoken = mAccountManager.blockingGetAuthToken(account,
-            // Util.AUTHTOKEN_TYPE, true
-            // /* notifyAuthFailure */);
-            // Log.v(LOG_TAG, "authtoken:" + authtoken);
 
             /*
              * if we are a password based system, the SugarCRM OAuth setup is
@@ -100,10 +111,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     mContext.getString(R.string.defaultUrl));
             final SugarCrmApp app = ((SugarCrmApp) SugarCrmApp.app);
             String sessionId = app != null ? app.getSessionId() : null;
-            if (sessionId == null
-                    || Rest.seamlessLogin(url, sessionId) == 0) {
-                sessionId = Rest.loginToSugarCRM(url, account.name,
-                        password);
+            if (sessionId == null || Rest.seamlessLogin(url, sessionId) == 0) {
+                sessionId = Rest.loginToSugarCRM(url, account.name, password);
                 app.setSessionId(sessionId);
             }
 
@@ -131,20 +140,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // should be used once for one time set-up
                 final boolean modulesSyncd = SugarSyncManager.syncModules(
                         mContext, account.name, sessionId);
-                // Log.d(LOG_TAG, "syncModules done. success: " + modulesSyncd);
-
-                // boolean aclAccessSyncd =
-                // SugarSyncManager.syncAclAccess(mContext, account.name,
-                // sessionId);
-                // Log.d(LOG_TAG, "ACL access aync done. success: " +
-                // aclAccessSyncd);
 
                 final boolean usersSyncd = SugarSyncManager.syncUsersList(
                         mContext, sessionId);
-                // Log.d(LOG_TAG, "Users aync done. success: " + usersSyncd);
 
                 // TODO - Need to resolve SYNC issue.
-                // if (modulesSyncd && aclAccessSyncd & usersSyncd) {
                 WizardAuthActivity.resultWait.release();
                 if (modulesSyncd && usersSyncd) {
                     final Editor editor = pref.edit();
@@ -190,15 +190,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (final ParseException e) {
             syncResult.stats.numParseExceptions++;
             Log.e(LOG_TAG, "ParseException", e);
-        } /*
-           * catch (OperationCanceledException e) { // TODO - whats the stats
-           * update here // syncResult.stats.++; Log.e(LOG_TAG, e.getMessage(),
-           * e); } catch (AuthenticatorException e) { //
-           * syncResult.stats.numAuthExceptions++; Log.e(LOG_TAG,
-           * e.getMessage(), e); } catch (IOException e) {
-           * syncResult.stats.numIoExceptions++; Log.e(LOG_TAG, e.getMessage(),
-           * e); }
-           */catch (final SugarCrmException se) {
+        } catch (final SugarCrmException se) {
             Log.e(LOG_TAG, se.getMessage(), se);
         } catch (final Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -206,13 +198,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
-     * syncModulesData, syncs all modules
+     * syncModulesData, syncs all modules.
      * 
      * @param account
+     *            the account
      * @param extras
+     *            the extras
      * @param authority
+     *            the authority
      * @param sessionId
+     *            the session id
      * @param syncResult
+     *            the sync result
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     private void syncAllModulesData(final Account account, final Bundle extras,
             final String authority, final String sessionId,
@@ -245,15 +244,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
-     * syncModuleData
+     * syncModuleData.
      * 
      * @param account
+     *            the account
      * @param extras
+     *            the extras
      * @param authority
+     *            the authority
      * @param sessionId
+     *            the session id
      * @param moduleName
+     *            the module name
      * @param syncResult
+     *            the sync result
      * @throws SugarCrmException
+     *             the sugar crm exception
      */
     private void syncModuleData(final Account account, final Bundle extras,
             final String authority, final String sessionId,

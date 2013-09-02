@@ -11,25 +11,33 @@ import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 
 /**
- * ContactsApiTest, tests the rest api calls
- * 
- * @author chander
- * 
+ * The Class ContactDetailsApiTest.
  */
 public class ContactDetailsApiTest extends RestAPITest {
 
+    /** The module name. */
     String moduleName = "Contacts";
 
+    /** The fields. */
     String[] fields = new String[] {};
 
+    /** The select fields. */
     String[] selectFields = { ModuleFields.FIRST_NAME, ModuleFields.LAST_NAME,
             ModuleFields.ACCOUNT_NAME, ModuleFields.PHONE_MOBILE,
             ModuleFields.PHONE_WORK, ModuleFields.EMAIL1 };
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = "ContactDetailsTest";
 
+    /**
+     * Test contact detail.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testContactDetail() throws Exception {
 
@@ -54,9 +62,12 @@ public class ContactDetailsApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
+     *            the offset
      * @param maxResults
-     * @return
+     *            the max results
+     * @return the sugar beans
      * @throws Exception
+     *             the exception
      */
     private SugarBean[] getSugarBeans(final int offset, final int maxResults)
             throws Exception {
@@ -73,8 +84,10 @@ public class ContactDetailsApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param beanId
-     * @return
+     *            the bean id
+     * @return the sugar bean
      * @throws Exception
+     *             the exception
      */
     private SugarBean getSugarBean(final String beanId) throws Exception {
         final SugarBean sBean = Rest.getEntry(url, mSessionId, moduleName,

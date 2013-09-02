@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright (c)
+ *   {DATE} 27/08/2013
+ *   {INITIAL COPYRIGHT OWNER} Asha , Muralidaran
+ *   All rights reserved. This program and the accompanying materials
+ *   are made available under the terms of the Eclipse Public License v1.0
+ *   which accompanies this distribution, and is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ *  
+ *   Contributors::
+ *                  Asha, Muralidaran- initial API and implementation and/or initial documentation
+ *   Project Name : SugarCrm Pancake
+ *   FileName : BatchOpeartion 
+ *   Description : 
+                Helper class for storing data in the sugarcrm content providers..
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.sync;
 
 import java.util.Map;
@@ -14,7 +31,7 @@ import com.imaginea.android.sugarcrm.rest.SugarBean;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 
 /**
- * Helper class for storing data in the sugarcrm content providers.
+ * The Class SugarCRMOperations.
  */
 public class SugarCRMOperations {
 
@@ -118,9 +135,7 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
      * Constructor for SugarCRMOperations.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -137,9 +152,7 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
      * Constructor for SugarCRMOperations.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -160,14 +173,11 @@ public class SugarCRMOperations {
         mModuleName = moduleName;
         mRelatedModuleName = relationModuleName;
         mIsNewId = true;
-        // mBuilder = newInsertCpo(contentUri, true).withValues(mValues);
-        // mBatchOperation.add(mBuilder.build());
     }
 
     /**
-     * <p>
+     * 
      * Constructor for SugarCRMOperations.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -184,14 +194,11 @@ public class SugarCRMOperations {
         this(context, batchOperation);
         mModuleName = moduleName;
         mIsNewId = true;
-        // mBuilder = newInsertCpo(contentUri, true).withValues(mValues);
-        // mBatchOperation.add(mBuilder.build());
+
     }
 
     /**
-     * <p>
      * Constructor for SugarCRMOperations.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -215,9 +222,7 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
      * Constructor for SugarCRMOperations.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -244,9 +249,8 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
+     * 
      * addSugarBean
-     * </p>
      * 
      * @param sBean
      *            a {@link com.imaginea.android.sugarcrm.rest.SugarBean} object.
@@ -268,9 +272,8 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
+     * 
      * addRelatedSugarBean
-     * </p>
      * 
      * @param sBean
      *            a {@link com.imaginea.android.sugarcrm.rest.SugarBean} object.
@@ -289,17 +292,13 @@ public class SugarCRMOperations {
             }
         }
         if (mValues.size() > 0) {
-            // String beandIdValue =
-            // sBean.getFieldValue(SugarSyncManager.mBeanIdField);
             addRelatedInsertOp();
         }
         return this;
     }
 
     /**
-     * <p>
      * updateSugarBean
-     * </p>
      * 
      * @param sBean
      *            a {@link com.imaginea.android.sugarcrm.rest.SugarBean} object.
@@ -327,12 +326,10 @@ public class SugarCRMOperations {
     }
 
     /**
-     * Adds an insert operation into the batch
+     * Adds an insert operation into the batch.
      */
     private void addInsertOp() {
-        // if (!mIsNewId) {
-        // mValues.put(SugarCRMContent.RECORD_ID, mRawId);
-        // }
+
         final Uri contentUri = ContentUtils.getModuleUri(mModuleName);
 
         mBuilder = newInsertCpo(contentUri, mYield);
@@ -350,16 +347,7 @@ public class SugarCRMOperations {
      * Adds an insert operation into the batch
      */
     private void addRelatedInsertOp() {
-        // if (!mIsNewId) {
-        // mValues.put(SugarCRMContent.RECORD_ID, mRawId);
-        // }
         final Uri contentUri = ContentUtils.getModuleUri(mModuleName);
-        // String uriPath = mRelatedModuleName;
-        // Log.v("Ops", "addRelatedInsertOp:" + uriPath);
-        // ;
-        // long id = 0;
-
-        // ContentUris.withAppendedId(contentUri, mRawId);
         final Uri relatedUri = Uri.withAppendedPath(
                 ContentUris.withAppendedId(contentUri, mRawId),
                 mRelatedModuleName);
@@ -368,10 +356,7 @@ public class SugarCRMOperations {
         }
         mBuilder = newInsertCpo(relatedUri, mYield);
         mBuilder.withValues(mValues);
-        // TODO - check out the undocumented Value backreferences
-        // if (mIsNewId) {
-        // mBuilder.withValueBackReference(Contacts.ACCOUNT_ID, mBackReference);
-        // }
+
         mYield = false;
         mBatchOperation.add(mBuilder.build());
     }
@@ -386,9 +371,8 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
+     * 
      * newInsertCpo
-     * </p>
      * 
      * @param uri
      *            a {@link android.net.Uri} object.
@@ -403,9 +387,8 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
+     * 
      * newUpdateCpo
-     * </p>
      * 
      * @param uri
      *            a {@link android.net.Uri} object.
@@ -420,9 +403,8 @@ public class SugarCRMOperations {
     }
 
     /**
-     * <p>
+     * 
      * newDeleteCpo
-     * </p>
      * 
      * @param uri
      *            a {@link android.net.Uri} object.

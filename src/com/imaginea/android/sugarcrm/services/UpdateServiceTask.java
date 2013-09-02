@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 chander, vasavi
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *          chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : UpdateServiceTask 
+ * Description : 
+ *              SugarService, follows the APIDemos pattern of command handling example of a
+ * Service
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.services;
 
 import java.util.LinkedHashMap;
@@ -33,41 +49,46 @@ import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * UpdateServiceTask
- * 
- * @author chander
- * @author vasavi
+ * The Class UpdateServiceTask.
  */
 public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
 
+    /** The m context. */
     private final Context mContext;
 
+    /** The m module name. */
     private String mModuleName;
 
+    /** The m parent module name. */
     private String mParentModuleName;
 
+    /** The m update name value map. */
     private final Map<String, String> mUpdateNameValueMap;
 
+    /** The m bean id. */
     private String mBeanId;
 
+    /** The m uri. */
     private final Uri mUri;
 
+    /** The m link field name. */
     private String mLinkFieldName;
 
+    /** The m db helper. */
     private final DatabaseHelper mDbHelper;
 
     /*
      * represents either delete or update, for local database operations, is
      * always an update on the remote server side
      */
+    /** The m command. */
     private final int mCommand;
 
+    /** The Constant TAG. */
     public static final String TAG = "UpdateServiceTask";
 
     /**
-     * <p>
      * Constructor for UpdateServiceTask.
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -90,7 +111,13 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         debug();
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.util.AsyncServiceTask#doInBackground(Params
+     * [])
+     */
     @Override
     protected Object doInBackground(Object... params) {
         int updatedRows = 0;
@@ -882,12 +909,21 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         return null;
     }
 
+    /**
+     * Send update status.
+     * 
+     * @param netOn
+     *            the net on
+     * @param serverUpdated
+     *            the server updated
+     * @param updatedRows
+     *            the updated rows
+     */
     private void sendUpdateStatus(boolean netOn, boolean serverUpdated,
             int updatedRows) {
 
         // If the update fails when the network is ON, display the message in
-        // the
-        // activity
+        // the activity
         if (netOn) {
 
             if (!serverUpdated) {
@@ -906,8 +942,6 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                         getCommandStr()));
             }
         } else {
-            // pass the success/failure msg to activity
-
             if (updatedRows > 0) {
                 Log.v(TAG, "update successful");
                 SugarService.sendMessage(R.id.status, String.format(
@@ -923,6 +957,11 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         }
     }
 
+    /**
+     * Gets the command str.
+     * 
+     * @return the command str
+     */
     private String getCommandStr() {
         switch (mCommand) {
         case Util.INSERT:
@@ -936,6 +975,12 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         }
     }
 
+    /**
+     * Update sync record.
+     * 
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     */
     private void updateSyncRecord() throws SugarCrmException {
         final long syncId = Long.parseLong(mUri.getPathSegments().get(1));
         final SyncRecord rec = mDbHelper.getSyncRecord(syncId, mModuleName);
@@ -951,6 +996,14 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         }
     }
 
+    /**
+     * Insert sync record.
+     * 
+     * @param insertUri
+     *            the insert uri
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     */
     private void insertSyncRecord(Uri insertUri) throws SugarCrmException {
         final SyncRecord record = new SyncRecord();
         record.syncId = Long.parseLong(insertUri.getPathSegments().get(1));
@@ -969,6 +1022,12 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         mDbHelper.insertSyncRecord(record);
     }
 
+    /**
+     * Debug.
+     * 
+     * @param record
+     *            the record
+     */
     private void debug(SyncRecord record) {
         if (record == null) {
             Log.d(TAG, "Sync Record is null");
@@ -985,6 +1044,9 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                 + (record.status == Util.UNSYNCED ? "UNSYNCHD" : "CONFLICTS"));
     }
 
+    /**
+     * Debug.
+     */
     private void debug() {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "size : " + mUri.getPathSegments().size());

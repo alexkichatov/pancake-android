@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Muralidaran.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : DatabaseHelper 
+ * Description : 
+                This class helps open, create, and upgrade the database file.
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.provider;
 
 import java.io.BufferedReader;
@@ -31,15 +46,15 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsContactsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AccountsOpportunitiesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AlarmColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Calls;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Campaigns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Cases;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.CallsColumns;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.CampaignColumns;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.CasesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsCasesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsOpportunitiesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.LeadsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.LinkFieldColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Meetings;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.MeetingsColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldSortOrder;
@@ -50,7 +65,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.OpportunitiesColum
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.RecentColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Sync;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.SyncColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.UserColumns;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 import com.imaginea.android.sugarcrm.sync.SyncRecord;
@@ -64,192 +79,125 @@ import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * This class helps open, create, and upgrade the database file.
+ * The Class DatabaseHelper.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    /** The Constant DATABASE_NAME. */
     private static final String DATABASE_NAME = "sugar_crm.db";
 
     // TODO: RESET the database version to 1
+    /** The Constant DATABASE_VERSION. */
     private static final int DATABASE_VERSION = 34;
 
+    /** The Constant ACCOUNTS_TABLE_NAME. */
     public static final String ACCOUNTS_TABLE_NAME = "accounts";
 
+    /** The Constant CONTACTS_TABLE_NAME. */
     public static final String CONTACTS_TABLE_NAME = "contacts";
 
+    /** The Constant ACCOUNTS_CONTACTS_TABLE_NAME. */
     public static final String ACCOUNTS_CONTACTS_TABLE_NAME = "accounts_contacts";
 
+    /** The Constant ACCOUNTS_OPPORTUNITIES_TABLE_NAME. */
     public static final String ACCOUNTS_OPPORTUNITIES_TABLE_NAME = "accounts_opportunities";
 
+    /** The Constant ACCOUNTS_CASES_TABLE_NAME. */
     public static final String ACCOUNTS_CASES_TABLE_NAME = "accounts_cases";
 
+    /** The Constant CONTACTS_OPPORTUNITIES_TABLE_NAME. */
     public static final String CONTACTS_OPPORTUNITIES_TABLE_NAME = "contacts_opportunities";
 
+    /** The Constant CONTACTS_CASES_TABLE_NAME. */
     public static final String CONTACTS_CASES_TABLE_NAME = "contacts_cases";
 
+    /** The Constant LEADS_TABLE_NAME. */
     public static final String LEADS_TABLE_NAME = "leads";
 
+    /** The Constant RECENT_TABLE_NAME. */
     public static final String RECENT_TABLE_NAME = "recent";
 
+    /** The Constant ALARM_TABLE_NAME. */
     public static final String ALARM_TABLE_NAME = "alarms";
 
+    /** The Constant OPPORTUNITIES_TABLE_NAME. */
     public static final String OPPORTUNITIES_TABLE_NAME = "opportunities";
 
+    /** The Constant MEETINGS_TABLE_NAME. */
     public static final String MEETINGS_TABLE_NAME = "meetings";
 
+    /** The Constant CALLS_TABLE_NAME. */
     public static final String CALLS_TABLE_NAME = "calls";
 
+    /** The Constant CASES_TABLE_NAME. */
     public static final String CASES_TABLE_NAME = "cases";
 
+    /** The Constant CAMPAIGNS_TABLE_NAME. */
     public static final String CAMPAIGNS_TABLE_NAME = "campaigns";
 
+    /** The Constant MODULES_TABLE_NAME. */
     public static final String MODULES_TABLE_NAME = "modules";
 
+    /** The Constant MODULE_FIELDS_TABLE_NAME. */
     public static final String MODULE_FIELDS_TABLE_NAME = "module_fields";
 
+    /** The Constant LINK_FIELDS_TABLE_NAME. */
     public static final String LINK_FIELDS_TABLE_NAME = "link_fields";
 
+    /** The Constant SYNC_TABLE_NAME. */
     public static final String SYNC_TABLE_NAME = "sync_table";
 
+    /** The Constant USERS_TABLE_NAME. */
     public static final String USERS_TABLE_NAME = "users";
 
+    /** The Constant ACL_ROLES_TABLE_NAME. */
     public static final String ACL_ROLES_TABLE_NAME = "acl_roles";
 
+    /** The Constant ACL_ACTIONS_TABLE_NAME. */
     public static final String ACL_ACTIONS_TABLE_NAME = "acl_actions";
 
+    /** The Constant MODULE_FIELDS_SORT_ORDER_TABLE_NAME. */
     public static final String MODULE_FIELDS_SORT_ORDER_TABLE_NAME = "module_fields_sort_order";
 
+    /** The Constant MODULE_FIELDS_GROUP_TABLE_NAME. */
     public static final String MODULE_FIELDS_GROUP_TABLE_NAME = "module_fields_group";
 
+    /** The Constant TAG. */
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
-    /*
-     * private String[] defaultSupportedModules = { Util.ACCOUNTS,
-     * Util.CONTACTS, Util.LEADS, Util.OPPORTUNITIES, Util.CASES, Util.CALLS,
-     * Util.MEETINGS, Util.CAMPAIGNS };
-     */
-    // private static HashMap<String, Integer> moduleIcons = new HashMap<String,
-    // Integer>();
-
-    // private static List<String> moduleList;
-
-    // private static final HashMap<String, String[]> moduleProjections = new
-    // HashMap<String, String[]>();
-
-    // private static final HashMap<String, String[]> moduleListProjections =
-    // new HashMap<String, String[]>();
-
-    // private static final HashMap<String, String[]> moduleListSelections = new
-    // HashMap<String, String[]>();
-
-    // private static final HashMap<String, String> moduleSortOrder = new
-    // HashMap<String, String>();
-
-    // private static final HashMap<String, Uri> moduleUris = new
-    // HashMap<String, Uri>();
-
-    // private static final HashMap<String, String> moduleSelections = new
-    // HashMap<String, String>();
-
-    // private static HashMap<String, HashMap<String, ModuleField>>
-    // moduleFields;
-
+    /** The link fields. */
     private static HashMap<String, HashMap<String, LinkField>> linkFields;
 
-    // private static final HashMap<String, String[]> moduleRelationshipItems =
-    // new HashMap<String, String[]>();
-
+    /** The Constant relationshipTables. */
     private static final HashMap<String, String[]> relationshipTables = new HashMap<String, String[]>();
 
+    /** The Constant accountRelationsSelection. */
     private static final HashMap<String, String> accountRelationsSelection = new HashMap<String, String>();
 
+    /** The Constant accountRelationsTableName. */
     private static final HashMap<String, String> accountRelationsTableName = new HashMap<String, String>();
 
+    /** The Constant linkfieldNames. */
     private static final HashMap<String, String> linkfieldNames = new HashMap<String, String>();
 
-    // private static List<String> billingAddressGroup = new
-    // ArrayList<String>();
-
-    // private static List<String> shippingAddressGroup = new
-    // ArrayList<String>();
-
-    // private static List<String> durationGroup = new ArrayList<String>();
-
+    /** The access map. */
     private final Map<String, Map<String, Integer>> accessMap = new HashMap<String, Map<String, Integer>>();
 
+    /** The fields excluded for edit. */
     private static Map<String, String> fieldsExcludedForEdit = new HashMap<String, String>();
 
+    /** The fields excluded for details. */
     private static Map<String, String> fieldsExcludedForDetails = new HashMap<String, String>();
 
+    /** The m context. */
     private final Context mContext;
 
+    /** The m selection. */
     private static String mSelection = SugarCRMContent.RECORD_ID + "=?";
 
     static {
 
-        // Module Projections
-        /*
-         * moduleProjections.put(Util.ACCOUNTS, Accounts.DETAILS_PROJECTION);
-         * moduleProjections.put(Util.CONTACTS, Contacts.DETAILS_PROJECTION);
-         * moduleProjections.put(Util.LEADS, Leads.DETAILS_PROJECTION);
-         * moduleProjections.put(Util.OPPORTUNITIES,
-         * Opportunities.DETAILS_PROJECTION); moduleProjections.put(Util.CASES,
-         * Cases.DETAILS_PROJECTION); moduleProjections.put(Util.CALLS,
-         * Calls.DETAILS_PROJECTION); moduleProjections.put(Util.MEETINGS,
-         * Meetings.DETAILS_PROJECTION); moduleProjections.put(Util.CAMPAIGNS,
-         * Campaigns.DETAILS_PROJECTION);
-         */
-
-        // module list projections
-        /*
-         * moduleListProjections.put(Util.ACCOUNTS, Accounts.LIST_PROJECTION);
-         * moduleListProjections.put(Util.CONTACTS, Contacts.LIST_PROJECTION);
-         * moduleListProjections.put(Util.LEADS, Leads.LIST_PROJECTION);
-         * moduleListProjections.put(Util.OPPORTUNITIES,
-         * Opportunities.LIST_PROJECTION); moduleListProjections.put(Util.CASES,
-         * Cases.LIST_PROJECTION); moduleListProjections.put(Util.CALLS,
-         * Calls.LIST_PROJECTION); moduleListProjections.put(Util.MEETINGS,
-         * Meetings.LIST_PROJECTION); moduleListProjections.put(Util.CAMPAIGNS,
-         * Campaigns.LIST_PROJECTION);
-         */
-
-        // Default sort orders
-        /*
-         * moduleSortOrder.put(Util.ACCOUNTS, Accounts.DEFAULT_SORT_ORDER);
-         * moduleSortOrder.put(Util.CONTACTS, Contacts.DEFAULT_SORT_ORDER);
-         * moduleSortOrder.put(Util.LEADS, Leads.DEFAULT_SORT_ORDER);
-         * moduleSortOrder.put(Util.OPPORTUNITIES,
-         * Opportunities.DEFAULT_SORT_ORDER); moduleSortOrder.put(Util.CASES,
-         * Cases.DEFAULT_SORT_ORDER); moduleSortOrder.put(Util.CALLS,
-         * Calls.DEFAULT_SORT_ORDER); moduleSortOrder.put(Util.MEETINGS,
-         * Meetings.DEFAULT_SORT_ORDER); moduleSortOrder.put(Util.CAMPAIGNS,
-         * Campaigns.DEFAULT_SORT_ORDER);
-         */
-
-        // TODO - complete this list
-        /*
-         * moduleRelationshipItems.put(Util.ACCOUNTS, new String[] {
-         * Util.CONTACTS, Util.OPPORTUNITIES, Util.CASES }); // TODO - leads
-         * removed from CONTACTS relationship and vice versa
-         * moduleRelationshipItems.put(Util.CONTACTS, new String[] {
-         * Util.OPPORTUNITIES }); // TODO -
-         * moduleRelationshipItems.put(Util.LEADS, new String[] {}); //
-         * moduleRelationshipItems.put(Util.LEADS, new String[] {
-         * Util.OPPORTUNITIES}); moduleRelationshipItems.put(Util.OPPORTUNITIES,
-         * new String[] { Util.CONTACTS }); // TODO -
-         * moduleRelationshipItems.put(Util.CASES, new String[] {});
-         * moduleRelationshipItems.put(Util.CALLS, new String[] {});
-         * moduleRelationshipItems.put(Util.MEETINGS, new String[] {});
-         * moduleRelationshipItems.put(Util.CAMPAIGNS, new String[] {});
-         */
-        // moduleRelationshipItems.put(Util.CASES, new String[] { Util.CONTACTS
-        // });
-        // moduleRelationshipItems.put(Util.CALLS, new String[] { Util.CONTACTS
-        // });
-        // moduleRelationshipItems.put(Util.MEETINGS, new String[] {
-        // Util.CONTACTS });
-
-        // relationship tables for each module
+        /* relationship tables for each module */
         relationshipTables.put(Util.CONTACTS,
                 new String[] { ACCOUNTS_CONTACTS_TABLE_NAME,
                         CONTACTS_OPPORTUNITIES_TABLE_NAME });
@@ -264,15 +212,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         relationshipTables.put(Util.CAMPAIGNS, new String[] {});
 
         // selection for the moduleName that has relationship with Accounts
-        // module
-        // moduleName vs selection column name
+        // module moduleName vs selection column name
         accountRelationsSelection.put(Util.CONTACTS, ModuleFields.CONTACT_ID);
         accountRelationsSelection.put(Util.OPPORTUNITIES,
                 ModuleFields.OPPORTUNITY_ID);
         accountRelationsSelection.put(Util.CASES, Util.CASE_ID);
 
         // table name for the relationships with Accounts module
-        // moduleName vas relationship table name
+        // moduleName vs relationship table name
         accountRelationsTableName.put(Util.CONTACTS,
                 ACCOUNTS_CONTACTS_TABLE_NAME);
         accountRelationsTableName.put(Util.OPPORTUNITIES,
@@ -288,33 +235,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         linkfieldNames.put(Util.CAMPAIGNS, "campaigns");
         linkfieldNames.put(Util.ACLROLES, "aclroles");
         linkfieldNames.put(Util.ACLACTIONS, "actions");
-
-        /*
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_2);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_3);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_4);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_CITY);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STATE);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_POSTALCODE);
-         * billingAddressGroup.add(ModuleFields.BILLING_ADDRESS_COUNTRY);
-         */
-
-        /*
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_2);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_3);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STREET_4);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_CITY);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_STATE);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_POSTALCODE);
-         * shippingAddressGroup.add(ModuleFields.SHIPPING_ADDRESS_COUNTRY);
-         */
-
-        /*
-         * durationGroup.add(ModuleFields.DURATION_HOURS);
-         * durationGroup.add(ModuleFields.DURATION_MINUTES);
-         */
 
         // add a field name to the map if a module field in detail projection is
         // to be excluded
@@ -339,8 +259,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ModuleFields.MODIFIED_BY_NAME);
 
         // add a field name to the map if a module field in detail projection is
-        // to be excluded in
-        // details screen
+        // to be excluded in details screen
         fieldsExcludedForDetails.put(SugarCRMContent.RECORD_ID,
                 SugarCRMContent.RECORD_ID);
         fieldsExcludedForDetails.put(SugarCRMContent.SUGAR_BEAN_ID,
@@ -353,22 +272,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <p>
-     * Constructor for DatabaseHelper.
-     * </p>
+     * Instantiates a new database helper.
      * 
      * @param context
-     *            a {@link android.content.Context} object.
+     *            the context
      */
     public DatabaseHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
+     * .SQLiteDatabase)
+     */
     @Override
     public void onCreate(final SQLiteDatabase db) {
-
         createAccountsTable(db);
         createContactsTable(db);
         createLeadsTable(db);
@@ -388,10 +310,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         createAclRolesTable(db);
         createAclActionsTable(db);
 
-        // TODO: Dyanamic Module Support
-        // createModuleFieldsSortOrderTable(db);
-        // createModuleFieldsGroupTable(db);
-
         // create join tables
         createAccountsContactsTable(db);
         createAccountsOpportunitiesTable(db);
@@ -405,95 +323,233 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Drop accounts table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAccountsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE_NAME);
     }
 
+    /**
+     * Drop contacts table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropContactsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_TABLE_NAME);
     }
 
+    /**
+     * Drop leads table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropLeadsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + LEADS_TABLE_NAME);
     }
 
+    /**
+     * Drop opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropOpportunitiesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + OPPORTUNITIES_TABLE_NAME);
     }
 
+    /**
+     * Drop cases table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropCasesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CASES_TABLE_NAME);
     }
 
+    /**
+     * Drop calls table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropCallsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CALLS_TABLE_NAME);
     }
 
+    /**
+     * Drop meetings table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropMeetingsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + MEETINGS_TABLE_NAME);
     }
 
+    /**
+     * Drop campaigns table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropCampaignsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGNS_TABLE_NAME);
     }
 
+    /**
+     * Drop modules table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropModulesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + MODULES_TABLE_NAME);
     }
 
+    /**
+     * Drop module fields table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropModuleFieldsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + MODULE_FIELDS_TABLE_NAME);
     }
 
+    /**
+     * Drop link fields table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropLinkFieldsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + LINK_FIELDS_TABLE_NAME);
     }
 
+    /**
+     * Drop accounts contacts table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAccountsContactsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_CONTACTS_TABLE_NAME);
     }
 
+    /**
+     * Drop accounts cases table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAccountsCasesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_CASES_TABLE_NAME);
     }
 
+    /**
+     * Drop accounts opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAccountsOpportunitiesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_OPPORTUNITIES_TABLE_NAME);
     }
 
+    /**
+     * Drop contacts opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropContactsOpportunitiesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_OPPORTUNITIES_TABLE_NAME);
     }
 
+    /**
+     * Drop contacts cases table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropContactsCasesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_CASES_TABLE_NAME);
     }
 
+    /**
+     * Drop sync table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropSyncTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + SYNC_TABLE_NAME);
     }
 
+    /**
+     * Drop users table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropUsersTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
     }
 
+    /**
+     * Drop acl roles table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAclRolesTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACL_ROLES_TABLE_NAME);
     }
 
+    /**
+     * Drop acl actions table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropAclActionsTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ACL_ACTIONS_TABLE_NAME);
     }
 
+    /**
+     * Drop module fields sort order table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropModuleFieldsSortOrderTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS "
                 + MODULE_FIELDS_SORT_ORDER_TABLE_NAME);
     }
 
+    /**
+     * Drop module fields group table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropModuleFieldsGroupTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + MODULE_FIELDS_GROUP_TABLE_NAME);
     }
 
+    /**
+     * Drop recent table.
+     * 
+     * @param db
+     *            the db
+     */
     void dropRecentTable(final SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + RECENT_TABLE_NAME);
     }
@@ -509,6 +565,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Drop all data tables.
+     * 
+     * @param db
+     *            the db
+     */
     private void dropAllDataTables(final SQLiteDatabase db) {
         dropAccountsTable(db);
         dropContactsTable(db);
@@ -527,10 +589,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dropAclRolesTable(db);
         dropAclActionsTable(db);
 
-        /*
-         * dropModuleFieldsGroupTable(db); dropModuleFieldsSortOrderTable(db);
-         */
-
         // drop join tables
         dropAccountsContactsTable(db);
         dropAccountsOpportunitiesTable(db);
@@ -542,12 +600,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dropRecentTable(db);
     }
 
+    /**
+     * Creates the alarms table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAlarmsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ALARM_TABLE_NAME + " (" + AlarmColumns.ID
                 + " INTEGER," + AlarmColumns.ALARM_STATE + " INTEGER" + ");");
     }
 
+    /**
+     * Creates the recent table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createRecentTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + RECENT_TABLE_NAME + " ("
@@ -558,6 +628,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " TEXT," + RecentColumns.DELETED + " INTEGER" + ");");
     }
 
+    /**
+     * Creates the accounts table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAccountsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACCOUNTS_TABLE_NAME + " ("
@@ -595,6 +671,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + AccountsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the contacts table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createContactsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + CONTACTS_TABLE_NAME + " ("
@@ -617,6 +699,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ContactsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the leads table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createLeadsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + LEADS_TABLE_NAME + " (" + LeadsColumns.ID
@@ -634,6 +722,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " UNIQUE(" + LeadsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createOpportunitiesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + OPPORTUNITIES_TABLE_NAME + " ("
@@ -667,66 +761,112 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + OpportunitiesColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the cases table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createCasesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CASES_TABLE_NAME + " (" + Cases.ID
-                + " INTEGER PRIMARY KEY," + Cases.BEAN_ID + " TEXT,"
-                + Cases.NAME + " TEXT," + Cases.ACCOUNT_NAME + " TEXT,"
-                + Cases.CASE_NUMBER + " TEXT," + Cases.PRIORITY + " TEXT,"
-                + Cases.ASSIGNED_USER_NAME + " TEXT," + Cases.STATUS + " TEXT,"
-                + Cases.DESCRIPTION + " TEXT," + Cases.RESOLUTION + " TEXT,"
-                + Cases.CREATED_BY_NAME + " TEXT," + Cases.DATE_ENTERED
-                + " TEXT," + Cases.DATE_MODIFIED + " TEXT," + Cases.DELETED
-                + " INTEGER," + " UNIQUE(" + Cases.BEAN_ID + ")" + ");");
+        db.execSQL("CREATE TABLE " + CASES_TABLE_NAME + " (" + CasesColumns.ID
+                + " INTEGER PRIMARY KEY," + CasesColumns.BEAN_ID + " TEXT,"
+                + CasesColumns.NAME + " TEXT," + CasesColumns.ACCOUNT_NAME
+                + " TEXT," + CasesColumns.CASE_NUMBER + " TEXT,"
+                + CasesColumns.PRIORITY + " TEXT,"
+                + CasesColumns.ASSIGNED_USER_NAME + " TEXT,"
+                + CasesColumns.STATUS + " TEXT," + CasesColumns.DESCRIPTION
+                + " TEXT," + CasesColumns.RESOLUTION + " TEXT,"
+                + CasesColumns.CREATED_BY_NAME + " TEXT,"
+                + CasesColumns.DATE_ENTERED + " TEXT,"
+                + CasesColumns.DATE_MODIFIED + " TEXT," + CasesColumns.DELETED
+                + " INTEGER," + " UNIQUE(" + CasesColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the calls table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createCallsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CALLS_TABLE_NAME + " (" + Calls.ID
-                + " INTEGER PRIMARY KEY," + Calls.BEAN_ID + " TEXT,"
-                + Calls.NAME + " TEXT," + Calls.ACCOUNT_NAME + " TEXT,"
-                + Calls.STATUS + " TEXT," + Calls.START_DATE + " TEXT,"
-                + Calls.DURATION_HOURS + " TEXT," + Calls.DURATION_MINUTES
-                + " TEXT," + Calls.ASSIGNED_USER_NAME + " TEXT,"
-                + Calls.DESCRIPTION + " TEXT," + Calls.CREATED_BY_NAME
-                + " TEXT," + Calls.DATE_ENTERED + " TEXT,"
-                + Calls.DATE_MODIFIED + " TEXT," + Calls.DELETED + " INTEGER,"
-                + " UNIQUE(" + Calls.BEAN_ID + ")" + ");");
+        db.execSQL("CREATE TABLE " + CALLS_TABLE_NAME + " (" + CallsColumns.ID
+                + " INTEGER PRIMARY KEY," + CallsColumns.BEAN_ID + " TEXT,"
+                + CallsColumns.NAME + " TEXT," + CallsColumns.ACCOUNT_NAME
+                + " TEXT," + CallsColumns.STATUS + " TEXT,"
+                + CallsColumns.START_DATE + " TEXT,"
+                + CallsColumns.DURATION_HOURS + " TEXT,"
+                + CallsColumns.DURATION_MINUTES + " TEXT,"
+                + CallsColumns.ASSIGNED_USER_NAME + " TEXT,"
+                + CallsColumns.DESCRIPTION + " TEXT,"
+                + CallsColumns.CREATED_BY_NAME + " TEXT,"
+                + CallsColumns.DATE_ENTERED + " TEXT,"
+                + CallsColumns.DATE_MODIFIED + " TEXT," + CallsColumns.DELETED
+                + " INTEGER," + " UNIQUE(" + CallsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the meetings table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createMeetingsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + MEETINGS_TABLE_NAME + " (" + Meetings.ID
-                + " INTEGER PRIMARY KEY," + Meetings.BEAN_ID + " TEXT,"
-                + Meetings.NAME + " TEXT," + Meetings.ACCOUNT_NAME + " TEXT,"
-                + Meetings.STATUS + " TEXT," + Meetings.LOCATION + " TEXT,"
-                + Meetings.START_DATE + " TEXT," + Meetings.DURATION_HOURS
-                + " TEXT," + Meetings.DURATION_MINUTES + " TEXT,"
-                + Meetings.ASSIGNED_USER_NAME + " TEXT," + Meetings.DESCRIPTION
-                + " TEXT," + Meetings.CREATED_BY_NAME + " TEXT,"
-                + Meetings.DATE_ENTERED + " TEXT," + Meetings.DATE_MODIFIED
-                + " TEXT," + Meetings.DELETED + " INTEGER," + " UNIQUE("
-                + Meetings.BEAN_ID + ")" + ");");
+        db.execSQL("CREATE TABLE " + MEETINGS_TABLE_NAME + " ("
+                + MeetingsColumns.ID + " INTEGER PRIMARY KEY,"
+                + MeetingsColumns.BEAN_ID + " TEXT," + MeetingsColumns.NAME
+                + " TEXT," + MeetingsColumns.ACCOUNT_NAME + " TEXT,"
+                + MeetingsColumns.STATUS + " TEXT," + MeetingsColumns.LOCATION
+                + " TEXT," + MeetingsColumns.START_DATE + " TEXT,"
+                + MeetingsColumns.DURATION_HOURS + " TEXT,"
+                + MeetingsColumns.DURATION_MINUTES + " TEXT,"
+                + MeetingsColumns.ASSIGNED_USER_NAME + " TEXT,"
+                + MeetingsColumns.DESCRIPTION + " TEXT,"
+                + MeetingsColumns.CREATED_BY_NAME + " TEXT,"
+                + MeetingsColumns.DATE_ENTERED + " TEXT,"
+                + MeetingsColumns.DATE_MODIFIED + " TEXT,"
+                + MeetingsColumns.DELETED + " INTEGER," + " UNIQUE("
+                + MeetingsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the campaigns table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createCampaignsTable(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + CAMPAIGNS_TABLE_NAME + " (" + Campaigns.ID
-                + " INTEGER PRIMARY KEY," + Campaigns.BEAN_ID + " TEXT,"
-                + Campaigns.NAME + " TEXT," + Campaigns.STATUS + " TEXT,"
-                + Campaigns.START_DATE + " TEXT," + Campaigns.END_DATE
-                + " TEXT," + Campaigns.CAMPAIGN_TYPE + " TEXT,"
-                + Campaigns.BUDGET + " TEXT," + Campaigns.ACTUAL_COST
-                + " TEXT," + Campaigns.EXPECTED_COST + " TEXT,"
-                + Campaigns.EXPECTED_REVENUE + " TEXT," + Campaigns.IMPRESSIONS
-                + " TEXT," + Campaigns.OBJECTIVE + " TEXT,"
-                + Campaigns.FREQUENCY + " TEXT," + Campaigns.ASSIGNED_USER_NAME
-                + " TEXT," + Campaigns.DESCRIPTION + " TEXT,"
-                + Campaigns.CREATED_BY_NAME + " TEXT," + Campaigns.DATE_ENTERED
-                + " TEXT," + Campaigns.DATE_MODIFIED + " TEXT,"
-                + Campaigns.DELETED + " INTEGER," + " UNIQUE("
-                + Meetings.BEAN_ID + ")" + ");");
+        db.execSQL("CREATE TABLE " + CAMPAIGNS_TABLE_NAME + " ("
+                + CampaignColumns.ID + " INTEGER PRIMARY KEY,"
+                + CampaignColumns.BEAN_ID + " TEXT," + CampaignColumns.NAME
+                + " TEXT," + CampaignColumns.STATUS + " TEXT,"
+                + CampaignColumns.START_DATE + " TEXT,"
+                + CampaignColumns.END_DATE + " TEXT,"
+                + CampaignColumns.CAMPAIGN_TYPE + " TEXT,"
+                + CampaignColumns.BUDGET + " TEXT,"
+                + CampaignColumns.ACTUAL_COST + " TEXT,"
+                + CampaignColumns.EXPECTED_COST + " TEXT,"
+                + CampaignColumns.EXPECTED_REVENUE + " TEXT,"
+                + CampaignColumns.IMPRESSIONS + " TEXT,"
+                + CampaignColumns.OBJECTIVE + " TEXT,"
+                + CampaignColumns.FREQUENCY + " TEXT,"
+                + CampaignColumns.ASSIGNED_USER_NAME + " TEXT,"
+                + CampaignColumns.DESCRIPTION + " TEXT,"
+                + CampaignColumns.CREATED_BY_NAME + " TEXT,"
+                + CampaignColumns.DATE_ENTERED + " TEXT,"
+                + CampaignColumns.DATE_MODIFIED + " TEXT,"
+                + CampaignColumns.DELETED + " INTEGER," + " UNIQUE("
+                + MeetingsColumns.BEAN_ID + ")" + ");");
     }
 
+    /**
+     * Creates the modules table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createModulesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + MODULES_TABLE_NAME + " ("
@@ -736,6 +876,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ModuleColumns.MODULE_NAME + ")" + ");");
     }
 
+    /**
+     * Creates the module fields table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createModuleFieldsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + MODULE_FIELDS_TABLE_NAME + " ("
@@ -746,6 +892,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ModuleFieldColumns.MODULE_ID + " INTEGER" + ");");
     }
 
+    /**
+     * Creates the link fields table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createLinkFieldsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + LINK_FIELDS_TABLE_NAME + " ("
@@ -757,6 +909,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + LinkFieldColumns.MODULE_ID + " INTEGER" + ");");
     }
 
+    /**
+     * Creates the accounts contacts table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAccountsContactsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACCOUNTS_CONTACTS_TABLE_NAME + " ("
@@ -768,6 +926,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + AccountsContactsColumns.CONTACT_ID + ")" + ");");
     }
 
+    /**
+     * Creates the accounts opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAccountsOpportunitiesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACCOUNTS_OPPORTUNITIES_TABLE_NAME + " ("
@@ -779,6 +943,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + AccountsOpportunitiesColumns.OPPORTUNITY_ID + ")" + ");");
     }
 
+    /**
+     * Creates the accounts cases table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAccountsCasesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACCOUNTS_CASES_TABLE_NAME + " ("
@@ -790,6 +960,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + AccountsCasesColumns.CASE_ID + ")" + ");");
     }
 
+    /**
+     * Creates the contacts opportunities table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createContactsOpportunitiesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + CONTACTS_OPPORTUNITIES_TABLE_NAME + " ("
@@ -801,6 +977,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ContactsOpportunitiesColumns.OPPORTUNITY_ID + ")" + ");");
     }
 
+    /**
+     * Creates the contacts cases.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createContactsCases(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + CONTACTS_CASES_TABLE_NAME + " ("
@@ -812,25 +994,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ContactsCasesColumns.CASE_ID + ")" + ");");
     }
 
+    /**
+     * Creates the sync table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createSyncTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + SYNC_TABLE_NAME + " (" + Sync.ID
-                + " INTEGER PRIMARY KEY," + Sync.SYNC_ID + " INTEGER ,"
-                + Sync.SYNC_RELATED_ID + " INTEGER ," + Sync.SYNC_COMMAND
-                + " INTEGER," + Sync.MODULE + " TEXT," + Sync.RELATED_MODULE
-                + " TEXT," + Sync.DATE_MODIFIED + " TEXT," + Sync.SYNC_STATUS
-                + " INTEGER," + " UNIQUE(" + Sync.SYNC_ID + "," + Sync.MODULE
-                + "," + Sync.RELATED_MODULE + ")" + ");");
+        db.execSQL("CREATE TABLE " + SYNC_TABLE_NAME + " (" + SyncColumns.ID
+                + " INTEGER PRIMARY KEY," + SyncColumns.SYNC_ID + " INTEGER ,"
+                + SyncColumns.SYNC_RELATED_ID + " INTEGER ,"
+                + SyncColumns.SYNC_COMMAND + " INTEGER," + SyncColumns.MODULE
+                + " TEXT," + SyncColumns.RELATED_MODULE + " TEXT,"
+                + SyncColumns.DATE_MODIFIED + " TEXT,"
+                + SyncColumns.SYNC_STATUS + " INTEGER," + " UNIQUE("
+                + SyncColumns.SYNC_ID + "," + SyncColumns.MODULE + ","
+                + SyncColumns.RELATED_MODULE + ")" + ");");
     }
 
+    /**
+     * Creates the users table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createUsersTable(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + USERS_TABLE_NAME + " (" + Users.ID
-                + " INTEGER PRIMARY KEY," + Users.USER_ID + " INTEGER,"
-                + Users.USER_NAME + " TEXT," + Users.FIRST_NAME + " TEXT,"
-                + Users.LAST_NAME + " TEXT," + " UNIQUE(" + Users.USER_NAME
-                + ")" + ");");
+        db.execSQL("CREATE TABLE " + USERS_TABLE_NAME + " (" + UserColumns.ID
+                + " INTEGER PRIMARY KEY," + UserColumns.USER_ID + " INTEGER,"
+                + UserColumns.USER_NAME + " TEXT," + UserColumns.FIRST_NAME
+                + " TEXT," + UserColumns.LAST_NAME + " TEXT," + " UNIQUE("
+                + UserColumns.USER_NAME + ")" + ");");
     }
 
+    /**
+     * Creates the acl roles table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAclRolesTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACL_ROLES_TABLE_NAME + " ("
@@ -841,6 +1043,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ACLRoleColumns.ROLE_ID + ")" + ");");
     }
 
+    /**
+     * Creates the acl actions table.
+     * 
+     * @param db
+     *            the db
+     */
     private static void createAclActionsTable(final SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + ACL_ACTIONS_TABLE_NAME + " ("
@@ -854,22 +1062,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ACLActionColumns.ACTION_ID + ")" + ");");
     }
 
-    /*
-     * private static void createModuleFieldsSortOrderTable(SQLiteDatabase db) {
-     * 
-     * db.execSQL("CREATE TABLE " + MODULE_FIELDS_SORT_ORDER_TABLE_NAME + " (" +
-     * ModuleFieldSortOrderColumns.ID + " INTEGER PRIMARY KEY," +
-     * ModuleFieldSortOrderColumns.FIELD_SORT_ID + " INTEGER," +
-     * ModuleFieldSortOrderColumns.GROUP_ID + " INTEGER," +
-     * ModuleFieldSortOrderColumns.MODULE_FIELD_ID + " INTEGER," +
-     * ModuleFieldSortOrderColumns.MODULE_ID + " INTEGER" + ");"); }
-     * 
-     * private static void createModuleFieldsGroupTable(SQLiteDatabase db) {
-     * 
-     * db.execSQL("CREATE TABLE " + MODULE_FIELDS_GROUP_TABLE_NAME + " (" +
-     * ModuleFieldGroupColumns.ID + " INTEGER PRIMARY KEY," +
-     * ModuleFieldGroupColumns.TITLE + " TEXT," +
-     * ModuleFieldGroupColumns.GROUP_ID + " INTEGER" + ");"); }
+    /**
+     * Sets the acl access map.
      */
     private void setAclAccessMap() {
         // get the module list
@@ -908,6 +1102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Gets the acl access map.
+     * 
+     * @return the acl access map
+     */
     private Map<String, Map<String, Integer>> getAclAccessMap() {
         if (accessMap != null && accessMap.size() != 0)
             return accessMap;
@@ -921,6 +1120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * isAclEnabled
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -936,6 +1136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * isAclEnabled
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1004,6 +1205,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Getter for the field <code>fieldsExcludedForDetails</code>.
      * </p>
      * 
+     * @param moduleName
+     *            the module name
+     * @param searchString
+     *            the search string
      * @return a {@link java.util.Map} object.
      */
     /*
@@ -1161,43 +1366,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * <p>
-     * Getter for the field <code>moduleList</code>.
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    // This method moved to ContentUtils class.
-    /*
-     * public List<String> getModuleList() { List<String> userModules =
-     * getUserModules(); List<String> supportedModules =
-     * Arrays.asList(getSupportedModulesList()); List<String> modules = new
-     * ArrayList<String>(); for (String module : userModules) { if
-     * (supportedModules.contains(module)) { modules.add(module); } } return
-     * modules; // TODO: return the module List after the exclusion of modules
-     * from the user moduleList // return moduleList; }
-     */
-
-    /**
-     * while fetching relationship module items, we need to determine if current
-     * user has access to that module, this module should be present in the
-     * modules available to the user
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    // this moved to content utils.
-    /*
-     * public boolean isModuleAccessAvailable(String moduleName) { //
-     * userModules list is already sorted when querying from DB, hey we can as
-     * well go against // the db or use a map List<String> userModules =
-     * getUserModules(); int index = Collections.binarySearch(userModules,
-     * moduleName); return index < 0 ? false : true; }
-     */
-    /**
-     * <p>
      * getLinkfieldName
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1207,149 +1378,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return linkfieldNames.get(moduleName);
     }
 
-    /**
-     * <p>
-     * getSupportedModulesList
-     * </p>
-     * 
-     * @return an array of {@link java.lang.String} objects.
-     */
-    /*
-     * public String[] getSupportedModulesList() { return
-     * defaultSupportedModules; }
-     */
-
-    /**
-     * <p>
-     * getModuleIcon
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a int.
-     */
-    // This moved to ContentUtils
-    /*
-     * public int getModuleIcon(String moduleName) { Integer iconResource =
-     * moduleIcons.get(moduleName); if (iconResource == null) return
-     * android.R.drawable.alert_dark_frame; return iconResource; }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>billingAddressGroup</code>.
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    /*
-     * public List<String> getBillingAddressGroup() { return
-     * billingAddressGroup; }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>shippingAddressGroup</code>.
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    /*
-     * public List<String> getShippingAddressGroup() { return
-     * shippingAddressGroup; }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>durationGroup</code>.
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    /*
-     * public List<String> getDurationGroup() { return durationGroup; }
-     */
-
-    /**
-     * <p>
-     * getModuleField
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @param fieldName
-     *            a {@link java.lang.String} object.
-     * @return a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
-     */
-    /*
-     * public ModuleField getModuleField(String moduleName, String fieldName) {
-     * SQLiteDatabase db = getReadableDatabase(); ModuleField moduleField =
-     * null;
-     * 
-     * String selection = ModuleColumns.MODULE_NAME + "='" + moduleName + "'";
-     * Cursor cursor = db.query(MODULES_TABLE_NAME, Modules.DETAILS_PROJECTION,
-     * selection, null, null, null, null); int num = cursor.getCount(); if (num
-     * > 0) { cursor.moveToFirst(); String moduleId = cursor.getString(0);
-     * cursor.close();
-     * 
-     * selection = "(" + ModuleFieldColumns.MODULE_ID + "=" + moduleId + " AND "
-     * + ModuleFieldColumns.NAME + "='" + fieldName + "')"; cursor =
-     * db.query(MODULE_FIELDS_TABLE_NAME,
-     * ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null, null, null,
-     * null); cursor.moveToFirst();
-     * 
-     * if (cursor.getCount() > 0) moduleField = new
-     * ModuleField(cursor.getString(
-     * cursor.getColumnIndex(ModuleFieldColumns.NAME)),
-     * cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.TYPE)),
-     * cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.LABEL)),
-     * cursor.getInt(cursor.getColumnIndex(ModuleFieldColumns.IS_REQUIRED)) == 1
-     * ? true
-     * 
-     * : false); } cursor.close();
-     * 
-     * db.close();
-     * 
-     * return moduleField; }
-     */
-    /**
-     * <p>
-     * Getter for the field <code>moduleFields</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
-     */
-    /*
-     * public Map<String, ModuleField> getModuleFields(String moduleName) { if
-     * (moduleFields != null) { HashMap<String, ModuleField> map =
-     * moduleFields.get(moduleName); if (map != null && map.size() > 0) return
-     * map; } else moduleFields = new HashMap<String, HashMap<String,
-     * ModuleField>>();
-     * 
-     * SQLiteDatabase db = getReadableDatabase(); String selection =
-     * ModuleColumns.MODULE_NAME + "='" + moduleName + "'"; Cursor cursor =
-     * db.query(MODULES_TABLE_NAME, Modules.DETAILS_PROJECTION, selection, null,
-     * null, null, null); cursor.moveToFirst(); String moduleId =
-     * cursor.getString(0); cursor.close();
-     * 
-     * // name of the module field is the key and ModuleField is the value
-     * HashMap<String, ModuleField> fieldNameVsModuleField = new HashMap<String,
-     * ModuleField>(); selection = ModuleFieldColumns.MODULE_ID + "=" +
-     * moduleId; cursor = db.query(MODULE_FIELDS_TABLE_NAME,
-     * ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null, null, null,
-     * null); cursor.moveToFirst(); for (int i = 0; i < cursor.getCount(); i++)
-     * { String name =
-     * cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.NAME));
-     * ModuleField moduleField = new ModuleField(name,
-     * cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.TYPE)),
-     * cursor.getString(cursor.getColumnIndex(ModuleFieldColumns.LABEL)),
-     * cursor.getInt(cursor.getColumnIndex(ModuleFieldColumns.IS_REQUIRED)) == 1
-     * ? true : false); cursor.moveToNext(); fieldNameVsModuleField.put(name,
-     * moduleField); } cursor.close(); db.close(); moduleFields.put(moduleName,
-     * fieldNameVsModuleField); return fieldNameVsModuleField; }
-     */
     /**
      * <p>
      * Getter for the field <code>linkFields</code>.
@@ -1397,63 +1425,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return nameVsLinkField;
     }
 
-    /*
-     * gives all the available user modules
-     */
-    /**
-     * <p>
-     * getUserModules
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    // this moved to content utils
-    /*
-     * public List<String> getUserModules() { SQLiteDatabase db =
-     * getReadableDatabase(); ArrayList<String> moduleList = new
-     * ArrayList<String>(); // get a sorted list with module_name OrderBy Cursor
-     * cursor = db.query(MODULES_TABLE_NAME, Modules.DETAILS_PROJECTION, null,
-     * null, null, null, ModuleColumns.MODULE_NAME); cursor.moveToFirst(); for
-     * (int i = 0; i < cursor.getCount(); i++) { String moduleName =
-     * cursor.getString(cursor.getColumnIndex(ModuleColumns.MODULE_NAME));
-     * moduleList.add(moduleName); cursor.moveToNext(); } cursor.close();
-     * db.close(); return moduleList; }
-     */
     /**
      * <p>
      * setUserModules
      * </p>
+     * .
      * 
-     * @param moduleNames
-     *            a {@link java.util.List} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
-     */
-
-    /*
-     * // this is moved to ContentUtils class public void
-     * setUserModules(List<String> moduleNames) throws SugarCrmException {
-     * boolean hasFailed = false; SQLiteDatabase db = getWritableDatabase();
-     * 
-     * try { // TODO: This has to be removed and is only added to fix the DB
-     * insertion issue, int numOfUserModulesDeleted =
-     * db.delete(MODULES_TABLE_NAME, null, null); Log.d(TAG,
-     * "number of user modules deleted: " + numOfUserModulesDeleted); } catch
-     * (SQLException sqlex) { // IGNORE even if it fails }
-     * 
-     * db.beginTransaction();
-     * 
-     * HashSet<String> moduleNamesSet = new HashSet<String>(moduleNames); try {
-     * for (String moduleName : moduleNamesSet) { ContentValues values = new
-     * ContentValues(); if (moduleName != null && !moduleName.equals("")) {
-     * values.put(ModuleColumns.MODULE_NAME, moduleName); long rowId =
-     * db.insert(MODULES_TABLE_NAME, "", values); if (rowId <= 0) { hasFailed =
-     * true; break; } } } } catch (SQLException sqlex) { hasFailed = true;
-     * Log.e(TAG, sqlex.getMessage(), sqlex); }
-     * 
-     * if (hasFailed) { db.endTransaction(); db.close(); throw new
-     * SugarCrmException("FAILED to insert Modules!"); } else {
-     * db.setTransactionSuccessful(); db.endTransaction(); db.close(); } }
+     * @param moduleFieldsInfo
+     *            the new module fields info
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
 
     /**
@@ -1536,7 +1517,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * get a Sync record given syncId and moduleName
+     * get a Sync record given syncId and moduleName.
      * 
      * @param syncId
      *            a long.
@@ -1554,7 +1535,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * get a Sync record given syncId and moduleName
+     * get a Sync record given syncId and moduleName.
      * 
      * @param syncId
      *            a long.
@@ -1598,7 +1579,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * gets the unsynced sync records from the sync table
+     * gets the unsynced sync records from the sync table.
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1622,6 +1603,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * getConflictingSyncRecords
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1635,6 +1617,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * getSyncRecordsToSync
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1648,6 +1631,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * getModuleProjectionInOrder
      * </p>
+     * .
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -1707,6 +1691,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /*
      * get the moduleId given the name of the module
      */
+    /**
+     * Gets the module id.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module id
+     */
     private int getModuleId(final String moduleName) {
         final SQLiteDatabase db = getReadableDatabase();
         final String selection = ModuleColumns.MODULE_NAME + "='" + moduleName
@@ -1725,14 +1716,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * // TODO - when do we update ?? - not required -??
+     * // TODO - when do we update ?? - not required -??.
      * 
      * @param record
      *            a {@link com.imaginea.android.sugarcrm.sync.SyncRecord}
      *            object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
      * @return a int.
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public int updateSyncRecord(final SyncRecord record)
             throws SugarCrmException {
@@ -1747,29 +1738,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(SyncColumns.RELATED_MODULE, record.relatedModuleName);
         values.put(SyncColumns.SYNC_STATUS, record.status);
 
-        final int rowId = db.update(SYNC_TABLE_NAME, values, Sync.ID + "=?",
-                new String[] { "" + record._id });
+        final int rowId = db.update(SYNC_TABLE_NAME, values, SyncColumns.ID
+                + "=?", new String[] { "" + record._id });
         if (rowId < 0)
             throw new SugarCrmException("FAILED to update sync record!");
         return rowId;
     }
 
     /**
-     * updateSyncRecord
+     * updateSyncRecord.
      * 
      * @param syncRecordId
      *            a long.
      * @param values
      *            a {@link android.content.ContentValues} object.
      * @return a int.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public int updateSyncRecord(final long syncRecordId,
             final ContentValues values) throws SugarCrmException {
         final SQLiteDatabase db = getWritableDatabase();
-        final int rowId = db.update(SYNC_TABLE_NAME, values, Sync.ID + "=?",
-                new String[] { "" + syncRecordId });
+        final int rowId = db.update(SYNC_TABLE_NAME, values, SyncColumns.ID
+                + "=?", new String[] { "" + syncRecordId });
         if (rowId < 0)
             throw new SugarCrmException("FAILED to update sync record!");
         return rowId;
@@ -1779,13 +1770,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * insertSyncRecord
      * </p>
+     * .
      * 
      * @param record
      *            a {@link com.imaginea.android.sugarcrm.sync.SyncRecord}
      *            object.
      * @return a long.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public long insertSyncRecord(final SyncRecord record)
             throws SugarCrmException {
@@ -1807,7 +1799,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * deletes a sync record based on the syncRecdordId (_id)
+     * deletes a sync record based on the syncRecdordId (_id).
      * 
      * @param syncRecordId
      *            a long.
@@ -1816,8 +1808,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int deleteSyncRecord(final long syncRecordId) {
         final SQLiteDatabase db = getWritableDatabase();
         // String accountId = uri.getPathSegments().get(1);
-        final int count = db.delete(DatabaseHelper.SYNC_TABLE_NAME, Sync.ID
-                + "=" + syncRecordId, null);
+        final int count = db.delete(DatabaseHelper.SYNC_TABLE_NAME,
+                SyncColumns.ID + "=" + syncRecordId, null);
         // + (!TextUtils.isEmpty(where) ? " AND (" + where + ')'
         // : ""), whereArgs);
         return count;
@@ -1827,14 +1819,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * insertActions
      * </p>
+     * .
      * 
      * @param roleId
      *            a {@link java.lang.String} object.
      * @param roleRelationBeans
      *            an array of
-     *            {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     *             {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
      */
     public void insertActions(final String roleId,
             final SugarBean[] roleRelationBeans) throws SugarCrmException {
@@ -1887,13 +1880,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * insertRoles
      * </p>
+     * .
      * 
      * @param roleBeans
      *            an array of
-     *            {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
      * @return a {@link java.util.List} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
+     *             {@link com.imaginea.android.sugarcrm.rest.SugarBean} objects.
      */
     public List<String> insertRoles(final SugarBean[] roleBeans)
             throws SugarCrmException {
@@ -1937,11 +1931,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>
      * insertUsers
      * </p>
+     * .
      * 
      * @param usersList
      *            a {@link java.util.Map} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public void insertUsers(final Map<String, Map<String, String>> usersList)
             throws SugarCrmException {
@@ -1976,12 +1971,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * executes SQL statements from a SQL file name present in assets folder
+     * executes SQL statements from a SQL file name present in assets folder.
      * 
      * @param fileName
      *            a {@link java.lang.String} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public void executeSQLFromFile(final String fileName)
             throws SugarCrmException {
@@ -2073,20 +2068,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <p>
-     * lookupUserBeanId
-     * </p>
+     * Lookup user bean id.
      * 
      * @param userBeanName
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     *            the user bean name
+     * @return the string
      */
     public String lookupUserBeanId(final String userBeanName) {
         final ContentResolver resolver = mContext.getContentResolver();
         String beanId = null;
         final Uri contentUri = ContentUtils.getModuleUri(Util.USERS);
         final String[] projection = new String[] { ModuleFields.ID };
-        final String selection = Users.USER_NAME + "='" + userBeanName + "'";
+        final String selection = UserColumns.USER_NAME + "='" + userBeanName
+                + "'";
         final Cursor c = resolver.query(contentUri, projection, selection,
                 null, null);
         try {

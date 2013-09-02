@@ -17,14 +17,23 @@ import com.imaginea.android.sugarcrm.rest.SugarBean;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 
+/**
+ * The Class AclTest.
+ */
 public class AclTest extends RestAPITest {
 
+    /** The tag. */
     String TAG = AclTest.class.getSimpleName();
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The user select fields. */
     String[] userSelectFields = { ModuleFields.ID };
 
+    /**
+     * Test acl access.
+     */
     @SmallTest
     public void testAclAccess() {
         try {

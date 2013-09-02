@@ -12,27 +12,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <RelativeLayout
+        style="@style/detail_list_item"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal" >
+        android:layout_weight="1" >
 
         <ImageView
             android:id="@+id/list_assigned_icon"
+            style="@style/detail_list_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingLeft="10dp"
             android:src="@drawable/ico_assignee"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/list_item_summary"
             style="@style/detail_list_value"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/list_assigned_icon"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@id/list_assigned_icon"
+            android:autoLink="web|email|map" />
+    </RelativeLayout>
 
 </LinearLayout>

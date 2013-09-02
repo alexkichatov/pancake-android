@@ -1,26 +1,35 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Vasavi, chander.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Vasavi, chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : SugarCrmException 
+ * Description :
+ *           SugarCrmException class.
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 /**
- * <p>
- * SugarCrmException class.
- * </p>
- * 
+ * The Class SugarCrmException.
  */
 public class SugarCrmException extends Exception {
 
-    /**
-     * 
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The m name. */
     private String mName;
 
+    /** The m description. */
     private final String mDescription;
 
     /**
-     * <p>
      * Constructor for SugarCrmException.
-     * </p>
      * 
      * @param name
      *            a {@link java.lang.String} object.
@@ -33,9 +42,7 @@ public class SugarCrmException extends Exception {
     }
 
     /**
-     * <p>
      * Constructor for SugarCrmException.
-     * </p>
      * 
      * @param desc
      *            a {@link java.lang.String} object.
@@ -44,16 +51,18 @@ public class SugarCrmException extends Exception {
         mDescription = desc;
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Throwable#toString()
+     */
     @Override
     public String toString() {
         return mName + " : " + mDescription;
     }
 
     /**
-     * <p>
      * getName
-     * </p>
      * 
      * @return a {@link java.lang.String} object.
      */
@@ -62,11 +71,9 @@ public class SugarCrmException extends Exception {
     }
 
     /**
-     * <p>
-     * getDescription
-     * </p>
+     * Gets the description.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the description
      */
     public String getDescription() {
         return mDescription;

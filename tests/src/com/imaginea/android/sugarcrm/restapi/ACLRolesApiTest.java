@@ -12,24 +12,35 @@ import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 
 /**
- * ACLApiTest, tests the rest api calls
+ * ACLApiTest, tests the rest api calls.
  * 
  * @author chander
- * 
  */
 public class ACLRolesApiTest extends RestAPITest {
+
+    /** The module name. */
     String moduleName = "ACLRoles";
 
+    /** The select fields. */
     String[] selectFields = { ModuleFields.ID, ModuleFields.NAME,
             ModuleFields.TYPE, ModuleFields.DESCRIPTION };
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = ACLRolesApiTest.class.getSimpleName();
 
+    /** The acl link fields. */
     String[] aclLinkFields = { ModuleFields.ID, ModuleFields.NAME, "category",
             "aclaccess", "acltype" };
 
+    /**
+     * Test acl list.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testACLList() throws Exception {
         final int offset = 0;
@@ -39,8 +50,6 @@ public class ACLRolesApiTest extends RestAPITest {
 
         final SugarBean[] sBeans = getSugarBeans(offset, maxResults);
         // Its not necessary that there should always be ACL roles
-        // assertTrue(sBeans.length > 0);
-
         if (Log.isLoggable(LOG_TAG, Log.INFO)) {
             for (final SugarBean sBean : sBeans) {
                 Log.d(LOG_TAG, sBean.getBeanId());
@@ -52,6 +61,14 @@ public class ACLRolesApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Prints the sugar.
+     * 
+     * @param sBeans
+     *            the s beans
+     * @param fieldsToPrint
+     *            the fields to print
+     */
     void printSugar(final SugarBean[] sBeans, final String[] fieldsToPrint) {
         for (final SugarBean sBean : sBeans) {
             // Log.d(LOG_TAG, "" + sBean.getBeanId());
@@ -67,9 +84,12 @@ public class ACLRolesApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
+     *            the offset
      * @param maxResults
-     * @return
+     *            the max results
+     * @return the sugar beans
      * @throws Exception
+     *             the exception
      */
     private SugarBean[] getSugarBeans(final int offset, final int maxResults)
             throws Exception {

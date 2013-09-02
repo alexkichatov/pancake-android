@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  /*******************************************************************************
+   * Copyright (c) {DATE} {INITIAL COPYRIGHT OWNER} {OTHER COPYRIGHT OWNERS}.
+   * All rights reserved. This program and the accompanying materials
+   * are made available under the terms of the Eclipse Public License v1.0
+   * which accompanies this distribution, and is available at
+   * http://www.eclipse.org/legal/epl-v10.html
+   *
+   * Contributors:
+   *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
+   *******************************************************************************/
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/commonList"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical" >
+    android:background="#c8c9cd"
+    android:orientation="vertical"
+    android:paddingRight="1dp" >
 
- 
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_weight="1"
+        android:background="#EDEDED"
         android:cacheColorHint="#00000000"
-        android:drawSelectorOnTop="false"
-        android:fadeScrollbars="false"
-        android:fastScrollEnabled="true" />
+        android:drawSelectorOnTop="true" />
 
     <include layout="@layout/empty_view" />
 

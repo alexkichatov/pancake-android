@@ -1,11 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Muralidaran.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ModuleFields 
+ * Description :
+ *              Module fields for Accounts, Contacts, Opportunities, Leads, Campaigns,
+ * Meetings, Cases. Velocity is used to generate this file, please do not edit manually
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm;
 
 /**
- * Module fields for Accounts, Contacts, Opportunities, Leads, Campaigns, Meetings, Cases.
- * 
- * Velocity is used to generate this file, please do not edit manually
- * 
- * @author chander
+ * The Interface ModuleFields.
  */
 public interface ModuleFields {
 

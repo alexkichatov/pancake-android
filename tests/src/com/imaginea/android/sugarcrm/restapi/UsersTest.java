@@ -13,12 +13,23 @@ import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 import com.imaginea.android.sugarcrm.util.Util;
 
+/**
+ * The Class UsersTest.
+ */
 public class UsersTest extends RestAPITest {
 
+    /** The module name. */
     String moduleName = Util.USERS;
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /**
+     * Test users insertion.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testUsersInsertion() throws Exception {
         final SugarBean[] userBeans = getUsers();
@@ -38,13 +49,15 @@ public class UsersTest extends RestAPITest {
             }
         }
 
-        // this is not a test, so commenting for now, till a set of users can be
-        // cleanly inserted
-        // into the system and the result asserted
-        // DatabaseHelper dbHelper = new DatabaseHelper(getContext());
-        // dbHelper.insertUsers(usersMap);
     }
 
+    /**
+     * Gets the user bean values.
+     * 
+     * @param userBean
+     *            the user bean
+     * @return the user bean values
+     */
     private Map<String, String> getUserBeanValues(final SugarBean userBean) {
         final Map<String, String> userBeanValues = new TreeMap<String, String>();
         for (final String fieldName : Users.INSERT_PROJECTION) {
@@ -55,6 +68,13 @@ public class UsersTest extends RestAPITest {
         return userBeanValues;
     }
 
+    /**
+     * Gets the users.
+     * 
+     * @return the users
+     * @throws Exception
+     *             the exception
+     */
     private SugarBean[] getUsers() throws Exception {
         return Rest.getEntryList(url, mSessionId, moduleName, null, null, "0",
                 Users.INSERT_PROJECTION, linkNameToFieldsArray, null, "0");

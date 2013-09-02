@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Muralidaran.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : WizardAuthActivity 
+ * Desciption: 
+ *             WizardAuthActivity is same as  Wizard Activity, but with account manager
+ * integration works only with android 2.0 and above-minSdkVersion>=5
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm;
 
 import java.util.concurrent.Semaphore;
@@ -29,19 +45,14 @@ import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.rest.Rest;
+import com.imaginea.android.sugarcrm.rest.RestConstants;
+import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 /**
- * WizardAuthActivity, same as Wizard Activity, but with account manager
- * integration works only with android 2.0 and above-minSdkVersion>=5
- * 
- * //TODO - as password is saved in Account Manager with Settings credential
- * storage, we donot have to store the password
- * 
- * @author Vasavi
- * @author chander
+ * The Class WizardAuthActivity.
  */
 public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
@@ -51,39 +62,61 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
      */
     private Boolean mConfirmCredentials = false;
 
+    /** The Constant PARAM_CONFIRMCREDENTIALS. */
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
 
+    /** The Constant PARAM_AUTHTOKEN_TYPE. */
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
 
+    /** The m username. */
     private String mUsername;
 
+    /** The m password. */
     private String mPassword;
 
+    /** The m account manager. */
     private AccountManager mAccountManager;
 
+    /** The m authtoken. */
     private String mAuthtoken;
 
+    /** The m authtoken type. */
     private String mAuthtokenType;
 
-    /** Was the original caller asking for an entirely new account? */
+    /** Was the original caller asking for an entirely new account?. */
     protected boolean mRequestNewAccount = false;
 
+    /** The app. */
     private SugarCrmApp app;
 
+    /** The m auth task. */
     private AuthenticationTask mAuthTask;
 
+    /** The m progress dialog. */
     private ProgressDialog mProgressDialog;
 
+    /** The m url edit text. */
     private EditText mUrlEditText;
+
+    /** The m usr edit text. */
     private EditText mUsrEditText;
+
+    /** The m password edit text. */
     private EditText mPasswordEditText;
 
+    /** The result wait. */
     public static Semaphore resultWait = new Semaphore(0);
 
+    /** The Constant LOG_TAG. */
     private static final String LOG_TAG = WizardAuthActivity.class
             .getSimpleName();
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.accounts.AccountAuthenticatorActivity#onCreate(android.os.Bundle)
+     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +166,13 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         mPasswordEditText = (EditText) findViewById(R.id.loginPassword);
     }
 
+    /**
+     * Gets the account.
+     * 
+     * @param userName
+     *            the user name
+     * @return the account
+     */
     private Account getAccount(final String userName) {
 
         final Account[] accounts = mAccountManager
@@ -150,12 +190,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     }
 
     /**
-     * <p>
-     * handleLogin
-     * </p>
+     * Handle login.
      * 
      * @param view
-     *            a {@link android.view.View} object.
+     *            the view
      */
     public void handleLogin(final View view) {
 
@@ -178,14 +216,22 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         }
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onNewIntent(android.content.Intent)
+     */
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         Log.i(LOG_TAG, "onNewIntent");
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onPause()
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -200,6 +246,11 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onStop()
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -214,18 +265,32 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     }
 
     // Task to authenticate
+    /**
+     * The Class AuthenticationTask.
+     */
     class AuthenticationTask extends AsyncTask<Object, Object, Object>
             implements SyncStatusObserver {
+
+        /** The usr. */
         private String usr;
 
+        /** The has exceptions. */
         boolean hasExceptions = false;
 
+        /** The sce desc. */
         private String sceDesc;
 
+        /** The prefs. */
         SharedPreferences prefs;
 
+        /** The sync handler. */
         Object syncHandler;
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onPreExecute()
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -238,6 +303,11 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             mProgressDialog.show();
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+         */
         @Override
         protected void onProgressUpdate(final Object... values) {
             super.onProgressUpdate(values);
@@ -245,6 +315,11 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             mProgressDialog.setMessage(msg);
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
         @Override
         protected Object doInBackground(final Object... args) {
 
@@ -266,10 +341,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
                 hasExceptions = true;
                 sceDesc = "Network is not avialable";
-                // Toast.makeText(WizardAuthActivity.this,
-                // "Network is not avialable", Toast.LENGTH_SHORT).show();
-                // setResult(RESULT_OK);
-                // finish();
 
                 return null;
             }
@@ -294,15 +365,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     // user
                     publishProgress(getString(R.string.configureAppMsg));
                     startMetaDataSync();
-                    // TODO - commenting the 2 lines below as the group table
-                    // logic is not needed
-                    // for this release
-                    // DatabaseHelper databaseHelper = new
-                    // DatabaseHelper(getBaseContext());
-                    // databaseHelper.executeSQLFromFile(Util.SQL_FILE);
-                    // TODO - note , we need a mechanism to release the lock
-                    // incase the metadata
-                    // sync never happens, or its gets killed.
+
                     WizardAuthActivity.resultWait.acquire();
 
                 }
@@ -320,11 +383,21 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             return sessionId;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onCancelled()
+         */
         @Override
         protected void onCancelled() {
             super.onCancelled();
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
         @Override
         protected void onPostExecute(final Object sessionId) {
             super.onPostExecute(sessionId);
@@ -335,28 +408,75 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             if (hasExceptions) {
                 Toast.makeText(WizardAuthActivity.this, sceDesc,
                         Toast.LENGTH_SHORT).show();
-                mProgressDialog.cancel();
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                setResult(RESULT_CANCELED);
 
-                finish();
+                if (mProgressDialog != null) {
+                    Log.d(LOG_TAG, "--- AsynchStartup() onPostExecute "
+                            + "(Dismissing progress meter)");
+                    mProgressDialog.cancel();
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+
+                setResult(RESULT_CANCELED);
 
             } else {
 
                 // save the sessionId in the application context after the
                 // successful login
                 app.setSessionId(sessionId.toString());
-                Log.d(LOG_TAG, "Cancelling progress bar which is showing:"
-                        + mProgressDialog.isShowing());
-                mProgressDialog.cancel();
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
+
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+
                 setResult(RESULT_OK);
-                finish();
+                final Long syncScreenCheck = prefs.getLong(
+                        Util.PREF_SYNC_START_TIME, 0L);
+                /*
+                 * Once First time login final is completed start final the sync
+                 * for final last seven Days
+                 */
+                if (syncScreenCheck == 0L) {
+                    final Bundle extras = new Bundle();
+
+                    extras.putBoolean(
+                            ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
+                    extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
+                    savePrefs();
+                    ContentResolver.requestSync(app.getAccount(usr),
+                            SugarCRMProvider.AUTHORITY, extras);
+                }
+                showDashboard();
+
             }
         }
 
+        /**
+         * Save prefs.
+         */
+        private void savePrefs() {
+            final SharedPreferences pref = PreferenceManager
+                    .getDefaultSharedPreferences(getBaseContext());
+            final long SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000L;
+            final long time = System.currentTimeMillis();
+
+            final long startMillis = time - SEVEN_DAYS;
+            final long endMillis = time;
+            final Editor editor = pref.edit();
+            editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
+            editor.putLong(Util.PREF_SYNC_END_TIME, endMillis);
+
+            editor.putString(Util.PREF_FETCH_RECORDS_SIZE, "2000");
+
+            editor.commit();
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.content.SyncStatusObserver#onStatusChanged(int)
+         */
         @Override
         public void onStatusChanged(final int which) {
             Log.d(LOG_TAG, "onStatusChanged:" + which);
@@ -371,6 +491,9 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             }
         }
 
+        /**
+         * Start meta data sync.
+         */
         private void startMetaDataSync() {
             Log.d(LOG_TAG, "startMetaDataSync");
             final Bundle extras = new Bundle();
@@ -383,9 +506,47 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             ContentResolver.requestSync(app.getAccount(usr),
                     SugarCRMProvider.AUTHORITY, extras);
 
-            // TODO -this is API - level 8 - using 2 for testing
             syncHandler = ContentResolver.addStatusChangeListener(2, this);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onActivityResult(int, int,
+     * android.content.Intent)
+     */
+    @Override
+    protected void onActivityResult(final int requestCode,
+            final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(LOG_TAG, "Onactivityresult called!!! " + requestCode);
+        if (requestCode == Util.SYNC_DATA_REQUEST_CODE) {
+            showDashboard();
+        }
+    }
+
+    /**
+     * Show dashboard.
+     */
+    void showDashboard() {
+        Log.d("WizardAuthActivity", "show dashboard called");
+        if (ViewUtil.isHoneycombTablet(WizardAuthActivity.this)) {
+            finish();
+            final Intent myIntent = new Intent(WizardAuthActivity.this,
+                    RecentModuleMultiPaneActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+            startActivity(myIntent);
+        } else {
+
+            final Intent myIntent = new Intent(WizardAuthActivity.this,
+                    ModulesActivity.class);
+            myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+            startActivity(myIntent);
+        }
+        finish();
+
     }
 
     /**
@@ -398,6 +559,29 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     public void onBackPressed() {
         setResult(RESULT_CANCELED);
         finish();
+    }
+
+    // *** standard onDestroy()
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onDestroy()
+     */
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+        Log.d(LOG_TAG, "onDestroy(" + this + ")");
+
+        if (mProgressDialog != null) {
+            Log.d(LOG_TAG, "onDestroy(Dismissing progress meter)");
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        } else {
+            Log.d(LOG_TAG, "onDestroy(Not required to dismiss progress meter)");
+        }
+
     }
 
     /** {@inheritDoc} */

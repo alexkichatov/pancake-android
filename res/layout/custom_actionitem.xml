@@ -1,21 +1,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/actionbar_height">
-<View
-	    android:id="@+id/actionbar_homeseperator"
+    android:layout_height="@dimen/actionbar_height"
+    android:orientation="horizontal" >
+
+    <View
+        android:id="@+id/actionbar_homeseperator"
         android:layout_width="1dp"
         android:layout_height="@dimen/actionbar_height"
-        android:background="#c4c4c4"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
-	<ImageButton
-	    android:layout_toRightOf="@id/actionbar_homeseperator"
-	    android:id="@+id/actionbar_item"
-	    android:layout_width="@dimen/actionbar_width"
-		android:layout_height="fill_parent"
-		android:layout_gravity="center_vertical"
-		android:background="@drawable/actionbar_btn"		 
-	    android:visibility="visible"	    
-	 />	
+        android:background="#c4c4c4" />
+
+    <ImageButton
+        android:id="@+id/actionbar_item"
+        android:layout_width="@dimen/actionbar_width"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_toRightOf="@id/actionbar_homeseperator"
+        android:background="@drawable/actionbar_btn"
+        android:visibility="visible" />
+
 </RelativeLayout>

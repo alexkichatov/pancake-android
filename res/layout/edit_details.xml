@@ -2,59 +2,92 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:paddingBottom="20dip" >
+    android:background="#EDEDED"
+    android:orientation="vertical" >
 
     <com.imaginea.android.sugarcrm.CustomActionbar
         android:id="@+id/custom_actionbar"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/actionbar_height" />
 
-    <!--
-        <TextView
-        android:id="@+id/accountName"
-        style="@style/header_2_text_label"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/custom_actionbar" />
-    -->
-
     <ScrollView
+        style="@style/edit_details"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/custom_actionbar"
+        android:background="@drawable/shape"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:scrollbars="horizontal|vertical" >
 
         <LinearLayout
-            android:id="@+id/moduleDetailsTable"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical" >
 
-            <include layout="@layout/edit_table_row" />
+            <LinearLayout
+                android:id="@+id/moduleDetailsTable"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
-            <include layout="@layout/edit_table_row" />
+                <TextView
+                    android:id="@+id/header1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="30dip"
+                    android:paddingTop="30dip"
+                    android:text="@string/mandatoryField"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
+            </LinearLayout>
 
-            <include layout="@layout/edit_table_row" />
+            <LinearLayout
+                android:id="@+id/moduleDetailsOptionalTable"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
-            <include layout="@layout/edit_table_row" />
+                <TextView
+                    android:id="@+id/header2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="30dip"
+                    android:paddingTop="30dip"
+                    android:text="@string/optionalField"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-            <include layout="@layout/edit_table_row" />
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+
+                <include layout="@layout/edit_table_row" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

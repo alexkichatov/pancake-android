@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
 
     <drawable name="screen_background_black">#ff000000</drawable>
@@ -7,7 +8,9 @@
     <drawable name="android_title_bar">#999999</drawable>
 
     <color name="white">#0106000b</color>
-    <color name="red_splash">#Eb5055</color>
+    <color name="dashboard_list_color">#3F434E</color>
+    <color name="dshboardlist_text_color">#3F434F</color>
+    <color name="red_splash">#eb5155</color>
     <color name="translucent_dark">#99000000</color>
     <color name="translucenter_dark">#bf000000</color>
     <color name="bright_foreground_dark">#ffffffff</color>
@@ -17,6 +20,7 @@
     <color name="body_text_1">#ff000000</color>
     <color name="body_text_2">#99000000</color>
     <color name="body_text_disabled">#66000000</color>
+    <color name="menu_background">#3F434E</color>
     <color name="body_text_1_inverse">#ffffffff</color>
     <color name="body_text_2_inverse">#99ffffff</color>
     <color name="accent_1">#ff29549f</color>
@@ -28,6 +32,7 @@
     <color name="block_column_2">#ffdf1831</color>
     <color name="block_column_3">#ff009939</color>
     <color name="grey">#EDEDED</color>
+    <color name="boarder_color">#c8c9cd</color>
     <color name="actionbar_background_start">#96cdfc</color>
     <color name="actionbar_background_end">#439eef</color>
     <color name="actionbar_background_item_pressed_start">#23c5f1</color>
@@ -35,12 +40,33 @@
     <color name="listview_row1">#EDEDED</color>
     <color name="listview_row2">#F6F6F6</color>
     <color name="calls">#68c39f</color>
+    <color name="calls_alpha">#7768c39f</color>
     <color name="meeting">#EB5055</color>
+    <color name="meeting_alpha">#77EB5055</color>
     <color name="cases">#4766B5</color>
-    <color name="contacts">#68c39f</color>
+    <color name="cases_alpha">#774766B5</color>
+    <color name="contacts">#D4BE94</color>
+    <color name="contacts_alpha">#77D4BE94</color>
     <color name="opportunities">#9E81D5</color>
+    <color name="opportunities_alpha">#779E81D5</color>
     <color name="account">#00B2CE</color>
+    <color name="account_alpha">#7700B2CE</color>
     <color name="leads">#5C97DD</color>
-    <color name="recents">#68c39f</color>
-    <color name="campaigns">#E67F5C</color>
+    <color name="leads_alpha">#775C97DD</color>
+    <color name="recents">#3F434E</color>
+    <color name="recents_alpha">#773F434E</color>
+    <color name="campaigns">#f38660</color>
+    <color name="campaigns_alpha">#77f38660</color>
+    <color name="calls_recent_label">#b3e1cf</color>
+    <color name="meeting_recent_label">#f5a7aa</color>
+    <color name="cases_recent_label">#a3b2da</color>
+    <color name="contacts_recent_label">#D4BE94</color>
+    <color name="opportunities_recent_label">#cec0ea</color>
+    <color name="account_recent_label">#7fd8e6</color>
+    <color name="leads_recent_label">#adcbee</color>
+    <color name="campaigns_recent_label">#f9c2af</color>
+    <color name="sigin_button_pressed">#B80611</color>
+    <color name="sortby_text_color">#8c8e95</color>
+    <color name="menuitem_devider">#525661</color>
+
 </resources>

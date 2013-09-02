@@ -1,70 +1,74 @@
-package com.imaginea.android.sugarcrm.util;
-
-/*
- * set_relationships, set_relationship methods in the REST calls, 
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : RelationshipStatus
+ * Description : 
+ *              Helper for set_relationships, set_relationship methods in the REST calls, 
  * give the number of relationships created, number of relationships failed and 
  * number of relationships deleted. This class can be used to get that status.
- * */
+ ******************************************************************************/
+
+package com.imaginea.android.sugarcrm.util;
+
 /**
- * <p>
- * RelationshipStatus class.
- * </p>
- * 
+ * The Class RelationshipStatus.
  */
 public class RelationshipStatus {
 
-    private int mCreatedCount;
+    /** The m created count. */
+    private final int mCreatedCount;
 
-    private int mFailedCount;
+    /** The m failed count. */
+    private final int mFailedCount;
 
-    private int mDeletedCount;
+    /** The m deleted count. */
+    private final int mDeletedCount;
 
     /**
-     * <p>
-     * Constructor for RelationshipStatus.
-     * </p>
+     * Instantiates a new relationship status.
      * 
      * @param createdCount
-     *            a int.
+     *            the created count
      * @param failedCount
-     *            a int.
+     *            the failed count
      * @param deletedCount
-     *            a int.
+     *            the deleted count
      */
-    public RelationshipStatus(int createdCount, int failedCount, int deletedCount) {
-        this.mCreatedCount = createdCount;
-        this.mFailedCount = failedCount;
-        this.mDeletedCount = deletedCount;
+    public RelationshipStatus(int createdCount, int failedCount,
+            int deletedCount) {
+        mCreatedCount = createdCount;
+        mFailedCount = failedCount;
+        mDeletedCount = deletedCount;
     }
 
     /**
-     * <p>
-     * getCreatedCount
-     * </p>
+     * Gets the created count.
      * 
-     * @return a int.
+     * @return the created count
      */
     public int getCreatedCount() {
         return mCreatedCount;
     }
 
     /**
-     * <p>
-     * getFailedCount
-     * </p>
+     * Gets the failed count.
      * 
-     * @return a int.
+     * @return the failed count
      */
     public int getFailedCount() {
         return mFailedCount;
     }
 
     /**
-     * <p>
-     * getDeletedCount
-     * </p>
+     * Gets the deleted count.
      * 
-     * @return a int.
+     * @return the deleted count
      */
     public int getDeletedCount() {
         return mDeletedCount;

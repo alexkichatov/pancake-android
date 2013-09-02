@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ContentUtils
+ * Description : 
+ *              The ContentUtils class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 import java.util.ArrayList;
@@ -33,21 +47,22 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Recent;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Users;
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 
+/**
+ * The Class ContentUtils.
+ */
 public class ContentUtils {
 
+    /** The default supported modules. */
     private static String[] defaultSupportedModules = { Util.CALLS,
             Util.MEETINGS, Util.CAMPAIGNS, Util.OPPORTUNITIES, Util.LEADS,
             Util.CASES, Util.CONTACTS, Util.ACCOUNTS };
 
-    /*
-     * gives all the available user modules
-     */
     /**
-     * <p>
-     * getUserModules
-     * </p>
+     * Gets the user modules.
      * 
-     * @return a {@link java.util.List} object.
+     * @param context
+     *            the context
+     * @return the user modules
      */
     public static List<String> getUserModules(Context context) {
 
@@ -71,8 +86,10 @@ public class ContentUtils {
     /**
      * while fetching relationship module items, we need to determine if current
      * user has access to that module, this module should be present in the
-     * modules available to the user
+     * modules available to the user.
      * 
+     * @param context
+     *            the context
      * @param moduleName
      *            a {@link java.lang.String} object.
      * @return a boolean.
@@ -86,14 +103,14 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * setUserModules
-     * </p>
+     * Sets the user modules.
      * 
+     * @param context
+     *            the context
      * @param moduleNames
-     *            a {@link java.util.List} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     *            the module names
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public static void setUserModules(Context context, List<String> moduleNames)
             throws SugarCrmException {
@@ -101,8 +118,7 @@ public class ContentUtils {
         final ContentResolver cr = context.getContentResolver();
 
         try {
-            // TODO: This has to be removed and is only added to fix the DB
-            // insertion issue,
+
             final int numOfUserModulesDeleted = cr.delete(Modules.CONTENT_URI,
                     null, null);
             Log.d("ContentUtils", "number of user modules deleted: "
@@ -131,11 +147,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleList</code>.
-     * </p>
+     * Gets the module list.
      * 
-     * @return a {@link java.util.List} object.
+     * @param context
+     *            the context
+     * @return the module list
      */
     public static List<String> getModuleList(Context context) {
         final List<String> userModules = getUserModules(context);
@@ -148,19 +164,15 @@ public class ContentUtils {
             }
         }
         return modules;
-        // TODO: return the module List after the exclusion of modules from the
-        // user moduleList
-        // return moduleList;
+
     }
 
     /**
-     * <p>
-     * getModuleIcon
-     * </p>
+     * Gets the module icon.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a int.
+     *            the module name
+     * @return the module icon
      */
     public static int getModuleIcon(String moduleName) {
 
@@ -188,13 +200,41 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * getModuleIcon
-     * </p>
+     * Gets the module phone icon.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a int.
+     *            the module name
+     * @return the module phone icon
+     */
+    public static int getModulePhoneIcon(String moduleName) {
+
+        if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
+            return R.drawable.ico_m_acounts_nor;
+        else if (moduleName.equalsIgnoreCase(Util.CONTACTS))
+            return R.drawable.ico_m_contacts_nor;
+        else if (moduleName.equalsIgnoreCase(Util.LEADS))
+            return R.drawable.ico_m_leads_nor;
+        else if (moduleName.equalsIgnoreCase(Util.OPPORTUNITIES))
+            return R.drawable.ico_m_opportunities_nor;
+        else if (moduleName.equalsIgnoreCase(Util.CASES))
+            return R.drawable.ico_m_issues_nor;
+        else if (moduleName.equalsIgnoreCase(Util.CALLS))
+            return R.drawable.ico_m_call_nor;
+        else if (moduleName.equalsIgnoreCase(Util.MEETINGS))
+            return R.drawable.ico_m_meeting_nor;
+        else if (moduleName.equalsIgnoreCase(Util.CAMPAIGNS))
+            return R.drawable.ico_m_campaigns_nor;
+        else
+            return android.R.drawable.alert_dark_frame;
+
+    }
+
+    /**
+     * Gets the module color.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module color
      */
     public static int getModuleColor(String moduleName) {
 
@@ -219,6 +259,75 @@ public class ContentUtils {
 
     }
 
+    /**
+     * Gets the recent modules label color.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module color
+     */
+    public static int getRecentModulelablesColors(String moduleName) {
+
+        if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
+            return R.color.account_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.CONTACTS))
+            return R.color.contacts_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.LEADS))
+            return R.color.leads_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.OPPORTUNITIES))
+            return R.color.opportunities_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.CASES))
+            return R.color.cases_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.CALLS))
+            return R.color.calls_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.MEETINGS))
+            return R.color.meeting_recent_label;
+        else if (moduleName.equalsIgnoreCase(Util.CAMPAIGNS))
+            return R.color.campaigns_recent_label;
+        else
+            return android.R.color.darker_gray;
+
+    }
+
+    /**
+     * Gets the module alpha color for list view touch.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module color
+     */
+    public static int getModuleAlphaColor(String moduleName) {
+
+        if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
+            return R.color.account_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.CONTACTS))
+            return R.color.contacts_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.LEADS))
+            return R.color.leads_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.OPPORTUNITIES))
+            return R.color.opportunities_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.CASES))
+            return R.color.cases_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.CALLS))
+            return R.color.calls_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.MEETINGS))
+            return R.color.meeting_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.CAMPAIGNS))
+            return R.color.campaigns_alpha;
+        else if (moduleName.equalsIgnoreCase(Util.RECENT))
+            return R.color.recents_alpha;
+        else
+            return android.R.color.darker_gray;
+
+    }
+
+    /**
+     * Gets the module selected icon.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module selected icon
+     */
     public static int getModuleSelectedIcon(String moduleName) {
 
         if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
@@ -244,13 +353,42 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * getModuleUri
-     * </p>
+     * Gets the module phone selected icon.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link android.net.Uri} object.
+     *            the module name
+     * @return the module phone selected icon
+     */
+    public static int getModulePhoneSelectedIcon(String moduleName) {
+
+        if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
+            return R.drawable.ico_m_acounts_sel;
+        else if (moduleName.equalsIgnoreCase(Util.CONTACTS))
+            return R.drawable.ico_m_contacts_sel;
+        else if (moduleName.equalsIgnoreCase(Util.LEADS))
+            return R.drawable.ico_m_leads_sel;
+        else if (moduleName.equalsIgnoreCase(Util.OPPORTUNITIES))
+            return R.drawable.ico_m_opportunities_sel;
+        else if (moduleName.equalsIgnoreCase(Util.CASES))
+            return R.drawable.ico_m_issues_sel;
+        else if (moduleName.equalsIgnoreCase(Util.CALLS))
+            return R.drawable.ico_m_call_sel;
+        else if (moduleName.equalsIgnoreCase(Util.MEETINGS))
+            return R.drawable.ico_m_meeting_sel;
+        else if (moduleName.equalsIgnoreCase(Util.CAMPAIGNS))
+            return R.drawable.ico_m_campaigns_sel;
+
+        else
+            return android.R.drawable.alert_dark_frame;
+
+    }
+
+    /**
+     * Gets the module uri.
+     * 
+     * @param moduleName
+     *            the module name
+     * @return the module uri
      */
     public static Uri getModuleUri(String moduleName) {
 
@@ -280,13 +418,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleListSelections</code>.
-     * </p>
+     * Gets the module list selections.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     *            the module name
+     * @return the module list selections
      */
     public static String[] getModuleListSelections(String moduleName) {
 
@@ -313,13 +449,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleProjections</code>.
-     * </p>
+     * Gets the module projections.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     *            the module name
+     * @return the module projections
      */
     public static String[] getModuleProjections(String moduleName) {
 
@@ -344,13 +478,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleSortOrder</code>.
-     * </p>
+     * Gets the module sort order.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     *            the module name
+     * @return the module sort order
      */
     public static String getModuleSortOrder(String moduleName) {
         if (moduleName.equalsIgnoreCase(Util.ACCOUNTS))
@@ -374,13 +506,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleListProjections</code>.
-     * </p>
+     * Gets the module list projections.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     *            the module name
+     * @return the module list projections
      */
     public static String[] getModuleListProjections(String moduleName) {
 
@@ -405,13 +535,11 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleRelationshipItems</code>.
-     * </p>
+     * Gets the module relationship items.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     *            the module name
+     * @return the module relationship items
      */
     public static String[] getModuleRelationshipItems(String moduleName) {
 
@@ -436,15 +564,13 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleFields</code>.
-     * </p>
+     * Gets the module fields.
      * 
      * @param context
-     *            a {@link android.content.Context} object.
+     *            the context
      * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
+     *            the module name
+     * @return the module fields
      */
     public static Map<String, ModuleField> getModuleFields(Context context,
             String moduleName) {
@@ -485,17 +611,15 @@ public class ContentUtils {
     }
 
     /**
-     * <p>
-     * getModuleField
-     * </p>
+     * Gets the module field.
      * 
      * @param context
-     *            a {@link android.content.Context} object.
+     *            the context
      * @param moduleName
-     *            a {@link java.lang.String} object.
+     *            the module name
      * @param fieldName
-     *            a {@link java.lang.String} object.
-     * @return a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
+     *            the field name
+     * @return the module field
      */
     public static ModuleField getModuleField(Context context,
             String moduleName, String fieldName) {

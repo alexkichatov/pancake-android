@@ -1,39 +1,50 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ModuleField
+ * Description : 
+ *              The ModuleField Class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 /**
- * <p>
- * ModuleField class.
- * </p>
- * 
+ * The Class ModuleField.
  */
 public class ModuleField {
 
-    private String mName;
+    /** The m name. */
+    private final String mName;
 
-    private String mType;
+    /** The m type. */
+    private final String mType;
 
-    private String mLabel;
+    /** The m label. */
+    private final String mLabel;
 
-    private boolean mIsRequired;
-
-    // didn't include options as of now
-    // private String[] mOptions
+    /** The m is required. */
+    private final boolean mIsRequired;
 
     /**
-     * <p>
-     * Constructor for ModuleField.
-     * </p>
+     * Instantiates a new module field.
      * 
      * @param name
-     *            a {@link java.lang.String} object.
+     *            the name
      * @param type
-     *            a {@link java.lang.String} object.
+     *            the type
      * @param label
-     *            a {@link java.lang.String} object.
+     *            the label
      * @param isRequired
-     *            a boolean.
+     *            the is required
      */
-    public ModuleField(String name, String type, String label, boolean isRequired) {
+    public ModuleField(String name, String type, String label,
+            boolean isRequired) {
         mName = name;
         mType = type;
         mLabel = label;
@@ -41,44 +52,36 @@ public class ModuleField {
     }
 
     /**
-     * <p>
-     * getName
-     * </p>
+     * Gets the name.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the name
      */
     public String getName() {
         return mName;
     }
 
     /**
-     * <p>
-     * getType
-     * </p>
+     * Gets the type.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the type
      */
     public String getType() {
         return mType;
     }
 
     /**
-     * <p>
-     * getLabel
-     * </p>
+     * Gets the label.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the label
      */
     public String getLabel() {
         return mLabel;
     }
 
     /**
-     * <p>
-     * isRequired
-     * </p>
+     * Checks if is required.
      * 
-     * @return a boolean.
+     * @return true, if is required
      */
     public boolean isRequired() {
         return mIsRequired;

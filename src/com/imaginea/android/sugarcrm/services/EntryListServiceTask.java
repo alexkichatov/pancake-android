@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *          chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : AccountRemovalService 
+ * Description : 
+                This is service class to remove the Account
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.services;
 
 import java.util.HashMap;
@@ -21,47 +36,55 @@ import com.imaginea.android.sugarcrm.util.AsyncServiceTask;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * EntryListServiceTask
- * 
- * @author chander
+ * The Class EntryListServiceTask.
  */
 public class EntryListServiceTask extends
         AsyncServiceTask<Object, Void, Object> {
 
+    /** The m context. */
     private final Context mContext;
 
     // TODO - remove this
+    /** The m session id. */
     private String mSessionId;
 
+    /** The m module name. */
     private final String mModuleName;
 
+    /** The m select fields. */
     private final String[] mSelectFields;
 
+    /** The m link name to fields array. */
     private final HashMap<String, List<String>> mLinkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The m max results. */
     private final String mMaxResults = "0";
 
+    /** The m uri. */
     private final Uri mUri;
 
+    /** The m query. */
     private final String mQuery = "";
 
+    /** The m order by. */
     private String mOrderBy = "";
 
+    /** The m offset. */
     private String mOffset = "0";
 
+    /** The m deleted. */
     private final String mDeleted = "0";
 
+    /** The Constant LOG_TAG. */
     public static final String LOG_TAG = "EntryListTask";
 
     /**
-     * <p>
-     * Constructor for EntryListServiceTask.
-     * </p>
+     * Instantiates a new entry list service task.
      * 
      * @param context
-     *            a {@link android.content.Context} object.
+     *            the context
      * @param intent
-     *            a {@link android.content.Intent} object.
+     *            the intent
      */
     public EntryListServiceTask(final Context context, final Intent intent) {
         super(context);
@@ -78,7 +101,13 @@ public class EntryListServiceTask extends
         mOrderBy = extras.getString(Util.SORT_ORDER);
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.util.AsyncServiceTask#doInBackground(Params
+     * [])
+     */
     @Override
     protected Object doInBackground(final Object... params) {
         try {
@@ -96,10 +125,6 @@ public class EntryListServiceTask extends
             final SugarBean[] sBeans = Rest.getEntryList(url, mSessionId,
                     mModuleName, mQuery, mOrderBy, mOffset, mSelectFields,
                     mLinkNameToFieldsArray, mMaxResults, mDeleted);
-            // mAdapter.setSugarBeanArray(sBeans);
-            // We can stop loading once we do not get the
-            // if (sBeans.length < mMaxResults)
-            // mStopLoading = true;
 
             // TODO - do a bulk insert in the content provider instead
             for (final SugarBean sBean : sBeans) {
@@ -113,8 +138,7 @@ public class EntryListServiceTask extends
                     values.put(mSelectFields[i], fieldValue);
                 }
                 mContext.getContentResolver().insert(mUri, values);
-                // mContext.getContentResolver().update(mUri, values, null,
-                // null);
+
             }
 
         } catch (final Exception e) {
@@ -124,7 +148,11 @@ public class EntryListServiceTask extends
         return null;
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.imaginea.android.sugarcrm.util.AsyncServiceTask#onCancelled()
+     */
     @Override
     protected void onCancelled() {
         super.onCancelled();

@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 27/08/2013 : 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ModuleDetailActivity 
+ * Description : ModuleDetailFragment is used to show detail description for all modules.
+ ******************************************************************************/
 package com.imaginea.android.sugarcrm;
 
 import java.net.URLEncoder;
@@ -11,6 +24,7 @@ import java.util.Map;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,7 +43,6 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,10 +56,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
+import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
+import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
@@ -54,75 +72,92 @@ import com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.ServiceHelper;
+import com.imaginea.android.sugarcrm.util.SugarCrmException;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 /**
- * ModuleDetailFragment is used to show detail description for all modules.
- * 
+ * The Class ModuleDetailFragment.
  */
 public class ModuleDetailFragment extends Fragment {
 
-    private String mRowId;
+    /** The m row id. */
+    private String mRowId; /* Record ID */
 
+    /** The m sugar bean id. */
     private String mSugarBeanId;
 
+    /** The m module name. */
     private String mModuleName;
 
+    /** The m cursor. */
     private Cursor mCursor;
 
+    /** The adapter. */
     private SeparatedListAdapter adapter = null;
 
+    /** The m select fields. */
     private String[] mSelectFields;
+
+    /** The m relationship modules. */
     private String[] mRelationshipModules;
 
+    /** The m uri. */
     private Uri mUri;
 
+    /** The m db helper. */
     private DatabaseHelper mDbHelper;
 
+    /** The m task. */
     private LoadContentTask mTask;
 
+    /** The m progress dialog. */
     private ProgressDialog mProgressDialog;
 
-    private CustomActionbar actionBar;
+    /** The m parent. */
+    private RelativeLayout mParent;
 
-    private LinearLayout mParent;
-
+    /** The bundle. */
     private Bundle bundle;
 
+    /** The Header item. */
     final Map<String, String> HeaderItem = new HashMap<String, String>();
 
-    private LinearLayout layoutView;
+    /** The layout view. */
+    private LinearLayout mlayoutView;
+
+    /** The inflater. */
     private LayoutInflater inflater;
 
+    /** The Constant LOG_TAG. */
     private static final String LOG_TAG = ModuleDetailFragment.class
             .getSimpleName();
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater,
+     * android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(final LayoutInflater inflater,
             final ViewGroup container, final Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        mParent = (LinearLayout) inflater.inflate(R.layout.account_details,
+        /* Inflate the layout for this fragment */
+        mParent = (RelativeLayout) inflater.inflate(R.layout.account_details,
                 container, false);
-
         bundle = getArguments();
-
         return mParent;
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        /*
-         * As per the new UI Tablet current Design Contain Dash board Image list
-         * Fragment else it would be same dashboard activity.
-         */
-        if (!ViewUtil.isHoneycombTablet(getActivity())) {
-            getFragmentManager().findFragmentById(R.id.list_imagefrag)
-                    .getView().setVisibility(View.GONE);
-        }
 
         Intent intent = getActivity().getIntent();
         if (getFragmentManager().findFragmentById(R.id.list_frag) != null) {
@@ -162,10 +197,83 @@ public class ModuleDetailFragment extends Fragment {
         inflater = (LayoutInflater) getActivity().getBaseContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        layoutView = (LinearLayout) inflater.inflate(R.layout.table_row, null);
+        /* inflate the Detail Module Fragment layout */
+        mlayoutView = (LinearLayout) inflater.inflate(R.layout.table_row, null);
+
+        /* Open the Edit Screen when clicked on edit image */
+        startEditDetailModule();
+
+        /* Delete the open record from server and database */
+        deleteOpenRecord();
+
+        /*
+         * As per the Requirement Action Bar need to be shown on Detail Screen
+         * in Phone Version only
+         */
+        if (!ViewUtil.isHoneycombTablet(getActivity())) {
+            setUpActionBar();
+        }
+
+        /* Starting a New Async task to populate the Data from the Database */
+        mTask = new LoadContentTask(getActivity());
+        mTask.execute(null, null, null);
+
+    }
+
+    /**
+     * Description : Delete the open record from server and database.
+     * 
+     */
+    private void deleteOpenRecord() {
+        /* To Delete the selected Module Details */
+        final ImageView deleteImageView = (ImageView) mlayoutView
+                .findViewById(R.id.deleteimage);
+        final int deleteResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int TabletdeleteResourcesId[] = {
+                    R.drawable.ico_trash_pressed, R.drawable.ico_trash_pressed,
+                    R.drawable.delete };
+            deleteResourcesId = TabletdeleteResourcesId;
+        } else {
+            final int PhonedeleteResourcesId[] = {
+                    R.drawable.icon_m_trash_pressed,
+                    R.drawable.icon_m_trash_pressed, R.drawable.icon_m_trash };
+            deleteResourcesId = PhonedeleteResourcesId;
+        }
+        deleteImageView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), deleteResourcesId));
+        deleteImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DialogFragment newFragment = new MyYesNoAlertDialogFragment()
+                        .newInstance(R.string.delete);
+                newFragment.show(getFragmentManager(), "YesNoAlertDialog");
+            }
+        });
+    }
+
+    /**
+     * Description : Open the Record to Edit the Details.
+     * 
+     */
+    private void startEditDetailModule() {
         /* To edit the module details fileds */
-        final ImageView editImageView = (ImageView) layoutView
+        final ImageView editImageView = (ImageView) mlayoutView
                 .findViewById(R.id.editimage);
+        final int editResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int TableteditResourcesId[] = { R.drawable.ico_edit_pressed,
+                    R.drawable.ico_edit_pressed, R.drawable.edit };
+            editResourcesId = TableteditResourcesId;
+        } else {
+            final int PhoneeditResourcesId[] = { R.drawable.ico_m_edit_pressed,
+                    R.drawable.ico_m_edit_pressed, R.drawable.ico_m_edit };
+
+            editResourcesId = PhoneeditResourcesId;
+        }
+        editImageView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), editResourcesId));
+
         editImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,29 +291,197 @@ public class ModuleDetailFragment extends Fragment {
                 startActivity(editDetailsIntent);
             }
         });
+    }
 
-        /* To Delete the selected Module Details */
-        final ImageView deleteImageView = (ImageView) layoutView
-                .findViewById(R.id.deleteimage);
-        deleteImageView.setOnClickListener(new OnClickListener() {
+    /**
+     * Description : Set up the Action Bar on Detail Screen in Phone Version
+     * only.
+     * 
+     */
+    private void setUpActionBar() {
+
+        final CustomActionbar actionBar = (CustomActionbar) getActivity()
+                .findViewById(R.id.custom_actionbar);
+
+        final LinearLayout actionView = (LinearLayout) actionBar
+                .findViewById(R.id.logo);
+        actionView.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                final DialogFragment newFragment = new MyYesNoAlertDialogFragment()
-                        .newInstance(R.string.delete);
-                // String lastSelectedModuleName = mModuleName;
-                newFragment.show(getFragmentManager(), "YesNoAlertDialog");
+                ModuleDetailFragment.this.getActivity().finish();
             }
         });
-        /* Starting a New Async task to populate the Data from the Database */
-        mTask = new LoadContentTask(getActivity());
-        mTask.execute(null, null, null);
+
+        final ImageView back = (ImageView) actionBar
+                .findViewById(R.id.actionbar_back);
+        final ImageView logo = (ImageView) actionBar
+                .findViewById(R.id.actionbar_logo);
+        logo.setVisibility(View.GONE);
+        back.setVisibility(View.VISIBLE);
+
+        /* Set the Module Name */
+        actionBar.setTitle(mModuleName);
+
+        /* Show the Menu when clicked on More Image */
+        final ImageView settingsView = (ImageView) actionBar
+                .findViewById(R.id.settings);
+        final int settinsResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int tabletSettinsResourcesId[] = {
+                    R.drawable.ico_actionbar_menu_pressed,
+                    R.drawable.ico_actionbar_menu_pressed, R.drawable.settings };
+            settinsResourcesId = tabletSettinsResourcesId;
+        } else {
+            final int phoneSettinsResourcesId[] = {
+                    R.drawable.ico_m_actionbar_menu_pressed,
+                    R.drawable.ico_m_actionbar_menu_pressed,
+                    R.drawable.ico_m_actionbar_menu_nor };
+            settinsResourcesId = phoneSettinsResourcesId;
+        }
+        settingsView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), settinsResourcesId));
+        settingsView.setVisibility(View.VISIBLE);
+        final LinearLayout menuLayout = (LinearLayout) getActivity()
+                .findViewById(R.id.settings_menu);
+        final View transparentView = getActivity().findViewById(
+                R.id.transparent_view);
+
+        settingsView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (!(menuLayout.getVisibility() == View.VISIBLE)) {
+                    menuLayout.setVisibility(View.VISIBLE);
+                    menuLayout.bringToFront();
+                    transparentView.setVisibility(View.VISIBLE);
+                } else {
+                    menuLayout.setVisibility(View.INVISIBLE);
+                    transparentView.setVisibility(View.INVISIBLE);
+
+                }
+            }
+        });
+
+        transparentView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                menuLayout.setVisibility(View.GONE);
+                transparentView.setVisibility(View.GONE);
+            }
+        });
+        /* Start Sync from server when clicked on Sync button */
+        final ImageView syncView = (ImageView) getActivity().findViewById(
+                R.id.sync);
+        syncView.setVisibility(View.VISIBLE);
+        final int syncResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int tabletSyncResourcesId[] = {
+                    R.drawable.ico_actionbar_refresh_pressed,
+                    R.drawable.ico_actionbar_refresh_pressed, R.drawable.sync };
+            syncResourcesId = tabletSyncResourcesId;
+        } else {
+            final int phoneSyncResourcesId[] = {
+                    R.drawable.ico_m_actionbar_refresh_pressed,
+                    R.drawable.ico_m_actionbar_refresh_pressed,
+                    R.drawable.ico_m_actionbar_refresh_nor };
+            syncResourcesId = phoneSyncResourcesId;
+        }
+        syncView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), syncResourcesId));
+        syncView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                SyncAction(v);
+
+            }
+        });
+
+        /* Open the Settings Screen when clicked on setting Menu */
+        final TextView mSettingsView = (TextView) getActivity().findViewById(
+                R.id.settingsTv);
+        mSettingsView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                /* Set Action to Settings Button */
+                Util.startSettingsActivity(getActivity());
+                menuLayout.setVisibility(View.GONE);
+                transparentView.setVisibility(View.GONE);
+
+            }
+        });
+
+        final TextView logoutView = (TextView) getActivity().findViewById(
+                R.id.logoutTv);
+        logoutView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                /* Set Action to Settings Button */
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String sessionId = ((SugarCrmApp) SugarCrmApp.app)
+                                .getSessionId();
+                        final String restUrl = SugarCrmSettings
+                                .getSugarRestUrl(getActivity());
+                        try {
+                            Rest.logoutSugarCRM(restUrl, sessionId);
+                        } catch (final SugarCrmException e) {
+                            Log.e(LOG_TAG, "Error While Logging out:" + e);
+                        }
+
+                    }
+                }).start();
+
+                Util.logout(getActivity());
+                menuLayout.setVisibility(View.GONE);
+                transparentView.setVisibility(View.GONE);
+            }
+        });
 
     }
 
     /**
-     * <p>
-     * openListScreen
-     * </p>
+     * Sync action.
+     * 
+     * @param view
+     *            the view
+     */
+    public void SyncAction(final View view) {
+        if (!Util.isNetworkOn(getActivity().getBaseContext())) {
+            Toast.makeText(getActivity(), R.string.networkUnavailable,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+
+            startModuleSync();
+
+        }
+    }
+
+    /**
+     * Start module sync.
+     */
+    private void startModuleSync() {
+        Log.d(LOG_TAG, "startModuleSync");
+        final Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
+        extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULE_DATA);
+        extras.putString(RestConstants.MODULE_NAME, mModuleName);
+        final SugarCrmApp app = (SugarCrmApp) ModuleDetailFragment.this
+                .getActivity().getApplication();
+        final String usr = SugarCrmSettings.getUsername(
+                ModuleDetailFragment.this.getActivity()).toString();
+        ContentResolver.requestSync(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY, extras);
+    }
+
+    /**
+     * openListScreen.
      * 
      * @param moduleName
      *            a {@link java.lang.String} object.
@@ -233,7 +509,11 @@ public class ModuleDetailFragment extends Fragment {
 
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.app.Fragment#onPause()
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -244,6 +524,27 @@ public class ModuleDetailFragment extends Fragment {
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.app.Fragment#onStop()
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mProgressDialog != null) {
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.app.Fragment#onResume()
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -261,7 +562,13 @@ public class ModuleDetailFragment extends Fragment {
 
     }
 
-    /** {@inheritDoc} */
+    /**
+     * On create options menu.
+     * 
+     * @param menu
+     *            the menu
+     * @return true, if successful
+     */
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the currently selected menu XML resource.
         final MenuInflater inflater = getActivity().getMenuInflater();
@@ -282,16 +589,16 @@ public class ModuleDetailFragment extends Fragment {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem
+     * )
+     */
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.home:
-            final Intent myIntent = new Intent(
-                    ModuleDetailFragment.this.getActivity(),
-                    DashboardActivity.class);
-            ModuleDetailFragment.this.startActivity(myIntent);
-            return true;
         case R.string.related:
             return true;
         default:
@@ -303,35 +610,54 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * The Class LoadContentTask.
+     */
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
+        /** The m context. */
         Context mContext;
 
+        /** The m billing address group. */
         private final List<String> mBillingAddressGroup = new ArrayList<String>();
 
+        /** The m shipping address group. */
         private final List<String> mShippingAddressGroup = new ArrayList<String>();
 
+        /** The m duration group. */
         private final List<String> mDurationGroup = new ArrayList<String>();
 
+        /** The m fields excluded for details. */
         private final List<String> mFieldsExcludedForDetails = new ArrayList<String>();
 
+        /** The detail items. */
         private final LinkedHashMap<String, DetailsItem> detailItems = new LinkedHashMap<String, DetailsItem>();
 
-        private String title;
-
+        /**
+         * Instantiates a new load content task.
+         * 
+         * @param context
+         *            the context
+         */
         LoadContentTask(final Context context) {
             mContext = context;
 
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onPreExecute()
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
             mProgressDialog = ViewUtil.getProgressDialog(getActivity(),
                     getString(R.string.loading), true);
-            mProgressDialog.show();
-
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
             // Initializing BillingAddressGroup the list
             mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET);
             mBillingAddressGroup.add(ModuleFields.BILLING_ADDRESS_STREET_2);
@@ -365,10 +691,16 @@ public class ModuleDetailFragment extends Fragment {
             mFieldsExcludedForDetails.add(ModuleFields.ACCOUNT_ID);
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
         @Override
         protected Object doInBackground(final Object... params) {
             if (mSelectFields != null) {
                 try {
+
                     mCursor = getActivity().getContentResolver().query(mUri,
                             mSelectFields, null, null,
                             ContentUtils.getModuleSortOrder(mModuleName));
@@ -383,6 +715,11 @@ public class ModuleDetailFragment extends Fragment {
             return Util.FETCH_SUCCESS;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
         @Override
         protected void onPostExecute(final Object result) {
             super.onPostExecute(result);
@@ -395,23 +732,27 @@ public class ModuleDetailFragment extends Fragment {
             if (mCursor != null && !mCursor.isClosed()) {
                 mCursor.close();
             }
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
 
-            mProgressDialog.cancel();
-            mProgressDialog = null;
         }
 
+        /**
+         * Setup detail views.
+         */
         private void setupDetailViews() {
-            if (actionBar != null) {
-                actionBar.setTitle(title);
-            }
+            Log.i("eeeeeee", "setupDetailViews........");
+
             final TextView titleView;
-            if (layoutView == null) {
-                layoutView = (LinearLayout) inflater.inflate(
+            if (mlayoutView == null) {
+                mlayoutView = (LinearLayout) inflater.inflate(
                         R.layout.table_row, null);
 
             }
             /* Get the Detail fragment module header Title view */
-            titleView = (TextView) layoutView.findViewById(R.id.titleview);
+            titleView = (TextView) mlayoutView.findViewById(R.id.titleview);
 
             final String[] keys = detailItems.keySet().toArray(
                     new String[detailItems.size()]);
@@ -430,14 +771,37 @@ public class ModuleDetailFragment extends Fragment {
 
             }
             ListView lv;
-            if (layoutView.getParent() == null) {
-                mParent.addView(layoutView);
-                lv = (ListView) layoutView.findViewById(R.id.detailList);
+            if (mlayoutView.getParent() == null) {
+                Log.i("eeeeeee", "mlayoutView parent null...........");
+
+                if (!ViewUtil.isHoneycombTablet(getActivity())) {
+                    Log.i("eeeeeee", "hahah11111111 mlayoutView  phone");
+                    final RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.WRAP_CONTENT);
+                    params1.addRule(RelativeLayout.BELOW, R.id.custom_actionbar);
+                    mParent.addView(mlayoutView, params1);
+
+                } else {
+                    Log.i("eeeeeee", "heeee1111111 tablet ");
+                    mParent.addView(mlayoutView);
+                }
+
+                lv = (ListView) mlayoutView.findViewById(R.id.detailList);
 
             } else {
-                layoutView = null;
-                final LinearLayout layoutView = new LinearLayout(getActivity());
-                mParent.addView(layoutView);
+                mlayoutView = null;
+                mlayoutView = new LinearLayout(getActivity());
+                if (!ViewUtil.isHoneycombTablet(getActivity().getBaseContext())) {
+                    final RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.WRAP_CONTENT);
+                    params1.addRule(RelativeLayout.BELOW, R.id.custom_actionbar);
+                    mParent.addView(mlayoutView, params1);
+                } else {
+                    mParent.addView(mlayoutView);
+                }
+
                 lv = null;
                 lv = new ListView(getActivity());
             }
@@ -449,6 +813,9 @@ public class ModuleDetailFragment extends Fragment {
 
         }
 
+        /**
+         * Prepare detail items.
+         */
         private void prepareDetailItems() {
             final String[] detailsProjection = mSelectFields;
 
@@ -589,11 +956,30 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * The Class DetailsItem.
+     */
     class DetailsItem {
+
+        /** The m field name. */
         private final String mFieldName;
+
+        /** The m value. */
         private final String mValue;
+
+        /** The m type. */
         private final String mType;
 
+        /**
+         * Instantiates a new details item.
+         * 
+         * @param fieldName
+         *            the field name
+         * @param value
+         *            the value
+         * @param type
+         *            the type
+         */
         DetailsItem(final String fieldName, final String value,
                 final String type) {
             mFieldName = fieldName;
@@ -601,27 +987,58 @@ public class ModuleDetailFragment extends Fragment {
             mType = type;
         }
 
+        /**
+         * Gets the value.
+         * 
+         * @return the value
+         */
         public String getValue() {
             return mValue;
         }
 
+        /**
+         * Gets the type.
+         * 
+         * @return the type
+         */
         public String getType() {
             return mType;
         }
 
+        /**
+         * Gets the field name.
+         * 
+         * @return the field name
+         */
         public String getFieldName() {
             return mFieldName;
         }
     }
 
+    /**
+     * The Class InternalURLSpan.
+     */
     static class InternalURLSpan extends ClickableSpan {
+
+        /** The m listener. */
         OnClickListener mListener;
 
+        /**
+         * Instantiates a new internal url span.
+         * 
+         * @param listener
+         *            the listener
+         */
         public InternalURLSpan(final OnClickListener listener) {
             super();
             mListener = listener;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.text.style.ClickableSpan#onClick(android.view.View)
+         */
         @Override
         public void onClick(final View widget) {
             Log.i(LOG_TAG, "InternalURLSpan onClick");
@@ -629,25 +1046,57 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * An asynchronous update interface for receiving notifications about
+     * DeleteContent information as the DeleteContent is constructed.
+     */
     private static class DeleteContentObserver extends ContentObserver {
 
+        /**
+         * This method is called when information about an DeleteContent which
+         * was previously requested using an asynchronous interface becomes
+         * available.
+         * 
+         * @param handler
+         *            the handler
+         */
         public DeleteContentObserver(final Handler handler) {
             super(handler);
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.database.ContentObserver#deliverSelfNotifications()
+         */
         @Override
         public boolean deliverSelfNotifications() {
             return super.deliverSelfNotifications();
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.database.ContentObserver#onChange(boolean)
+         */
         @Override
         public void onChange(final boolean selfChange) {
             super.onChange(selfChange);
         }
     }
 
+    /**
+     * The Class MyYesNoAlertDialogFragment.
+     */
     public class MyYesNoAlertDialogFragment extends DialogFragment {
 
+        /**
+         * New instance.
+         * 
+         * @param title
+         *            the title
+         * @return the my yes no alert dialog fragment
+         */
         public MyYesNoAlertDialogFragment newInstance(final int title) {
             final MyYesNoAlertDialogFragment frag = new MyYesNoAlertDialogFragment();
             final Bundle args = new Bundle();
@@ -656,6 +1105,13 @@ public class ModuleDetailFragment extends Fragment {
             return frag;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.support.v4.app.DialogFragment#onCreateDialog(android.os.Bundle
+         * )
+         */
         @Override
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
@@ -739,6 +1195,12 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * Open detail screen.
+     * 
+     * @param rowId
+     *            the row id
+     */
     void openDetailScreen(String rowId) {
 
         final Intent detailIntent = new Intent(getActivity(),
@@ -762,22 +1224,52 @@ public class ModuleDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * The Class SeparatedListAdapter.
+     */
     private class SeparatedListAdapter extends BaseAdapter {
 
+        /** The m data. */
         private final LinkedHashMap<String, DetailsItem> mData;
+
+        /** The inflater. */
         final LayoutInflater inflater = (LayoutInflater) getActivity()
                 .getBaseContext().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
+
+        /** The headerview1. */
         public TextView headerview1;
+
+        /** The headerview2. */
         public TextView headerview2;
+
+        /** The assigned icon view. */
         public ImageView assignedIconView;
+
+        /** The lable view. */
         public TextView lableView;
+
+        /** The summry view. */
         public TextView summryView;
+
+        /** The m keys. */
         String[] mKeys;
+
+        /** The list item_1. */
         int listItem_1 = 1;
+
+        /** The list item_2. */
         int listItem_2 = 2;
+
+        /** The list item_3. */
         int listItem_3 = 3;
 
+        /**
+         * Instantiates a new separated list adapter.
+         * 
+         * @param data
+         *            the data
+         */
         public SeparatedListAdapter(
                 final LinkedHashMap<String, DetailsItem> data) {
 
@@ -786,6 +1278,12 @@ public class ModuleDetailFragment extends Fragment {
 
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.Adapter#getView(int, android.view.View,
+         * android.view.ViewGroup)
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             getItemViewType(position);
@@ -843,6 +1341,7 @@ public class ModuleDetailFragment extends Fragment {
                 }
 
             } else {
+
                 /* set the filed to the text view */
                 final String field = mKeys[position];
                 final String value = (mData.get(mKeys[position])).getValue()
@@ -882,13 +1381,13 @@ public class ModuleDetailFragment extends Fragment {
                     assignedIconView.setVisibility(View.GONE);
                 }
 
-                if (field.contains("phone")) {
-                    summryView.setAutoLinkMask(Linkify.PHONE_NUMBERS);
-                }
                 // handle the map
-                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(field)
-                        || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(field)) {
-                    if (!TextUtils.isEmpty(value)) {
+                if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(mData.get(
+                        mKeys[position]).getFieldName())
+                        || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(mData
+                                .get(mKeys[position]).getFieldName())) {
+                    if (!TextUtils.isEmpty(value)
+                            && (!value.contains("Not Available"))) {
                         summryView.setLinksClickable(true);
                         summryView.setClickable(true);
 
@@ -932,18 +1431,33 @@ public class ModuleDetailFragment extends Fragment {
             return convertView;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.Adapter#getItemId(int)
+         */
         @Override
         public long getItemId(final int position) {
             // TODO Auto-generated method stub
             return position;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.Adapter#getCount()
+         */
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
             return mData.size();
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.Adapter#getItem(int)
+         */
         @Override
         public Object getItem(final int position) {
             // TODO Auto-generated method stub

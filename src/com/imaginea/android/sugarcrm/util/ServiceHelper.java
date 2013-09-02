@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ServiceHelper 
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 import java.io.Serializable;
@@ -13,16 +25,12 @@ import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.services.SugarService;
 
 /**
- * ServiceHelper
- * 
- * @author chander
+ * The Class ServiceHelper.
  */
 public class ServiceHelper {
 
     /**
-     * <p>
      * startService
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -35,10 +43,9 @@ public class ServiceHelper {
      * @param sortOrder
      *            a {@link java.lang.String} object.
      */
-    public static void startService(Context context, Uri uri, String module, String[] projection,
-                                    String sortOrder) {
-        // send a notify command to the service
-        Intent serviceIntent = new Intent(context, SugarService.class);
+    public static void startService(Context context, Uri uri, String module,
+            String[] projection, String sortOrder) {
+        final Intent serviceIntent = new Intent(context, SugarService.class);
         serviceIntent.setData(uri);
         serviceIntent.putExtra(Util.COMMAND, Util.GET);
         serviceIntent.putExtra(RestConstants.MODULE_NAME, module);
@@ -48,9 +55,7 @@ public class ServiceHelper {
     }
 
     /**
-     * <p>
      * startServiceForDelete
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -61,24 +66,24 @@ public class ServiceHelper {
      * @param beanId
      *            a {@link java.lang.String} object.
      */
-    public static void startServiceForDelete(Context context, Uri uri, String module, String beanId) {
-        Intent serviceIntent = new Intent(context, SugarService.class);
+    public static void startServiceForDelete(Context context, Uri uri,
+            String module, String beanId) {
+        final Intent serviceIntent = new Intent(context, SugarService.class);
         serviceIntent.setData(uri);
-        Map<String, String> nameValuePairs = new LinkedHashMap<String, String>();
+        final Map<String, String> nameValuePairs = new LinkedHashMap<String, String>();
         nameValuePairs.put(RestConstants.BEAN_ID, beanId);
         nameValuePairs.put(ModuleFields.DELETED, Util.DELETED_ITEM);
 
         serviceIntent.putExtra(Util.COMMAND, Util.DELETE);
         serviceIntent.putExtra(RestConstants.MODULE_NAME, module);
         serviceIntent.putExtra(RestConstants.BEAN_ID, beanId);
-        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST, (Serializable) nameValuePairs);
+        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST,
+                (Serializable) nameValuePairs);
         context.startService(serviceIntent);
     }
 
     /**
-     * <p>
      * startServiceForUpdate
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -91,22 +96,21 @@ public class ServiceHelper {
      * @param nameValueList
      *            a {@link java.util.Map} object.
      */
-    public static void startServiceForUpdate(Context context, Uri uri, String module,
-                                    String beanId, Map<String, String> nameValueList) {
-        Intent serviceIntent = new Intent(context, SugarService.class);
+    public static void startServiceForUpdate(Context context, Uri uri,
+            String module, String beanId, Map<String, String> nameValueList) {
+        final Intent serviceIntent = new Intent(context, SugarService.class);
         serviceIntent.setData(uri);
 
         serviceIntent.putExtra(Util.COMMAND, Util.UPDATE);
         serviceIntent.putExtra(RestConstants.BEAN_ID, beanId);
         serviceIntent.putExtra(RestConstants.MODULE_NAME, module);
-        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST, (Serializable) nameValueList);
+        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST,
+                (Serializable) nameValueList);
         context.startService(serviceIntent);
     }
 
     /**
-     * <p>
      * startServiceForInsert
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -117,14 +121,15 @@ public class ServiceHelper {
      * @param nameValueList
      *            a {@link java.util.Map} object.
      */
-    public static void startServiceForInsert(Context context, Uri uri, String moduleName,
-                                    Map<String, String> nameValueList) {
-        Intent serviceIntent = new Intent(context, SugarService.class);
+    public static void startServiceForInsert(Context context, Uri uri,
+            String moduleName, Map<String, String> nameValueList) {
+        final Intent serviceIntent = new Intent(context, SugarService.class);
         serviceIntent.setData(uri);
 
         serviceIntent.putExtra(Util.COMMAND, Util.INSERT);
         serviceIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
-        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST, (Serializable) nameValueList);
+        serviceIntent.putExtra(RestConstants.NAME_VALUE_LIST,
+                (Serializable) nameValueList);
         context.startService(serviceIntent);
     }
 }

@@ -11,34 +11,49 @@ import android.test.ProviderTestCase2;
  */
 public class ProviderTests extends ProviderTestCase2<SugarCRMProvider> {
 
+    /** The m provider. */
     SugarCRMProvider mProvider;
 
+    /** The m mock context. */
     Context mMockContext;
 
+    /**
+     * Instantiates a new provider tests.
+     */
     public ProviderTests() {
         super(SugarCRMProvider.class, SugarCRMProvider.AUTHORITY);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.test.ProviderTestCase2#setUp()
+     */
     @Override
     public void setUp() throws Exception {
         super.setUp();
         mMockContext = getMockContext();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.test.ProviderTestCase2#tearDown()
+     */
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     /**
-     * Test simple account save/retrieve
+     * Test simple account save/retrieve.
      */
     public void testAccountSave() {
 
     }
 
     /**
-     * 
+     * Test contact save.
      */
     public void testContactSave() {
 

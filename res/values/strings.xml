@@ -7,17 +7,28 @@
 		Opportunities and other modules of Sugar CRM</string>
     <string name="home">Home</string>
 
+    <!-- Edit Details Items -->
+    <string name="mandatoryField">Mandatory Field</string>
+    <string name="optionalField">Optional Field</string>
+
     <!-- ActionBar Items -->
     <string name="addNew">ADD NEW</string>
+    <string name="add">Add New</string>
     <string name="editDone">Done</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="logout">Logout</string>
+
     <!-- Sugar CRM Settings -->
     <string name="userSummary">The username you use to log in to Sugar</string>
     <string name="pwdSummary">The password associated to your username</string>
     <string name="urlSummary">The REST URL of SugarCRM</string>
-    <string name="notification">NOTIFICATION</string>
+    <string name="notification">Notification</string>
     <string name="sorting">SORTING</string>
-    <string name="synchrnizing">SYNCHRONIZING</string>
-     <string name="enablealarm">Enable Alarm</string>
+    <string name="synchrnizing">Sync</string>
+    <string name="period">Period</string>
+    <string name="downloadedrecords_title">Downloaded per session</string>
+    <string name="enablealarm">Enable Alarm</string>
+    <string name="apply">Apply</string>
 
     <!-- default values for settings -->
 
@@ -37,7 +48,7 @@
     <string name="sortSummary">Set the sort order for the modules</string>
 
     <!-- Login Module -->
-    <string name="sugarCrmUrlHeader">Sugar-CRM REST url</string>
+    <string name="sugarCrmUrlHeader">Sugar-CRM REST URL</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>

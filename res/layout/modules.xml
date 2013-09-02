@@ -1,14 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!-- "Fragment A" -->
+    <com.imaginea.android.sugarcrm.CustomActionbar
+        android:id="@+id/custom_actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/actionbar_height" />
 
-    <fragment
-        android:id="@+id/list_frag"
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/custom_actionbar"
+        android:orientation="horizontal" >
+
+        <fragment
+            android:id="@+id/list_imagefrag"
+            android:layout_width="@dimen/dashboard_imagephoneitem_width"
+            android:layout_height="match_parent"
+            class="com.imaginea.android.sugarcrm.ModuleImageListFragment" />
+
+        <!-- "Fragment A" -->
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="#c8c9cd"
+            android:baselineAligned="false"
+            android:orientation="vertical"
+            android:paddingBottom="1dp"
+            android:paddingLeft="1dp"
+            android:paddingTop="1dp" >
+
+            <RelativeLayout
+                android:id="@+id/list_frag_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <!-- place holder for list fragement -->
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <!-- transparent view -->
+
+    <View
+        android:id="@+id/transparent_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.imaginea.android.sugarcrm.ModuleListFragment" />
+        android:clickable="true"
+        android:visibility="gone" />
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/settings_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/custom_actionbar"
+        android:layout_marginRight="5dp"
+        android:background="#282828"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/addNew"
+            style="@style/menu_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector"
+            android:text="@string/add"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/settings_menu_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/menuitem_devider" />
+
+        <LinearLayout
+            android:id="@+id/orderByListContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#282828"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/menuitem_devider" />
+
+        <TextView
+            android:id="@+id/settingsTv"
+            style="@style/menu_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector"
+            android:text="@string/settings" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/menuitem_devider" />
+
+        <TextView
+            android:id="@+id/logoutTv"
+            style="@style/menu_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector"
+            android:text="@string/logout" />
+    </LinearLayout>
+
+    <!-- Settings dropdown end -->
+
+</RelativeLayout>

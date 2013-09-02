@@ -1,3 +1,15 @@
+<!--
+  /*******************************************************************************
+   * Copyright (c) {DATE} {INITIAL COPYRIGHT OWNER} {OTHER COPYRIGHT OWNERS}.
+   * All rights reserved. This program and the accompanying materials
+   * are made available under the terms of the Eclipse Public License v1.0
+   * which accompanies this distribution, and is available at
+   * http://www.eclipse.org/legal/epl-v10.html
+   *
+   * Contributors:
+   *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
+   *******************************************************************************/
+-->
 <resources>
 
     <style name="Theme.Pancake" parent="android:Theme.Holo.Light">
@@ -15,8 +27,7 @@
 			name="android:textAppearance">?android:attr/textAppearanceSmall</item
         -->
         <item name="android:textSize">12sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginLeft">30dip</item>
+       <item name="android:layout_marginLeft">30dip</item>
         <item name="android:layout_marginRight">30dip</item>
         <item name="android:layout_marginTop">10dip</item>
         <item name="android:paddingLeft">1dip</item>

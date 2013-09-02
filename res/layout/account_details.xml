@@ -1,10 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/grey"
     android:orientation="vertical" >
 
-   
+    <com.imaginea.android.sugarcrm.CustomActionbar
+        android:id="@+id/custom_actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/actionbar_height"
+        android:layout_alignParentTop="true" />
+    
+    <!-- transparent view -->
+    <View
+        android:id="@+id/transparent_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/settings_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/custom_actionbar"
+        android:layout_marginRight="5dp"
+        android:background="#282828"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/settingsTv"
+            style="@style/menu_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector"
+            android:text="@string/settings" />
+
+        <ImageView
+            android:id="@+id/settings_menu_divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/menuitem_devider" />
+
+        <TextView
+            android:id="@+id/logoutTv"
+            style="@style/menu_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector"
+            android:text="@string/logout" />
+    </LinearLayout>
+
+</RelativeLayout>

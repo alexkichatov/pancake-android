@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : SBParseHelper
+ * Description : 
+ *              Helper for the SBParser and SugarBean to parse the JSON response to
+ *retrieve the name value pairs either in the entry_list or the
+ *relationship_list
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 import static com.imaginea.android.sugarcrm.rest.RestConstants.VALUE;
@@ -10,28 +26,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>
- * SBParseHelper class.
- * </p>
- * 
+ * The Class SBParseHelper.
  */
 public class SBParseHelper {
 
-    /*
-     * Helper for the SBParser and SugarBean to parse the JSON response to
-     * retrieve the name value pairs either in the entry_list or the
-     * relationship_list
-     */
     /**
-     * <p>
-     * getNameValuePairs
-     * </p>
+     * Gets the name value pairs.
      * 
      * @param nameValueList
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
-     * @throws com.imaginea.android.sugarcrm.util.SugarCrmException
-     *             if any.
+     *            the name value list
+     * @return the name value pairs
+     * @throws SugarCrmException
+     *             the sugar crm exception
      */
     public static Map<String, String> getNameValuePairs(
             final String nameValueList) throws SugarCrmException {

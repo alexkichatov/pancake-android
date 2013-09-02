@@ -1,18 +1,19 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*******************************************************************************
+ * Copyright (c) 2013 Asha
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Asha - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : BaseActivity 
+ * Description : 
+ *              A base activity that defers common functionality across app activities to an
+ * {@link ActivityHelper}. This class shouldn't be used directly; instead,
+ * activities should inherit from {@link BaseSinglePaneActivity} or
+ * {@link BaseMultiPaneActivity}.
+ ******************************************************************************/
 
 package com.imaginea.android.sugarcrm.ui;
 
@@ -27,39 +28,61 @@ import android.view.MenuItem;
 import com.imaginea.android.sugarcrm.util.ActivityHelper;
 
 /**
- * A base activity that defers common functionality across app activities to an
- * {@link ActivityHelper}. This class shouldn't be used directly; instead,
- * activities should inherit from {@link BaseSinglePaneActivity} or
- * {@link BaseMultiPaneActivity}.
+ * The Class BaseActivity.
  */
 public abstract class BaseActivity extends FragmentActivity {
     final ActivityHelper mActivityHelper = ActivityHelper.createInstance(this);
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onPostCreate(android.os.Bundle)
+     */
     @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // This is commented becuause currently using custom action bar.
-        // mActivityHelper.onPostCreate(savedInstanceState);
+
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onKeyLongPress(int, android.view.KeyEvent)
+     */
     @Override
     public boolean onKeyLongPress(final int keyCode, final KeyEvent event) {
         return mActivityHelper.onKeyLongPress(keyCode, event)
                 || super.onKeyLongPress(keyCode, event);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.app.FragmentActivity#onKeyDown(int,
+     * android.view.KeyEvent)
+     */
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         return mActivityHelper.onKeyDown(keyCode, event)
                 || super.onKeyDown(keyCode, event);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+     */
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         return mActivityHelper.onCreateOptionsMenu(menu)
                 || super.onCreateOptionsMenu(menu);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+     */
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         return mActivityHelper.onOptionsItemSelected(item)
@@ -68,6 +91,8 @@ public abstract class BaseActivity extends FragmentActivity {
 
     /**
      * Returns the {@link ActivityHelper} object associated with this activity.
+     * 
+     * @return the activity helper
      */
     protected ActivityHelper getActivityHelper() {
         return mActivityHelper;
@@ -79,6 +104,9 @@ public abstract class BaseActivity extends FragmentActivity {
      * multi-pane activity) that can handle the intent.
      * 
      * Must be called from the main (UI) thread.
+     * 
+     * @param intent
+     *            the intent
      */
     public void openActivityOrFragment(final Intent intent) {
         // Default implementation simply calls startActivity
@@ -88,6 +116,10 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Converts an intent into a {@link Bundle} suitable for use as fragment
      * arguments.
+     * 
+     * @param intent
+     *            the intent
+     * @return the bundle
      */
     public static Bundle intentToFragmentArguments(final Intent intent) {
         final Bundle arguments = new Bundle();
@@ -109,6 +141,10 @@ public abstract class BaseActivity extends FragmentActivity {
 
     /**
      * Converts a fragment arguments bundle into an intent.
+     * 
+     * @param arguments
+     *            the arguments
+     * @return the intent
      */
     public static Intent fragmentArgumentsToIntent(final Bundle arguments) {
         final Intent intent = new Intent();
