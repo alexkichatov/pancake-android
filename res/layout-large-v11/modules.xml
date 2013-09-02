@@ -99,6 +99,24 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/menuitem_devider" />
+  <LinearLayout 
+            android:id="@+id/orderByListContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#282828"
+            android:orientation="vertical">
+            <TextView 
+                android:layout_width="match_parent"
+            	android:layout_height="match_parent"
+            	style="@style/menu_item"
+                android:text="Sort By"/>
+        </LinearLayout>
+        
+         <ImageView
+            android:id="@+id/settings_menu_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/menuitem_devider" />
         
         <TextView
             android:id="@+id/settingsTv"

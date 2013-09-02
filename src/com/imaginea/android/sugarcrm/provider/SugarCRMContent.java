@@ -243,8 +243,8 @@ public final class SugarCRMContent {
                 FIRST_NAME, LAST_NAME, EMAIL1 };
 
         /** The Constant LIST_VIEW_PROJECTION. */
-        public static final String[] LIST_VIEW_PROJECTION = { LAST_NAME,
-                FIRST_NAME, ACCOUNT_NAME, EMAIL1 };
+        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME,
+                LAST_NAME, ACCOUNT_NAME, EMAIL1 };
 
         /** The Constant DETAILS_PROJECTION. */
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -474,8 +474,8 @@ public final class SugarCRMContent {
                 FIRST_NAME, LAST_NAME, CREATED_BY_NAME };
 
         /** The Constant LIST_VIEW_PROJECTION. */
-        public static final String[] LIST_VIEW_PROJECTION = { LAST_NAME,
-                FIRST_NAME, ACCOUNT_NAME, EMAIL1 };
+        public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME,
+        	LAST_NAME, ACCOUNT_NAME, EMAIL1 };
 
         /** The Constant DETAILS_PROJECTION. */
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,

@@ -39,8 +39,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
@@ -162,6 +165,19 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         });
 
         mUrlEditText = (EditText) findViewById(R.id.wizardUrl);
+        /* Override the Done Key in Keyboard and mapped with Handle Login */
+        mUrlEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mUrlEditText.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId,
+                    KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    handleLogin(v);
+                    return true;
+                } else
+                    return false;
+            }
+        });
         mUsrEditText = (EditText) findViewById(R.id.loginUsername);
         mPasswordEditText = (EditText) findViewById(R.id.loginPassword);
     }

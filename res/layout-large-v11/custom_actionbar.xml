@@ -53,6 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:src="@drawable/settings"
         android:visibility="gone" />
@@ -73,7 +74,8 @@
         android:layout_toLeftOf="@id/actionbar_homeseperator1"
         android:onClick="true"
         android:orientation="horizontal"
-        android:paddingRight="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:visibility="gone" >
 
         <ImageView
@@ -81,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:paddingRight="5dp"
             android:src="@drawable/add" />
 
         <TextView
@@ -90,7 +93,7 @@
             android:layout_height="@dimen/actionbar_height"
             android:singleLine="true"
             android:text="@string/addNew"
-            android:textColor="#B0B1B6" />
+            android:textColor="@color/addnew_color" />
     </LinearLayout>
 
     <View
@@ -108,6 +111,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/actionbar_homeseperator2"
+        android:paddingRight="10dp"
         android:src="@drawable/sync"
         android:visibility="gone" />
 
@@ -117,6 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/sync"
+        android:paddingRight="10dp"
         android:src="@drawable/search"
         android:visibility="gone" />
 
@@ -126,8 +131,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
         android:layout_toRightOf="@id/actionbar_moduleName"
+        android:gravity="center_vertical"
         android:paddingLeft="5dp"
         android:visibility="gone" />
 
@@ -156,6 +161,7 @@
             android:id="@+id/editDoneImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/edit_done" />
 
         <TextView
@@ -164,7 +170,8 @@
             android:layout_height="@dimen/actionbar_height"
             android:paddingRight="5dp"
             android:singleLine="true"
-            android:text="@string/editDone" />
+            android:text="@string/editDone"
+            android:textColor="#3F434F" />
     </LinearLayout>
 
 </RelativeLayout>
