@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#EDEDED"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="20dp"
+            android:text="@string/settings"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black" >
+        </TextView>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#50535D" />
+
+        <TextView
+            android:id="@+id/head1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/dashboard_list_color"
+            android:paddingBottom="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:text="@string/synchrnizing"
+            android:textColor="@android:color/white" >
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:text="@string/period"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black" >
+            </TextView>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/startDate"
+                    style="?android:attr/spinnerStyle"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingBottom="20dp"
+                    android:paddingRight="20dp"
+                    android:textColor="@android:color/black" />
+
+                <View
+                    android:id="@+id/dummyview"
+                    android:layout_width="20dp"
+                    android:layout_height="1dp"
+                    android:layout_toRightOf="@id/startDate" >
+                </View>
+
+                <Button
+                    android:id="@+id/endDate"
+                    style="?android:attr/spinnerStyle"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/dummyview"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="40dp"
+                    android:textColor="@android:color/black" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/recordtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingRight="20dp"
+                android:paddingTop="20dp"
+                android:text="@string/downloadedrecords_title"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black" >
+            </TextView>
+
+            <Spinner
+                android:id="@+id/recordsize"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#50535D" />
+
+        <TextView
+            android:id="@+id/head2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/dashboard_list_color"
+            android:paddingBottom="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:text="@string/sugarCrmUrlHeader"
+            android:textColor="@android:color/white" >
+        </TextView>
+
+        <RelativeLayout
+            android:id="@+id/url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp" >
+
+            <EditText
+                android:id="@+id/crmUrl"
+                style="@style/edit_text_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/restUrl"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:paddingTop="20dp" >
+            </EditText>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#50535D" />
+
+        <TextView
+            android:id="@+id/head3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/dashboard_list_color"
+            android:paddingBottom="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:text="@string/notification"
+            android:textColor="@android:color/white" >
+        </TextView>
+
+        <RelativeLayout
+            android:id="@+id/notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingTop="20dp" >
+
+            <CheckBox
+                android:id="@+id/enableAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/alarmText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/enableAlarm"
+                android:text="@string/enablealarm"
+                android:textAppearance="?android:attr/textAppearanceMedium" >
+            </TextView>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/dialogButtonCancel"
+                android:layout_width="fill_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@drawable/selector"
+                android:text="@string/cancel"
+                android:textColor="@color/textcolor" >
+            </Button>
+
+            <View
+                android:id="@+id/devider"
+                android:layout_width="2dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="#50535D" />
+
+            <Button
+                android:id="@+id/dialogButtonOK"
+                android:layout_width="fill_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@drawable/selector"
+                android:text="@string/apply"
+                android:textColor="@color/textcolor" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

@@ -20,23 +20,28 @@ import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 
 /**
- * Do not run this, exclude this from the test suite
+ * Do not run this, exclude this from the test suite.
  * 
  * @author chander
- * 
  */
 public class GenerateModuleFieldsTest extends RestAPITest {
 
+    /** The module name. */
     String moduleName = "Accounts";
 
+    /** The fields. */
     String[] fields = new String[] {};
 
+    /** The custom fields. */
     String[] customFields = new String[] { "a", "b" };
 
+    /** The module fields set. */
     LinkedHashSet<String> moduleFieldsSet = new LinkedHashSet<String>();
 
+    /** The module field list. */
     List<String> moduleFieldList = new ArrayList<String>();
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = "ModuleFieldTest";
 
     /**
@@ -45,6 +50,7 @@ public class GenerateModuleFieldsTest extends RestAPITest {
      * to be created
      * 
      * @throws Exception
+     *             the exception
      */
     @LargeTest
     public void testGetAllModuleFields() throws Exception {
@@ -102,6 +108,12 @@ public class GenerateModuleFieldsTest extends RestAPITest {
         // Log.i("ModuleFields:"+ moduleName.)
     }
 
+    /**
+     * Adds the to module field list.
+     * 
+     * @param moduleFields
+     *            the module fields
+     */
     private void addToModuleFieldList(final List<ModuleField> moduleFields) {
         for (final ModuleField moduleField : moduleFields) {
             moduleFieldsSet.add(moduleField.getName());
@@ -109,7 +121,12 @@ public class GenerateModuleFieldsTest extends RestAPITest {
     }
 
     /**
-     * This class is a generate Class file using the Velocity Template Engine
+     * This class is a generate Class file using the Velocity Template Engine.
+     * 
+     * @param set
+     *            the set
+     * @throws Exception
+     *             the exception
      */
 
     public void generateClass(final Set set) throws Exception {
@@ -119,39 +136,16 @@ public class GenerateModuleFieldsTest extends RestAPITest {
             final Properties prop = new Properties();
             prop.put("runtime.log.logsystem.class",
                     "org.apache.velocity.runtime.log.NullLogSystem");
-            // Velocity.init(prop);
-            // Velocity.addProperty("runtime.log.logsystem.class",
-            // "org.apache.velocity.runtime.log.NullLogSystem");
         } catch (final Exception e) {
             Log.e(LOG_TAG, "Problem initializing Velocity : " + e);
             return;
         }
 
-        /* lets make a Context and put data into it */
-
-        // VelocityContext context = new VelocityContext();
-        // context.put("fields", set);
-        //
-        /* lets render a template */
-
         StringWriter w = new StringWriter();
-        /*
-         * lets dynamically 'create' our template and use the evaluate() method
-         * to render it. Its currently in assets folder of test package, but to
-         * generate it we need it in the main project, but do not check-in this
-         * file. This is really a tool and can be kept outside of our android
-         * project, but what the heck, we want everything in one place
-         */
-        String s = "";
         try {
             final InputStream is = super.getContext().getAssets()
                     .open("classFile.vm");
-            // InputStream is =
-            // super.getContext().getAssets().open("fields.vm");
 
-            // We guarantee that the available method returns the total
-            // size of the asset... of course, this does mean that a single
-            // asset can't be more than 2 gigs.
             final int size = is.available();
 
             // Read the entire asset into a local byte buffer.
@@ -159,8 +153,7 @@ public class GenerateModuleFieldsTest extends RestAPITest {
             is.read(buffer);
             is.close();
 
-            // Convert the buffer into a string.
-            s = new String(buffer);
+            new String(buffer);
         } catch (final IOException e) {
             // Should never happen!
             throw new RuntimeException(e);
@@ -169,25 +162,7 @@ public class GenerateModuleFieldsTest extends RestAPITest {
         w = new StringWriter();
 
         try {
-            // Velocity.evaluate(context, w, "mystring", s);
-        }
-        /*
-         * catch (ParseErrorException pee) {
-         * 
-         * // thrown if something is wrong with the syntax of our template
-         * string
-         * 
-         * Log.e(LOG_TAG, "ParseErrorException : " + pee); }
-         */
-        // catch (MethodInvocationException mee) {
-        /*
-         * thrown if a method of a reference called by the template throws an
-         * exception. That won't happen here as we aren't calling any methods in
-         * this example, but we have to catch them anyway
-         */
-        // Log.e(LOG_TAG, "MethodInvocationException : " + mee);
-        // }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             Log.e(LOG_TAG, "Exception : " + e);
         }
 

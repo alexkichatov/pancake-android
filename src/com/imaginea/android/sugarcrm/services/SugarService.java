@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *          chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : SugarService 
+ * Description : 
+ *              SugarService, follows the APIDemos pattern of command handling example of a
+ * Service
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.services;
 
 import java.io.File;
@@ -28,45 +44,36 @@ import com.imaginea.android.sugarcrm.util.Util;
 
 /**
  * SugarService, follows the APIDemos pattern of command handling example of a
- * Service
+ * Service.
  */
 public class SugarService extends Service {
 
-    // static SugarService self;
-
-    /**
-     * file handler for logging the sync/copy requests
-     */
+    /** file handler for logging the sync/copy requests. */
     private static FileHandler fileHandler;
 
-    /**
-	 * 
-	 */
+    /** The m task map. */
     @SuppressWarnings("rawtypes")
     private static HashMap<Integer, AsyncServiceTask> mTaskMap = new HashMap<Integer, AsyncServiceTask>();
 
-    /**
-	 * 
-	 */
+    /** The m service looper. */
     private volatile Looper mServiceLooper;
 
-    /**
-	 * 
-	 */
+    /** The m service handler. */
     private volatile ServiceHandler mServiceHandler;
 
+    /** The Constant ONE_MINUTE. */
     public static final int ONE_MINUTE = 60 * 1000;
 
+    /** The m recent start id. */
     private static int mRecentStartId;
 
+    /** The m messenger. */
     private static Messenger mMessenger;
 
-    // constants for syncing
-    // public static final String SERVICECMD =
-    // "com.imaginea.android.synccommand";
-
+    /** The Constant ACTION_START. */
     public static final String ACTION_START = "com.imaginea.action.ACTION_START";
 
+    /** The Constant TAG. */
     private static final String TAG = SugarService.class.getSimpleName();
 
     /** {@inheritDoc} */
@@ -146,7 +153,7 @@ public class SugarService extends Service {
     };
 
     /**
-     * isRunning returns if the transaction is running or not
+     * isRunning returns if the transaction is running or not.
      * 
      * @param transactionId
      *            a long.
@@ -172,19 +179,27 @@ public class SugarService extends Service {
     }
 
     /**
-     * handles REST API operations
-     * 
-     * @author chander
-     * 
+     * The Class ServiceHandler.
      */
     private final class ServiceHandler extends Handler {
 
         // public int cancelStartId;
 
+        /**
+         * Instantiates a new service handler.
+         * 
+         * @param looper
+         *            the looper
+         */
         public ServiceHandler(final Looper looper) {
             super(looper);
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.os.Handler#handleMessage(android.os.Message)
+         */
         @Override
         public void handleMessage(final Message msg) {
             final Intent intent = (Intent) msg.obj;
@@ -240,14 +255,13 @@ public class SugarService extends Service {
 
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Done with #" + msg.arg1);
-                // stopSelfResult(msg.arg1);
-                // stopSelf();
+
             }
         }
     };
 
     /**
-     * isCancelled
+     * isCancelled.
      * 
      * @param transactionId
      *            a long.
@@ -270,6 +284,11 @@ public class SugarService extends Service {
      * This is the old onStart method that will be called on the pre-2.0 //
      * platform. On 2.0 or later we override onStartCommand() so this // method
      * will not be called.
+     * 
+     * @param intent
+     *            the intent
+     * @param startId
+     *            the start id
      */
     @Override
     public void onStart(final Intent intent, final int startId) {
@@ -285,8 +304,13 @@ public class SugarService extends Service {
         return START_NOT_STICKY;
     }
 
-    /*
+    /**
      * common method to handle intents for pre2.0 and post 2.0 devices
+     * 
+     * @param intent
+     *            the intent
+     * @param startId
+     *            the start id
      */
     void handleStart(final Intent intent, final int startId) {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -313,27 +337,24 @@ public class SugarService extends Service {
     }
 
     /**
-     * initLogger
+     * initLogger.
      */
     private void initLogger() {
         try {
             final File storeLog = new File(
                     Environment.getExternalStorageDirectory(), "SugarCRM"
                             + File.separatorChar + "Cache");
-            // Log.d(TAG, "Files Dir:" + storeLog.get());
 
             if (storeLog.exists() == false) {
                 storeLog.mkdirs();
-                // FileOutputStream fs = new FileOutputStream(logFile);
-                // fs.close();
+
             }
             final File logFile = new File(storeLog, "CRMLog.txt");
             final String name = logFile.getAbsolutePath();
-            // if(logFile.exists())
-            // logFile.renameTo(dest)
+
             fileHandler = new FileHandler(name, 10 * 1024, 1, false);
             fileHandler.setFormatter(new CRMCustomLogFormatter());
-            // Logger.getLogger(TAG).addHandler(fileHandler);
+
             Logger.getLogger("CRM").addHandler(fileHandler);
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -341,7 +362,7 @@ public class SugarService extends Service {
     }
 
     /**
-     * closeLogger
+     * closeLogger.
      */
     private void closeLogger() {
         if (fileHandler != null) {
@@ -350,7 +371,7 @@ public class SugarService extends Service {
     }
 
     /**
-     * logStatus
+     * logStatus.
      * 
      * @param str
      *            a {@link java.lang.String} object.
@@ -363,7 +384,7 @@ public class SugarService extends Service {
     }
 
     /**
-     * logError
+     * logError.
      * 
      * @param str
      *            a {@link java.lang.String} object.
@@ -375,7 +396,11 @@ public class SugarService extends Service {
         }
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Service#onDestroy()
+     */
     @Override
     public void onDestroy() {
 
@@ -386,7 +411,11 @@ public class SugarService extends Service {
         super.onDestroy();
     }
 
-    /** {@inheritDoc} */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Service#onBind(android.content.Intent)
+     */
     @Override
     public IBinder onBind(final Intent intent) {
         return null;
@@ -403,7 +432,6 @@ public class SugarService extends Service {
      */
     public static void registerMessenger(final Messenger messenger) {
 
-        // messengerList.add(messenger);
         mMessenger = messenger;
     }
 
@@ -423,7 +451,7 @@ public class SugarService extends Service {
     /**
      * messages will be sent to the activity or any component that is currently
      * registered with this service made static so can directly call this to
-     * display the status of the
+     * display the status of the.
      * 
      * @param what
      *            a int.
@@ -451,11 +479,7 @@ public class SugarService extends Service {
                 mMessenger.send(message);
             }
         } catch (final RemoteException e) {
-            // This should hopefullly not happen ? as we are not remote but
-            // using it within
-            // same process - but some error message needs to be sent to UI
-            // -
-            // TBD
+
             Log.e(TAG, e.getMessage(), e);
         }
     }

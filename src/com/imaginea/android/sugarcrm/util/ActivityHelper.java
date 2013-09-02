@@ -1,23 +1,23 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Murli.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ActivityHelper 
+ * Description :
+ *            A class that handles some common activity-related functionality in the app,
+ * such as setting up the action bar. This class provides functionality useful
+ * for both phones and tablets, and does not require any Android 3.0-specific
+ * features
+ ******************************************************************************/
 
 package com.imaginea.android.sugarcrm.util;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -25,50 +25,73 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.imaginea.android.sugarcrm.DashboardActivity;
 import com.imaginea.android.sugarcrm.R;
 
 /**
- * A class that handles some common activity-related functionality in the app,
- * such as setting up the action bar. This class provides functionality useful
- * for both phones and tablets, and does not require any Android 3.0-specific
- * features.
- * 
- * Modified
+ * The Class ActivityHelper.
  */
 public class ActivityHelper {
+
+    /** The m activity. */
     protected Activity mActivity;
 
     /**
      * Factory method for creating {@link ActivityHelper} objects for a given
      * activity. Depending on which device the app is running, either a basic
      * helper or Honeycomb-specific helper will be returned.
+     * 
+     * @param activity
+     *            the activity
+     * @return the activity helper
      */
     public static ActivityHelper createInstance(final Activity activity) {
         return ViewUtil.isHoneycomb() ? new ActivityHelperHoneycomb(activity)
                 : new ActivityHelper(activity);
     }
 
+    /**
+     * Instantiates a new activity helper.
+     * 
+     * @param activity
+     *            the activity
+     */
     protected ActivityHelper(final Activity activity) {
         mActivity = activity;
     }
 
+    /**
+     * On post create.
+     * 
+     * @param savedInstanceState
+     *            the saved instance state
+     */
     public void onPostCreate(final Bundle savedInstanceState) {
         // Create the action bar
         final SimpleMenu menu = new SimpleMenu(mActivity);
         mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu);
-        // TODO: call onPreparePanelMenu here as well
         for (int i = 0; i < menu.size(); i++) {
         }
     }
 
+    /**
+     * On create options menu.
+     * 
+     * @param menu
+     *            the menu
+     * @return true, if successful
+     */
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // mActivity.getMenuInflater().inflate(R.menu.default_menu_items, menu);
-        // TODO
         mActivity.getMenuInflater().inflate(R.menu.settings_menu, menu);
         return false;
     }
 
+    /**
+     * On options item selected.
+     * 
+     * @param item
+     *            the item
+     * @return true, if successful
+     */
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.search:
@@ -78,17 +101,34 @@ public class ActivityHelper {
         return false;
     }
 
+    /**
+     * On key down.
+     * 
+     * @param keyCode
+     *            the key code
+     * @param event
+     *            the event
+     * @return true, if successful
+     */
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU)
             return true;
         return false;
     }
 
+    /**
+     * On key long press.
+     * 
+     * @param keyCode
+     *            the key code
+     * @param event
+     *            the event
+     * @return true, if successful
+     */
     public boolean onKeyLongPress(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            goHome();
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            // goHome();
             return true;
-        }
         return false;
     }
 
@@ -107,19 +147,6 @@ public class ActivityHelper {
     }
 
     /**
-     * Invoke "home" action, returning to
-     * {@link com.google.android.apps.iosched.ui.HomeActivity}.
-     */
-    public void goHome() {
-        if (mActivity instanceof DashboardActivity)
-            return;
-
-        final Intent intent = new Intent(mActivity, DashboardActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mActivity.startActivity(intent);
-    }
-
-    /**
      * Invoke "search" action, triggering a default search.
      */
     public void goSearch() {
@@ -127,7 +154,12 @@ public class ActivityHelper {
     }
 
     /**
-     * Sets up the action bar
+     * Sets up the action bar.
+     * 
+     * @param title
+     *            the title
+     * @param color
+     *            the color
      */
     public void setupActionBar(final CharSequence title, final int color) {
         // TODO
@@ -136,6 +168,8 @@ public class ActivityHelper {
     /**
      * Returns the {@link ViewGroup} for the action bar on phones (compatibility
      * action bar). Can return null, and will return null on Honeycomb.
+     * 
+     * @return the action bar compat
      */
     public ViewGroup getActionBarCompat() {
         return (ViewGroup) mActivity.findViewById(R.id.actionbar_compat);

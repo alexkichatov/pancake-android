@@ -10,66 +10,103 @@ import android.text.format.Time;
 import com.imaginea.android.sugarcrm.ModuleFields;
 
 /**
- * Sugar CRM Sync instrumentation tests. Testing creation of new accounts, deleting accounts,
- * editing accounts.
+ * Sugar CRM Sync instrumentation tests. Testing creation of new accounts,
+ * deleting accounts, editing accounts.
  */
 public class SyncCRMTest extends CRMSyncTestingBase {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.imaginea.android.sugarcrm.provider.CRMSyncTestingBase#setUp()
+     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
+    /**
+     * Test create new account.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void testCreateNewAccount() throws Exception {
-        int countBeforeNewAccount = getAccountsCount();
+        final int countBeforeNewAccount = getAccountsCount();
         insertAccount();
-        assertTrue("No New account was added. ", getAccountsCount() > countBeforeNewAccount);
+        assertTrue("No New account was added. ",
+                getAccountsCount() > countBeforeNewAccount);
     }
 
+    /**
+     * Test edit account name.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void testEditAccountName() throws Exception {
         Cursor cursor;
         cursor = mResolver.query(mAccountsUri, null, null, null, null);
 
-        int countBeforeNewAccount = cursor.getCount();
+        final int countBeforeNewAccount = cursor.getCount();
         cursor.moveToNext();
-        Time time = new Time();
+        final Time time = new Time();
         time.setToNow();
-        String newTitle = cursor.getString(cursor.getColumnIndex(ModuleFields.NAME))
-                                        + time.toString();
+        final String newTitle = cursor.getString(cursor
+                .getColumnIndex(ModuleFields.NAME)) + time.toString();
 
-        long accountId = cursor.getLong(cursor.getColumnIndex(SugarCRMContent.RECORD_ID));
+        final long accountId = cursor.getLong(cursor
+                .getColumnIndex(SugarCRMContent.RECORD_ID));
 
         cursor.close();
-        ContentValues values = new ContentValues();
+        final ContentValues values = new ContentValues();
         values.put(ModuleFields.NAME, newTitle);
         // values.put(ModuleFields., value)
         editAccount(accountId, values);
         cursor = mResolver.query(mAccountsUri, null, null, null, null);
-        assertTrue("Events count should remain same.", getAccountsCount() == countBeforeNewAccount);
+        assertTrue("Events count should remain same.",
+                getAccountsCount() == countBeforeNewAccount);
 
         while (cursor.moveToNext()) {
-            if (cursor.getLong(cursor.getColumnIndex(SugarCRMContent.RECORD_ID)) == accountId) {
-                assertEquals(cursor.getString(cursor.getColumnIndex(ModuleFields.NAME)), newTitle);
+            if (cursor
+                    .getLong(cursor.getColumnIndex(SugarCRMContent.RECORD_ID)) == accountId) {
+                assertEquals(cursor.getString(cursor
+                        .getColumnIndex(ModuleFields.NAME)), newTitle);
                 break;
             }
         }
         cursor.close();
     }
 
+    /**
+     * Test create and delete account.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void testCreateAndDeleteAccount() throws Exception {
         syncSugarCRMAccounts();
-        int countBeforeNewAccount = getAccountsCount();
-        Uri insertUri = insertAccount();
+        final int countBeforeNewAccount = getAccountsCount();
+        final Uri insertUri = insertAccount();
 
-        assertTrue("A account should have been created.", getAccountsCount() > countBeforeNewAccount);
+        assertTrue("A account should have been created.",
+                getAccountsCount() > countBeforeNewAccount);
         deleteAccount(insertUri);
-        assertEquals("Account should have been deleted.", countBeforeNewAccount, getAccountsCount());
+        assertEquals("Account should have been deleted.",
+                countBeforeNewAccount, getAccountsCount());
     }
 
+    /**
+     * Test sync modules.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void testSyncModules() throws Exception {
-        Uri insertUri = insertAccount();
-        Bundle extras = new Bundle();
+        insertAccount();
+        final Bundle extras = new Bundle();
         // extras.putInt(key, value)
-        ContentResolver.requestSync(getAccount(), SugarCRMProvider.AUTHORITY, extras);
+        ContentResolver.requestSync(getAccount(), SugarCRMProvider.AUTHORITY,
+                extras);
     }
 }

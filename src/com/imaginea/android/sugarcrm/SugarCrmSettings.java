@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : SugarCrmSettings 
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm;
 
 import java.util.Arrays;
@@ -5,9 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -15,6 +26,7 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -22,124 +34,167 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
-import com.imaginea.android.sugarcrm.util.ContentUtils;
-import com.imaginea.android.sugarcrm.util.ModuleField;
 import com.imaginea.android.sugarcrm.util.Util;
+import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 /**
- * <p>
- * SugarCrmSettings class.
- * </p>
- * 
+ * The Class SugarCrmSettings.
  */
 public class SugarCrmSettings extends Activity {
 
+    /** The Constant LOG_TAG. */
     private static final String LOG_TAG = "SugarCrmSettings";
 
+    /** The m context. */
+    private Context mContext;
+
+    /** The saved settings. */
     private static Map<String, Object> savedSettings = null;
 
-    private Spinner mModuleNameSpinner;
-
-    private Spinner mFieldNameSpinner;
-
-    private Spinner mSortOrderSpinner;
-
+    /** The m start date button. */
     private Button mStartDateButton;
 
+    /** The m end date button. */
     private Button mEndDateButton;
 
+    /** The start date. */
     private Date startDate;
+
+    /** The end date. */
     private Date endDate;
 
+    /** The m records size spinner. */
     private Spinner mRecordsSizeSpinner;
-    private CheckBox enableAlarm;
-    private EditText crmUrl;
-    private EditText loginUsr;
 
+    /** The enable alarm. */
+    private CheckBox enableAlarm;
+
+    /** The crm url. */
+    private EditText crmUrl;
+
+    /** The m records size. */
     private final String[] mRecordsSize = { "500", "1000", "2000", "5000",
             "10000", "ALL" };
 
     // cache the time
+    /** The m start time. */
     private Date mStartTime;
 
+    /** The m end time. */
     private Date mEndTime;
 
+    /** The Constant THREE_MONTHS. */
     public static final long THREE_MONTHS = 3 * 30 * 24 * 60 * 60 * 1000L;
 
-    private final Map<String, String> fieldMap = new HashMap<String, String>();
-
-    private final Map<String, String> orderMap = new HashMap<String, String>();;
-
-    private SugarCrmApp app;
-
-    private int selectedModuleIndex;
-
-    private int selectedFieldIndex;
-
-    private int selectedOrderIndex;
-
+    /** The dialog. */
     private Dialog dialog;
 
+    /** The is sync settings changed. */
+    private boolean isSyncSettingsChanged = false;
+
+    /** The cancel. */
     public Button apply, cancel;;
 
-    /** {@inheritDoc} */
+    /**
+     * Creates the settings dilog.
+     */
+    public void createSettingsDilog() {
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onCreate(android.os.Bundle)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ViewUtil.isHoneycombTablet(this)) {
 
-        dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog = new Dialog(this);
+            mContext = dialog.getContext();
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setContentView(R.layout.settings_dialog);
 
-        dialog.setContentView(R.layout.settings_dialog);
+            dialog.setOnKeyListener(new Dialog.OnKeyListener() {
 
-        /* Set the Apply Button to Save the Settings */
-        apply = (Button) dialog.findViewById(R.id.dialogButtonOK);
-        apply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                saveCurrentSettings(getApplicationContext());
-                saveSortOrder();
-
-                // invalidate the session if the current settings changes
-                if (currentSettingsChanged(SugarCrmSettings.this)) {
-                    final SugarCrmApp app = ((SugarCrmApp) getApplicationContext());
-                    app.setSessionId(null);
+                @Override
+                public boolean onKey(DialogInterface arg0, int keyCode,
+                        KeyEvent event) {
+                    // TODO Auto-generated method stub
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                    return true;
                 }
-                dialog.dismiss();
-            }
-        });
-        /* Set the Cancel Button to dismiss the Dialog */
-        cancel = (Button) dialog.findViewById(R.id.dialogButtonCancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
+            });
 
-        /* set All the layout views */
-        setDialogLayoutViews();
+            /* Set the Apply Button to Save the Settings */
+            apply = (Button) dialog.findViewById(R.id.dialogButtonOK);
+            apply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-        /* Set the Sorting View */
-        setSortSpinner();
+                    saveCurrentSettings(getApplicationContext());
+                    if (isSyncSettingsChanged) {
+                        Log.i(LOG_TAG,
+                                "Sync settings has been changed Start Sync ");
+                        isSyncSettingsChanged = false;
+                        startSync();
+                    }
+                    // invalidate the session if the current settings changes
+                    if (currentSettingsChanged(SugarCrmSettings.this)) {
+                        final SugarCrmApp app = ((SugarCrmApp) getApplicationContext());
+                        app.setSessionId(null);
+                    }
+                    finish();
+                    dialog.dismiss();
+
+                }
+            });
+            /* Set the Cancel Button to dismiss the Dialog */
+            cancel = (Button) dialog.findViewById(R.id.dialogButtonCancel);
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                    dialog.dismiss();
+
+                }
+            });
+            dialog.show();
+            /* set All the layout views */
+            setDialogLayoutViews();
+
+        } else {
+            setContentView(R.layout.settings_dialog);
+
+            mContext = this;
+            /* Set the Action Bar */
+            setupActionBar();
+
+            /* set All the layout views */
+            setDialogLayoutViewsForPhone();
+        }
         /* Set the Synchronizing view */
         setSyncSpinner();
-
         /* Set the Last Saved Settings as default */
         setLastDefaultSettings();
 
@@ -162,28 +217,87 @@ public class SugarCrmSettings extends Activity {
                     savedSettings.get(Util.PREF_REST_URL)))
                 return true;
 
-            if (!getUsername(context).equals(
-                    savedSettings.get(Util.PREF_USERNAME)))
-                return true;
-
             return false;
         } finally {
 
         }
     }
 
+    private void setDialogLayoutViewsForPhone() {
+        /* LOGIN */
+
+        crmUrl = (EditText) findViewById(R.id.crmUrl);
+
+        /* NOTOFICATION */
+        enableAlarm = (CheckBox) findViewById(R.id.enableAlarm);
+
+        /* SYNCRONIZING */
+        mRecordsSizeSpinner = (Spinner) findViewById(R.id.recordsize);
+        mStartDateButton = (Button) findViewById(R.id.startDate);
+        mEndDateButton = (Button) findViewById(R.id.endDate);
+
+    }
+
+    private void setupActionBar() {
+        /* SYNCRONIZING */
+        final ImageView actionView = (ImageView) findViewById(R.id.actionbar_back);
+        actionView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                finish();
+
+            }
+        });
+
+        final ImageView saveButton = (ImageView) findViewById(R.id.editDoneImg);
+        final int[] saveResourcesId;
+        if (ViewUtil.isHoneycombTablet(mContext)) {
+            final int[] saveTabletResourcesId = {
+                    R.drawable.ico_actionbar_done_pressed,
+                    R.drawable.ico_actionbar_done_pressed, R.drawable.edit_done };
+            saveResourcesId = saveTabletResourcesId;
+        } else {
+            final int[] savePhoneResourcesId = {
+                    R.drawable.ico_m_actionbar_done_pressed,
+                    R.drawable.ico_m_actionbar_done_pressed,
+                    R.drawable.ico_m_actionbar_done_nor };
+            saveResourcesId = savePhoneResourcesId;
+        }
+        saveButton.setImageDrawable(Util.getPressedImage(mContext,
+                saveResourcesId));
+        saveButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                saveButton
+                        .setImageResource(R.drawable.ico_m_actionbar_done_pressed);
+                saveCurrentSettings(getApplicationContext());
+                if (isSyncSettingsChanged) {
+                    Log.i(LOG_TAG, "Sync settings has been changed Start Sync ");
+                    isSyncSettingsChanged = false;
+                    startSync();
+                }
+                // invalidate the session if the current settings changes
+                if (currentSettingsChanged(SugarCrmSettings.this)) {
+                    final SugarCrmApp app = ((SugarCrmApp) getApplicationContext());
+                    app.setSessionId(null);
+                }
+                finish();
+            }
+        });
+    }
+
+    /**
+     * Sets the dialog layout views.
+     */
     private void setDialogLayoutViews() {
         /* LOGIN */
-        loginUsr = (EditText) dialog.findViewById(R.id.loginUsername);
+
         crmUrl = (EditText) dialog.findViewById(R.id.crmUrl);
 
         /* NOTOFICATION */
         enableAlarm = (CheckBox) dialog.findViewById(R.id.enableAlarm);
-
-        /* SORTING */
-        mModuleNameSpinner = (Spinner) dialog.findViewById(R.id.orderByModule);
-        mFieldNameSpinner = (Spinner) dialog.findViewById(R.id.orderByName);
-        mSortOrderSpinner = (Spinner) dialog.findViewById(R.id.orderBysort);
 
         /* SYNCRONIZING */
         mRecordsSizeSpinner = (Spinner) dialog.findViewById(R.id.recordsize);
@@ -192,11 +306,12 @@ public class SugarCrmSettings extends Activity {
 
     }
 
+    /**
+     * Sets the last default settings.
+     */
     private void setLastDefaultSettings() {
 
         if (savedSettings != null && !savedSettings.isEmpty()) {
-            /* Set Login user name */
-            loginUsr.setText(savedSettings.get(Util.PREF_USERNAME).toString());
             /* Set CRM URL */
             crmUrl.setText(savedSettings.get(Util.PREF_REST_URL).toString());
             /* Set Alarm state */
@@ -217,7 +332,6 @@ public class SugarCrmSettings extends Activity {
             }
 
         } else {
-            loginUsr.setText(getUsername(getApplicationContext()));
             crmUrl.setText(getSugarRestUrl(getApplicationContext()));
             enableAlarm.setChecked(PreferenceManager
                     .getDefaultSharedPreferences(getApplicationContext())
@@ -226,6 +340,9 @@ public class SugarCrmSettings extends Activity {
         }
     }
 
+    /**
+     * Sets the sync spinner.
+     */
     private void setSyncSpinner() {
 
         final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
@@ -246,159 +363,14 @@ public class SugarCrmSettings extends Activity {
 
         populateWhen();
 
-        final SugarCrmApp app = (SugarCrmApp) getApplication();
-        final String usr = SugarCrmSettings
-                .getUsername(getApplicationContext());
-
-        if (ContentResolver.isSyncActive(app.getAccount(usr),
-                SugarCRMProvider.AUTHORITY)) {
-
-        }
-
         final String records_size = SugarCrmSettings
                 .getFetchRecordsSize(getApplicationContext());
         final int position = Arrays.binarySearch(mRecordsSize, records_size);
         mRecordsSizeSpinner.setSelection(position);
     }
 
-    private void setSortSpinner() {
-        app = (SugarCrmApp) getApplication();
-
-        // get the modules that are displayed in the dashboard
-        final List<String> moduleList = ContentUtils.getModuleList(this);
-        final String[] moduleNames = new String[moduleList.size()];
-        moduleList.toArray(moduleNames);
-
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
-                this, android.R.layout.simple_spinner_dropdown_item,
-                moduleNames);
-        mModuleNameSpinner.setAdapter(adapter);
-
-        // disable the field name spinner until the user selects the module
-        mFieldNameSpinner.setEnabled(false);
-
-        // order vs sql syntax
-        orderMap.put(getString(R.string.ascending), "ASC");
-        orderMap.put(getString(R.string.descending), "DESC");
-
-        adapter = new ArrayAdapter<CharSequence>(this,
-                android.R.layout.simple_spinner_dropdown_item, new String[] {
-                        getString(R.string.ascending),
-                        getString(R.string.descending) });
-        mSortOrderSpinner.setAdapter(adapter);
-        // adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // disable the sortOrder spinner until the user selects the fieldName
-        mSortOrderSpinner.setEnabled(false);
-
-        mModuleNameSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                            View view, int position, long id) {
-
-                        // store the selected module index
-                        selectedModuleIndex = position;
-
-                        final String moduleName = moduleNames[position];
-                        // get the fields that are in the LIST_PROJECTION of the
-                        // module
-                        final String[] moduleFields = ContentUtils
-                                .getModuleListSelections(moduleName);
-                        // get the ModuleField objects for the module
-                        final Map<String, ModuleField> map = ContentUtils
-                                .getModuleFields(getApplicationContext(),
-                                        moduleName);
-                        // get the labels of the module fields to display
-                        final String[] moduleFieldsChoice = new String[moduleFields.length];
-                        for (int i = 0; i < moduleFields.length; i++) {
-                            // add the module field label to be displayed in the
-                            // choice
-                            // menu
-                            final ModuleField modField = map
-                                    .get(moduleFields[i]);
-                            if (modField != null) {
-                                moduleFieldsChoice[i] = modField.getLabel();
-                                // fieldMap: label vs name
-                                fieldMap.put(moduleFieldsChoice[i],
-                                        moduleFields[i]);
-                            } else {
-                                moduleFieldsChoice[i] = "";
-                            }
-
-                            if (moduleFieldsChoice[i].indexOf(":") > 0) {
-                                moduleFieldsChoice[i] = moduleFieldsChoice[i].substring(
-                                        0, moduleFieldsChoice[i].length() - 1);
-                                fieldMap.put(moduleFieldsChoice[i],
-                                        moduleFields[i]);
-                            }
-                        }
-                        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
-                                getBaseContext(),
-                                android.R.layout.simple_spinner_dropdown_item,
-                                moduleFieldsChoice);
-                        // adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        mFieldNameSpinner.setAdapter(adapter);
-                        mFieldNameSpinner.setEnabled(true);
-
-                        final Map<String, String> sortOrderMap = app
-                                .getModuleSortOrder(moduleName);
-                        if (sortOrderMap != null) {
-                            for (final Entry<String, String> entry : sortOrderMap
-                                    .entrySet()) {
-                                mFieldNameSpinner
-                                        .setSelection(((ArrayAdapter<CharSequence>) mFieldNameSpinner
-                                                .getAdapter())
-                                                .getPosition(entry.getKey()));
-                                mSortOrderSpinner
-                                        .setSelection(((ArrayAdapter<CharSequence>) mSortOrderSpinner
-                                                .getAdapter())
-                                                .getPosition(entry.getValue()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-        mFieldNameSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                            View view, int position, long id) {
-                        // store the selected field index
-                        selectedFieldIndex = position;
-                        mSortOrderSpinner.setEnabled(true);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-        mSortOrderSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                            View view, int position, long id) {
-                        // store the selected order index
-                        selectedOrderIndex = position;
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-    }
-
     /**
-     * <p>
      * getUsername
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -413,9 +385,7 @@ public class SugarCrmSettings extends Activity {
     }
 
     /**
-     * <p>
      * getFetchRecordsSize
-     * </p>
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -429,9 +399,6 @@ public class SugarCrmSettings extends Activity {
     /**
      * gets SugarCRM RestUrl, on production it returns empty url, if debuggable
      * is set to "false" in the manifest file.
-     * 
-     * // TODO - optimize once loaded instead of calling package manager
-     * everytime
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -457,7 +424,7 @@ public class SugarCrmSettings extends Activity {
 
     /**
      * This methods saves the current settings, to be able to check later if
-     * settings changed
+     * settings changed.
      * 
      * @param context
      *            a {@link android.content.Context} object.
@@ -465,8 +432,7 @@ public class SugarCrmSettings extends Activity {
     private void saveCurrentSettings(Context context) {
         savedSettings = new HashMap<String, Object>();
         savedSettings.clear();
-        savedSettings.put(Util.PREF_REST_URL, loginUsr.getText().toString());
-        savedSettings.put(Util.PREF_USERNAME, crmUrl.getText().toString());
+        savedSettings.put(Util.PREF_REST_URL, crmUrl.getText().toString());
         savedSettings.put(Util.PREF_ALARM_STATE, enableAlarm.isChecked());
 
         savedSettings.put(Util.PREF_SYNC_START_TIME, startDate);
@@ -474,6 +440,9 @@ public class SugarCrmSettings extends Activity {
 
     }
 
+    /**
+     * Populate when.
+     */
     private void populateWhen() {
         setDate(mStartDateButton, mStartTime);
         setDate(mEndDateButton, mEndTime);
@@ -482,6 +451,14 @@ public class SugarCrmSettings extends Activity {
         mEndDateButton.setOnClickListener(new DateClickListener(mEndTime));
     }
 
+    /**
+     * Sets the date.
+     * 
+     * @param view
+     *            the view
+     * @param date
+     *            the date
+     */
     private void setDate(final TextView view, final Date date) {
         final int flags = DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_WEEKDAY
@@ -491,17 +468,33 @@ public class SugarCrmSettings extends Activity {
     }
 
     /**
-     * DateClickListener
+     * DateClickListener.
+     * 
+     * @see DateClickEvent
      */
     private class DateClickListener implements View.OnClickListener {
+
+        /** The m date. */
         private final Date mDate;
 
+        /**
+         * Instantiates a new date click listener.
+         * 
+         * @param date
+         *            the date
+         */
         public DateClickListener(final Date date) {
             mDate = date;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.view.View.OnClickListener#onClick(android.view.View)
+         */
         @Override
         public void onClick(final View v) {
+            isSyncSettingsChanged = true;
             final Calendar calendar = new GregorianCalendar();
             calendar.setTimeInMillis(mDate.getTime());
 
@@ -509,21 +502,38 @@ public class SugarCrmSettings extends Activity {
             final int month = calendar.get(Calendar.MONTH);
             final int date = calendar.get(Calendar.DATE);
 
-            new DatePickerDialog(dialog.getContext(), new DateListener(v),
-                    year, month, date).show();
+            new DatePickerDialog(mContext, new DateListener(v), year, month,
+                    date).show();
         }
     }
 
     /**
-     * DateListener
+     * DateListener.
+     * 
+     * @see DateEvent
      */
     private class DateListener implements OnDateSetListener {
+
+        /** The m view. */
         View mView;
 
+        /**
+         * Instantiates a new date listener.
+         * 
+         * @param view
+         *            the view
+         */
         public DateListener(final View view) {
             mView = view;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.app.DatePickerDialog.OnDateSetListener#onDateSet(android.
+         * widget.DatePicker, int, int, int)
+         */
         @Override
         public void onDateSet(final DatePicker view, final int year,
                 final int month, final int monthDay) {
@@ -582,19 +592,23 @@ public class SugarCrmSettings extends Activity {
         }
     }
 
-    private void saveSortOrder() {
-        Log.i(LOG_TAG, "saveSortOrder : ");
+    /**
+     * starts sync for all the modules in the background.
+     * 
+     */
+    private void startSync() {
+        final Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
+        extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
+        final SugarCrmApp app = (SugarCrmApp) getApplication();
+        final String usr = SugarCrmSettings
+                .getUsername(getApplicationContext());
+        if (ContentResolver.isSyncActive(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY))
+            return;
 
-        final String module = (String) mModuleNameSpinner.getAdapter().getItem(
-                selectedModuleIndex);
-        final String fieldName = fieldMap.get(mFieldNameSpinner.getAdapter()
-                .getItem(selectedFieldIndex));
-        final String sortBy = orderMap.get(mSortOrderSpinner.getAdapter()
-                .getItem(selectedOrderIndex));
-        Log.i(LOG_TAG, "module : " + module + " field : " + fieldName
-                + " order : " + sortBy);
-
-        app.setModuleSortOrder(module, fieldName, sortBy);
+        ContentResolver.requestSync(app.getAccount(usr),
+                SugarCRMProvider.AUTHORITY, extras);
 
     }
 

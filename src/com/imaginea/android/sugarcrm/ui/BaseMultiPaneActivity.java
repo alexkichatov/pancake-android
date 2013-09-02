@@ -1,18 +1,18 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*******************************************************************************
+ * Copyright (c) 2013 Asha.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Asha - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : BaseMultiPaneActivity 
+ * Description : 
+ *              A {@link BaseActivity} that can contain multiple panes, and has the ability
+ * to substitute fragments for activities when intents are fired using
+ * {@link BaseActivity#openActivityOrFragment(android.content.Intent)}.
+ ******************************************************************************/
 
 package com.imaginea.android.sugarcrm.ui;
 
@@ -27,12 +27,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 /**
- * A {@link BaseActivity} that can contain multiple panes, and has the ability
- * to substitute fragments for activities when intents are fired using
- * {@link BaseActivity#openActivityOrFragment(android.content.Intent)}.
+ * The Class BaseMultiPaneActivity.
  */
 public abstract class BaseMultiPaneActivity extends BaseActivity {
-    /** {@inheritDoc} */
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.ui.BaseActivity#openActivityOrFragment(
+     * android.content.Intent)
+     */
     @Override
     public void openActivityOrFragment(final Intent intent) {
         final PackageManager pm = getPackageManager();
@@ -70,8 +75,11 @@ public abstract class BaseMultiPaneActivity extends BaseActivity {
     /**
      * Callback that's triggered to find out if a fragment can substitute the
      * given activity class. Base activites should return a
-     * {@link FragmentReplaceInfo} if a fragment can act in place of the given
-     * activity class name.
+     * 
+     * @param activityClassName
+     *            the activity class name
+     * @return the fragment replace info {@link FragmentReplaceInfo} if a
+     *         fragment can act in place of the given activity class name.
      */
     protected FragmentReplaceInfo onSubstituteFragmentForActivityLaunch(
             final String activityClassName) {
@@ -81,6 +89,13 @@ public abstract class BaseMultiPaneActivity extends BaseActivity {
     /**
      * Called just before a fragment replacement transaction is committed in
      * response to an intent being fired and substituted for a fragment.
+     * 
+     * @param fm
+     *            theFragmentManager
+     * @param ft
+     *            the FragmentTransaction
+     * @param fragment
+     *            the fragment
      */
     protected void onBeforeCommitReplaceFragment(final FragmentManager fm,
             final FragmentTransaction ft, final Fragment fragment) {

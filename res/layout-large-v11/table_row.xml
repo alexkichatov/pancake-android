@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:paddingLeft="1dp" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/grey"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/outerDetailLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/titleview"
+                style="@style/detail_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/editimage"
+                android:contentDescription="?android:text"
+                android:maxLines="2" />
+
+            <ImageView
+                android:id="@+id/editimage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_toLeftOf="@+id/deleteimage"
+                android:clickable="true"
+                android:onClick="imageClick"
+                android:paddingTop="20dp"
+                android:src="@drawable/edit" />
+
+            <ImageView
+                android:id="@+id/deleteimage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:onClick="imageClick"
+                android:paddingLeft="15dp"
+                android:paddingRight="30dp"
+                android:paddingTop="20dp"
+                android:src="@drawable/delete" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/detailList"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape"
+            android:cacheColorHint="@android:color/transparent"
+            android:drawSelectorOnTop="false"
+            android:fadeScrollbars="false"
+            android:fastScrollEnabled="true" />
+    </LinearLayout>
+
+</LinearLayout>

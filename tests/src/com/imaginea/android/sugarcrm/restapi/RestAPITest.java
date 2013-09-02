@@ -19,34 +19,46 @@ import com.imaginea.android.sugarcrm.rest.Rest;
  */
 public class RestAPITest extends AndroidTestCase {
 
+    /** The m account manager. */
     protected AccountManager mAccountManager;
 
+    /** The m target context. */
     protected Context mTargetContext;
 
+    /** The m account. */
     protected String mAccount;
 
-    /**
-     * used by module specific unit tests
-     */
-    protected String url = "http://192.168.1.83/sugarcrm/service/v2/rest.php";
+    /** used by module specific unit tests. */
+    protected String url = "http://50.16.5.141/html/sugarcrm/service/v2/rest.php";
 
+    /** The user name. */
     protected String userName = "will";
 
+    /** The password. */
     protected String password = "will";
 
+    /** The m session id. */
     protected String mSessionId;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.test.AndroidTestCase#setUp()
+     */
     @Override
     protected void setUp() throws Exception {
 
         super.setUp();
-        // mTargetContext = getInstrumentation().getTargetContext();
 
-        // mAccountManager = AccountManager.get(mTargetContext);
-        // mAccount = getAccount();
         authenticate();
     }
 
+    /**
+     * Server Authenticate.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void authenticate() throws Exception {
 
         mSessionId = Rest.loginToSugarCRM(url, userName, password);

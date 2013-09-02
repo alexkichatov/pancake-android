@@ -1,85 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!--
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
--->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="center"
     android:background="@color/red_splash"
     android:gravity="center_vertical" >
 
     <TextView
         android:id="@+id/logotext"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:text="@string/logo_title"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/white" />
 
     <ImageView
         android:id="@+id/logoImage"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logotext"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:src="@drawable/applaunch" />
+        android:src="@drawable/login_logo_m" />
 
-    <LinearLayout
-        android:id="@+id/editUserPass"
+    <EditText
+        android:id="@+id/loginUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logoImage"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="60dp" >
+        android:hint="@string/username"
+        android:inputType="textCapWords|textNoSuggestions"
+        android:minWidth="244dip"
+        android:paddingTop="40dp"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white" />
 
-        <EditText
-            android:id="@+id/loginUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/username"
-            android:inputType="textCapWords|textNoSuggestions"
-            android:minWidth="230dp"
-            android:singleLine="true"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white" />
-
-        <EditText
-            android:id="@+id/loginPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/password"
-            android:inputType="textPassword"
-            android:minWidth="230dp"
-            android:paddingLeft="10dp"
-            android:singleLine="true"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white" />
-    </LinearLayout>
+    <EditText
+        android:id="@+id/loginPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/loginUsername"
+        android:layout_below="@+id/loginUsername"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:minWidth="244dip"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white" />
 
     <EditText
         android:id="@+id/wizardUrl"
-        android:layout_width="wrap_content"
+        android:layout_width="244dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editUserPass"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
+        android:layout_alignLeft="@+id/loginUsername"
+        android:layout_below="@+id/loginPassword"
         android:hint="@string/sugarCrmUrlHeader"
         android:inputType="textUri"
-        android:minWidth="230dp"
-        android:paddingTop="20dp"
-        android:scrollHorizontally="true"
+        android:minWidth="240dip"
         android:singleLine="true"
         android:text="@string/defaultUrl"
         android:textColor="@android:color/white"
@@ -90,12 +73,11 @@
         style="@style/signin_button_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/wizardUrl"
         android:layout_below="@+id/wizardUrl"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:minWidth="460dip"
+        android:minWidth="240dip"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
         android:text="@string/signIn" />
 
-</RelativeLayout> <!-- </LinearLayout> -->
+</RelativeLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  /*******************************************************************************
+   * Copyright (c) {DATE} {INITIAL COPYRIGHT OWNER} {OTHER COPYRIGHT OWNERS}.
+   * All rights reserved. This program and the accompanying materials
+   * are made available under the terms of the Eclipse Public License v1.0
+   * which accompanies this distribution, and is available at
+   * http://www.eclipse.org/legal/epl-v10.html
+   *
+   * Contributors:
+   *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
+   *******************************************************************************/
+-->
+<resources>
+
+    <dimen name="actionbar_height">48dp</dimen>
+    <dimen name="actionbar_width">35dp</dimen>
+    <dimen name="deatailscreen_textsize">12sp</dimen>
+    <dimen name="dashboarditem_textsize">14sp</dimen>
+    <dimen name="dashboard_imageitem_width">70dp</dimen>
+    <dimen name="dashboard_imagephoneitem_width">50dp</dimen>
+    <dimen name="searchview_width">180dp</dimen>
+
+</resources>

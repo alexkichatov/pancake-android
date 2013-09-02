@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  /*******************************************************************************
+   * Copyright (c) {DATE} {INITIAL COPYRIGHT OWNER} {OTHER COPYRIGHT OWNERS}.
+   * All rights reserved. This program and the accompanying materials
+   * are made available under the terms of the Eclipse Public License v1.0
+   * which accompanies this distribution, and is available at
+   * http://www.eclipse.org/legal/epl-v10.html
+   *
+   * Contributors:
+   *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
+   *******************************************************************************/
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/splash"
+    android:background="@color/red_splash"
+    android:gravity="center"
     android:orientation="vertical" >
 
-   
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/splashimage" >
+    </ImageView>
 
 </LinearLayout>

@@ -16,7 +16,7 @@
 
     <!-- changed to 5 as WizardActivity has WizardAuth stuff in it and no longer supports 1.6 -->
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -51,18 +51,8 @@
         android:icon="@drawable/applaunch"
         android:label="@string/appName" >
         <activity
-            android:name=".DashboardActivity"
-            android:label="@string/appName"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.Pancake" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ModulesActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/appName"
             android:theme="@style/Theme.Pancake" >
             <intent-filter>
@@ -70,13 +60,10 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name=".RecentModuleActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/appName"
             android:theme="@style/Theme.Pancake" >
             <intent-filter>
@@ -84,15 +71,11 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name=".SugarCrmSettings"
             android:label="@string/settings"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar" >
+            android:theme="@style/Theme.Pancake.Settings" >
             <intent-filter>
                 <action android:name="com.imaginea.android.sugarcrm.settings" />
 
@@ -110,14 +93,10 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name=".EditModuleDetailActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/editDetails"
             android:theme="@style/Theme.Pancake" >
             <intent-filter>
@@ -127,26 +106,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SearchActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:theme="@style/Theme.Pancake" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
             android:name=".WizardAuthActivity"
             android:clearTaskOnLaunch="true"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:excludeFromRecents="true"
             android:label="@string/appName"
+            android:launchMode="singleTask"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
             android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.imaginea.android.sugarcrm.sync.SyncConfigActivity"
@@ -170,6 +142,7 @@
         </activity>
         <activity
             android:name="com.imaginea.android.sugarcrm.ui.ModuleDetailsMultiPaneActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/appName"
             android:theme="@style/Theme.Pancake" >
             <intent-filter>
@@ -177,13 +150,10 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
         <activity
             android:name="com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/appName"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Pancake" >
@@ -225,15 +195,6 @@
             </intent-filter>
         </receiver>
 
-        <!--
-        TODO : permissions, grantUri and export flags need to be set appropriately, 
-		we want to share our provider only with apps signed by our certificate or running with the same UID
-        -->
-        <!--
-             permission android:name="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" 
-			android:label="@string/perm_access_sugarCrm" android:description="@string/sugarProviderDesc" 
-			android:protectionLevel="signature"/
-        -->
         <!-- add provider permission android:permission="com.imaginea.android.sugarcrm.permission.ACCESS_SUGAR_CRM_PROVIDER" -->
         <provider
             android:name=".provider.SugarCRMProvider"

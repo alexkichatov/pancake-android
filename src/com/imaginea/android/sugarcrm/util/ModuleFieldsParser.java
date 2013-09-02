@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Murli.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ModuleFieldsParser
+ * Description : 
+ *              ModuleFieldsParser Class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 import java.util.ArrayList;
@@ -12,32 +26,29 @@ import android.util.Log;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 
 /**
- * <p>
- * ModuleFieldsParser class.
- * </p>
- * 
+ * The Class ModuleFieldsParser.
  */
 public class ModuleFieldsParser {
 
+    /** The log tag. */
     private final String LOG_TAG = ModuleFieldsParser.class.getSimpleName();
 
+    /** The module fields. */
     private List<ModuleField> moduleFields;
 
+    /** The link fields. */
     private List<LinkField> linkFields;
 
     /**
-     * <p>
-     * Constructor for ModuleFieldsParser.
-     * </p>
+     * Instantiates a new module fields parser.
      * 
      * @param jsonResponse
-     *            a {@link java.lang.String} object.
-     * @throws org.json.JSONException
-     *             if any.
+     *            the json response
+     * @throws JSONException
+     *             the jSON exception
      */
     public ModuleFieldsParser(final String jsonResponse) throws JSONException {
         final JSONObject responseObj = new JSONObject(jsonResponse);
-        // String moduleName = responseObj.get("module_name").toString();
 
         final JSONObject moduleFieldsJSON = (JSONObject) responseObj
                 .get("module_fields");
@@ -48,12 +59,19 @@ public class ModuleFieldsParser {
                     .get("link_fields");
             setLinkFields(linkFieldsJSON);
         } catch (final ClassCastException cce) {
-            // ignore : no linkFields
             linkFields = new ArrayList<LinkField>();
         }
 
     }
 
+    /**
+     * Sets the module fields.
+     * 
+     * @param moduleFieldsJSON
+     *            the new module fields
+     * @throws JSONException
+     *             the jSON exception
+     */
     private void setModuleFields(final JSONObject moduleFieldsJSON)
             throws JSONException {
         moduleFields = new ArrayList<ModuleField>();
@@ -69,6 +87,14 @@ public class ModuleFieldsParser {
         }
     }
 
+    /**
+     * Sets the link fields.
+     * 
+     * @param linkFieldsJSON
+     *            the new link fields
+     * @throws JSONException
+     *             the jSON exception
+     */
     private void setLinkFields(final JSONObject linkFieldsJSON)
             throws JSONException {
         linkFields = new ArrayList<LinkField>();
@@ -84,6 +110,15 @@ public class ModuleFieldsParser {
         }
     }
 
+    /**
+     * Gets the module field.
+     * 
+     * @param nameValuePairsJson
+     *            the name value pairs json
+     * @return the module field
+     * @throws JSONException
+     *             the jSON exception
+     */
     private ModuleField getModuleField(final JSONObject nameValuePairsJson)
             throws JSONException {
         final String name = nameValuePairsJson.getString(RestConstants.NAME);
@@ -94,6 +129,15 @@ public class ModuleFieldsParser {
         return new ModuleField(name, type, label, isRequired);
     }
 
+    /**
+     * Gets the link field attributes.
+     * 
+     * @param nameValuePairsJson
+     *            the name value pairs json
+     * @return the link field attributes
+     * @throws JSONException
+     *             the jSON exception
+     */
     private LinkField getLinkFieldAttributes(final JSONObject nameValuePairsJson)
             throws JSONException {
         final String name = nameValuePairsJson.getString(RestConstants.NAME);
@@ -109,22 +153,18 @@ public class ModuleFieldsParser {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>moduleFields</code>.
-     * </p>
+     * Gets the module fields.
      * 
-     * @return a {@link java.util.List} object.
+     * @return the module fields
      */
     public List<ModuleField> getModuleFields() {
         return moduleFields;
     }
 
     /**
-     * <p>
-     * Getter for the field <code>linkFields</code>.
-     * </p>
+     * Gets the link fields.
      * 
-     * @return a {@link java.util.List} object.
+     * @return the link fields
      */
     public List<LinkField> getLinkFields() {
         return linkFields;

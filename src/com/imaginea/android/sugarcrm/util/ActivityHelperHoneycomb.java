@@ -1,18 +1,17 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Murli.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ActivityHelperHoneycomb 
+ * Description :
+ *            An extension of {@link ActivityHelper} that provides Android 3.0-specific
+ * functionality for Honeycomb tablets. It thus requires API level 11.
+ ******************************************************************************/
 
 package com.imaginea.android.sugarcrm.util;
 
@@ -22,72 +21,60 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 /**
- * An extension of {@link ActivityHelper} that provides Android 3.0-specific functionality for
- * Honeycomb tablets. It thus requires API level 11.
+ * The Class ActivityHelperHoneycomb.
  */
 public class ActivityHelperHoneycomb extends ActivityHelper {
+
+    /**
+     * Instantiates a new activity helper honeycomb.
+     * 
+     * @param activity
+     *            the activity
+     */
     protected ActivityHelperHoneycomb(Activity activity) {
         super(activity);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.util.ActivityHelper#onPostCreate(android
+     * .os.Bundle)
+     */
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
-        // Do nothing in onPostCreate. ActivityHelper creates the old action bar, we don't
-        // need to for Honeycomb.
+        // Do nothing in onPostCreate. ActivityHelper creates the old action
+        // bar, we don't need to for Honeycomb.
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.util.ActivityHelper#onCreateOptionsMenu
+     * (android.view.Menu)
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.imaginea.android.sugarcrm.util.ActivityHelper#onOptionsItemSelected
+     * (android.view.MenuItem)
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            // Handle the HOME / UP affordance. Since the app is only two levels deep
-            // hierarchically, UP always just goes home.
-            goHome();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setupHomeActivity() {
-        super.setupHomeActivity();
-        /*mActivity.getActionBar();
-        if (ViewUtil.isTablet(mActivity)) {
-            if (mActivity.getActionBar() != null)
-                mActivity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME
-                                                | ActionBar.DISPLAY_SHOW_TITLE);
-        } else {
-            // TODO
-            // / mActivity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_USE_LOGO,
-            // ActionBar.DISPLAY_USE_LOGO
-            // | ActionBar.DISPLAY_SHOW_TITLE);
-        }*/
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setupSubActivity() {
-        super.setupSubActivity();
-        // NOTE: there needs to be a content view set before this is called, so this method
-        // should be called in onPostCreate.
-       /* ActionBar actionBar = mActivity.getActionBar();
-        if (ViewUtil.isTablet(mActivity)) {
-
-            if (actionBar != null)
-                actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                                                | ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_HOME_AS_UP
-                                                | ActionBar.DISPLAY_USE_LOGO);
-        } else {
-            // add check for null explicitly as this can change
-            if (actionBar != null)
-                actionBar.setDisplayOptions(0, ActionBar.DISPLAY_HOME_AS_UP
-                                                | ActionBar.DISPLAY_USE_LOGO);
-        }*/
-    }
 }

@@ -22,22 +22,33 @@ import com.imaginea.android.sugarcrm.util.RelationshipStatus;
 import com.imaginea.android.sugarcrm.util.Util;
 
 /**
- * AccountssApiTest tests the REST API calls
- * 
+ * AccountssApiTest tests the REST API calls.
  */
 public class AccountsApiTest extends RestAPITest {
+
+    /** The module name. */
     String moduleName = Util.ACCOUNTS;
 
+    /** The fields. */
     String[] fields = new String[] {};
 
+    /** The select fields. */
     String[] selectFields = { ModuleFields.NAME, ModuleFields.PARENT_NAME,
             ModuleFields.PHONE_OFFICE, ModuleFields.PHONE_FAX,
             ModuleFields.EMAIL1, ModuleFields.DELETED };
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = AccountsApiTest.class.getSimpleName();
 
+    /**
+     * Test get accounts list.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetAccountsList() throws Exception {
         final int offset = 15;
@@ -73,18 +84,24 @@ public class AccountsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test entire get accounts list.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testEntireGetAccountsList() throws Exception {
         int offset = 0;
-        final int maxResults = 20;
+        final int maxResults = 10;
         // get sugar beans
         SugarBean[] sBeans = getSugarBeans(offset, maxResults);
         assertNotNull(sBeans);
         assertTrue(sBeans.length > 0);
 
         int totalRuns = 1;
-        while (sBeans.length > 0) {
-            offset += 20; // update the offset as we fetch the beans
+        while (sBeans.length > totalRuns) {
+            offset += 10; // update the offset as we fetch the beans
             // get sugar beans based on the offset
             sBeans = getSugarBeans(offset, maxResults);
             assertNotNull(sBeans);
@@ -93,6 +110,12 @@ public class AccountsApiTest extends RestAPITest {
         Log.d(LOG_TAG, "Total Runs:" + totalRuns);
     }
 
+    /**
+     * Test get entry.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetEntry() throws Exception {
         // get only one sugar bean
@@ -125,6 +148,12 @@ public class AccountsApiTest extends RestAPITest {
                         + sBean.getFieldValue(ModuleFields.DELETED));
     }
 
+    /**
+     * Test get entries count.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetEntriesCount() throws Exception {
         final String query = "";
@@ -136,6 +165,12 @@ public class AccountsApiTest extends RestAPITest {
         assertTrue(entriesCount > 0);
     }
 
+    /**
+     * Test set entry.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testSetEntry() throws Exception {
         // create a sugar bean
@@ -160,6 +195,12 @@ public class AccountsApiTest extends RestAPITest {
         assertEquals(beanId, _beanId);
     }
 
+    /**
+     * Test set entries.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testSetEntries() throws Exception {
         final List<Map<String, String>> beanNameValuePairs = new ArrayList<Map<String, String>>();
@@ -182,6 +223,12 @@ public class AccountsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test delete entry.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testDeleteEntry() throws Exception {
         // create a new bean
@@ -205,6 +252,12 @@ public class AccountsApiTest extends RestAPITest {
         assertEquals(beanId, _beanId);
     }
 
+    /**
+     * Test get relationships.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetRelationships() throws Exception {
         // get only one sugar bean
@@ -239,6 +292,12 @@ public class AccountsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test set relationship.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testSetRelationship() throws Exception {
         // create a new bean : Account
@@ -279,6 +338,12 @@ public class AccountsApiTest extends RestAPITest {
         assertEquals(response.getCreatedCount(), 1);
     }
 
+    /**
+     * Test set relationships.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testSetRelationships() throws Exception {
         // create a new bean : Account
@@ -322,6 +387,12 @@ public class AccountsApiTest extends RestAPITest {
         assertTrue(response.getCreatedCount() >= 1);
     }
 
+    /**
+     * Test get entry list with no select fields.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetEntryListWithNoSelectFields() throws Exception {
         final String query = "", orderBy = "";
@@ -337,6 +408,12 @@ public class AccountsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test get module fields.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     public void testGetModuleFields() throws Exception {
         // obtain the modules fields of the module
         final Module module = Rest.getModuleFields(url, mSessionId, moduleName,
@@ -373,6 +450,12 @@ public class AccountsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test search by module.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testSearchByModule() throws Exception {
         final String searchString = "beans.the.vegan";
@@ -419,9 +502,12 @@ public class AccountsApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
+     *            the offset
      * @param maxResults
-     * @return
+     *            the max results
+     * @return the sugar beans
      * @throws Exception
+     *             the exception
      */
     private SugarBean[] getSugarBeans(final int offset, final int maxResults)
             throws Exception {

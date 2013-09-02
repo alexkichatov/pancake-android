@@ -2,29 +2,49 @@
     android:id="@+id/custom_actionbar"
     android:layout_width="fill_parent"
     android:layout_height="0dp"
+    android:layout_gravity="center"
     android:background="#FFFFFF"
     android:orientation="horizontal" >
 
-    <ImageView
-        android:id="@+id/actionbar_logo"
+    <LinearLayout
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:onClick="true"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:src="@drawable/applaunch" />
+        android:orientation="horizontal"
+        android:paddingLeft="10dp" >
+
+        <ImageView
+            android:id="@+id/actionbar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ico_actionbar_m_back"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/actionbar_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_m_pancake" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/actionbar_moduleName"
         style="@style/header_text_label"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/actionbar_height"
-        android:paddingRight="20dp"
-        android:layout_toRightOf="@+id/actionbar_logo"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/logo"
         android:contentDescription="?android:text"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:singleLine="true"
+        android:textColor="#3F434F"
         android:textStyle="bold" />
 
     <ImageView
@@ -33,98 +53,56 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:paddingRight="20dp"
-        android:src="@drawable/settings"
+        android:paddingRight="5dp"
+        android:src="@drawable/ico_m_actionbar_menu_nor"
         android:visibility="gone" />
 
-
-   <View
+    <View
         android:id="@+id/actionbar_homeseperator1"
         android:layout_width="1dp"
         android:layout_height="@dimen/actionbar_height"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/settings"
-        android:background="#e2e2e2" /> 
-        
-    <LinearLayout
-        android:id="@+id/addNew"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:onClick="true"
-        android:layout_toLeftOf="@id/actionbar_homeseperator1"
-        android:orientation="horizontal"
-        android:paddingRight="20dp"
-        android:visibility="gone" >
-
-        <ImageView
-            android:id="@+id/add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/add" />
-
-        <TextView
-            android:id="@+id/addNewText"
-            style="@style/header_text_label"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/actionbar_height"
-            android:layout_centerVertical="true"
-            android:singleLine="true"
-            android:text="@string/addNew" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/actionbar_homeseperator2"
-        android:layout_width="1dp"
-        android:layout_height="@dimen/actionbar_height"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/addNew"
         android:background="#e2e2e2"
         android:visibility="gone" />
-        
+
     <ImageView
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/actionbar_homeseperator2"
-        android:src="@drawable/sync"
+        android:layout_toLeftOf="@id/actionbar_homeseperator1"
+        android:src="@drawable/ico_m_actionbar_refresh_nor"
         android:visibility="gone" />
-    
+
     <ImageView
         android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/sync"
-        android:src="@drawable/search"
-        android:visibility="gone" />
-            
-    <Spinner
-        android:id="@+id/orderBySpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/actionbar_moduleName"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingRight="5dp"
+        android:src="@drawable/ico_m_actionbar_search_nor"
         android:visibility="gone" />
 
-<!--     <View
-        android:id="@+id/actionbar_homeseperator3"
-        android:layout_width="1dp"
-        android:layout_height="@dimen/actionbar_height"
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="@dimen/searchview_width"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/orderBySpinner"
-        android:background="#c4c4c4"
-        android:visibility="gone" /> -->
+        android:layout_gravity="center"
+        android:layout_toRightOf="@+id/logo"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" >
+    </SearchView>
 
     <LinearLayout
         android:id="@+id/editDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:visibility="gone" >
 
@@ -132,13 +110,14 @@
             android:id="@+id/editDoneImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/edit_done" />
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ico_m_actionbar_done_nor" />
 
         <TextView
             style="@style/header_text_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/actionbar_height"
-            android:layout_centerVertical="true"
+            android:paddingRight="20dp"
             android:singleLine="true"
             android:text="@string/editDone" />
     </LinearLayout>

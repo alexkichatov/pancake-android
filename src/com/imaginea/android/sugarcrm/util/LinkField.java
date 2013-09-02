@@ -1,158 +1,154 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : LinkField
+ * Description : 
+ *              The LinkField Class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
+// TODO: Auto-generated Javadoc
 /**
- * <p>
- * LinkField class.
- * </p>
- * 
+ * The Class LinkField.
  */
 public class LinkField {
 
+    /** The m name. */
     private String mName;
 
+    /** The m type. */
     private String mType;
 
+    /** The m relationship. */
     private String mRelationship;
 
+    /** The m module. */
     private String mModule;
 
+    /** The m bean name. */
     private String mBeanName;
 
     /**
-     * <p>
-     * Constructor for LinkField.
-     * </p>
+     * Instantiates a new link field.
      * 
      * @param name
-     *            a {@link java.lang.String} object.
+     *            the name
      * @param type
-     *            a {@link java.lang.String} object.
+     *            the type
      * @param relationship
-     *            a {@link java.lang.String} object.
+     *            the relationship
      * @param module
-     *            a {@link java.lang.String} object.
+     *            the module
      * @param beanName
-     *            a {@link java.lang.String} object.
+     *            the bean name
      */
-    public LinkField(String name, String type, String relationship, String module, String beanName) {
+    public LinkField(String name, String type, String relationship,
+            String module, String beanName) {
         super();
-        this.mName = name;
-        this.mType = type;
-        this.mRelationship = relationship;
-        this.mModule = module;
-        this.mBeanName = beanName;
+        mName = name;
+        mType = type;
+        mRelationship = relationship;
+        mModule = module;
+        mBeanName = beanName;
     }
 
     /**
-     * <p>
-     * getName
-     * </p>
+     * Gets the name.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the name
      */
     public String getName() {
         return mName;
     }
 
     /**
-     * <p>
-     * setName
-     * </p>
+     * Sets the name.
      * 
      * @param name
-     *            a {@link java.lang.String} object.
+     *            the new name
      */
     public void setName(String name) {
-        this.mName = name;
+        mName = name;
     }
 
     /**
-     * <p>
-     * getType
-     * </p>
+     * Gets the type.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the type
      */
     public String getType() {
         return mType;
     }
 
     /**
-     * <p>
-     * setType
-     * </p>
+     * Sets the type.
      * 
      * @param type
-     *            a {@link java.lang.String} object.
+     *            the new type
      */
     public void setType(String type) {
-        this.mType = type;
+        mType = type;
     }
 
     /**
-     * <p>
-     * getRelationship
-     * </p>
+     * Gets the relationship.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the relationship
      */
     public String getRelationship() {
         return mRelationship;
     }
 
     /**
-     * <p>
-     * setRelationship
-     * </p>
+     * Sets the relationship.
      * 
      * @param relationship
-     *            a {@link java.lang.String} object.
+     *            the new relationship
      */
     public void setRelationship(String relationship) {
-        this.mRelationship = relationship;
+        mRelationship = relationship;
     }
 
     /**
-     * <p>
-     * getModule
-     * </p>
+     * Gets the module.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the module
      */
     public String getModule() {
         return mModule;
     }
 
     /**
-     * <p>
-     * setModule
-     * </p>
+     * Sets the module.
      * 
      * @param module
-     *            a {@link java.lang.String} object.
+     *            the new module
      */
     public void setModule(String module) {
-        this.mModule = module;
+        mModule = module;
     }
 
     /**
-     * <p>
-     * getBeanName
-     * </p>
+     * Gets the bean name.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the bean name
      */
     public String getBeanName() {
         return mBeanName;
     }
 
     /**
-     * <p>
-     * Setter for the field <code>mBeanName</code>.
-     * </p>
+     * Sets the m bean name.
      * 
      * @param mBeanName
-     *            a {@link java.lang.String} object.
+     *            the new m bean name
      */
     public void setmBeanName(String mBeanName) {
         this.mBeanName = mBeanName;

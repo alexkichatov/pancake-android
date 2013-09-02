@@ -1,101 +1,102 @@
+/*******************************************************************************
+ * Copyright (c) 2013
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : Module
+ * Description : 
+ *              The Module Class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 import java.util.List;
 
 /**
- * <p>
- * Module class.
- * </p>
- * 
+ * The Class Module.
  */
 public class Module {
 
+    /** The m module name. */
     private String mModuleName;
 
+    /** The m module fields. */
     private List<ModuleField> mModuleFields;
 
+    /** The m link fields. */
     private List<LinkField> mLinkFields;
 
     /**
-     * <p>
-     * Constructor for Module.
-     * </p>
+     * Instantiates a new module.
      */
     public Module() {
 
     }
 
     /**
-     * <p>
-     * Constructor for Module.
-     * </p>
+     * Instantiates a new module.
      * 
      * @param moduleName
-     *            a {@link java.lang.String} object.
+     *            the module name
      * @param moduleFields
-     *            a {@link java.util.List} object.
+     *            the module fields
      * @param linkFields
-     *            a {@link java.util.List} object.
+     *            the link fields
      */
-    public Module(String moduleName, List<ModuleField> moduleFields, List<LinkField> linkFields) {
+    public Module(String moduleName, List<ModuleField> moduleFields,
+            List<LinkField> linkFields) {
         super();
-        this.mModuleName = moduleName;
-        this.mModuleFields = moduleFields;
-        this.mLinkFields = linkFields;
+        mModuleName = moduleName;
+        mModuleFields = moduleFields;
+        mLinkFields = linkFields;
     }
 
     /**
-     * <p>
-     * getModuleFields
-     * </p>
+     * Gets the module fields.
      * 
-     * @return a {@link java.util.List} object.
+     * @return the module fields
      */
     public List<ModuleField> getModuleFields() {
         return mModuleFields;
     }
 
     /**
-     * <p>
-     * setModuleFields
-     * </p>
+     * Sets the module fields.
      * 
      * @param moduleFields
-     *            a {@link java.util.List} object.
+     *            the new module fields
      */
     public void setModuleFields(List<ModuleField> moduleFields) {
-        this.mModuleFields = moduleFields;
+        mModuleFields = moduleFields;
     }
 
     /**
-     * <p>
-     * getLinkFields
-     * </p>
+     * Gets the link fields.
      * 
-     * @return a {@link java.util.List} object.
+     * @return the link fields
      */
     public List<LinkField> getLinkFields() {
         return mLinkFields;
     }
 
     /**
-     * <p>
-     * setLinkFields
-     * </p>
+     * Sets the link fields.
      * 
      * @param linkFields
-     *            a {@link java.util.List} object.
+     *            the new link fields
      */
     public void setLinkFields(List<LinkField> linkFields) {
-        this.mLinkFields = linkFields;
+        mLinkFields = linkFields;
     }
 
     /**
-     * <p>
-     * getModuleName
-     * </p>
+     * Gets the module name.
      * 
-     * @return a {@link java.lang.String} object.
+     * @return the module name
      */
     public String getModuleName() {
         return mModuleName;

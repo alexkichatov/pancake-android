@@ -1,21 +1,13 @@
 package com.imaginea.android.sugarcrm.restapi;
 
-import java.util.List;
-
 public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
 
-    private final String TAG = ModuleFieldsSortOrderSQLGenerationTest.class.getSimpleName();
-
-    private List<String> billingAddressGroup;
-
-    private List<String> shippingAddressGroup;
-
-    private List<String> durationGroup;
-
-    private final String sqlFile = "sortOrderAndGroup.sql";
+    private final String TAG = ModuleFieldsSortOrderSQLGenerationTest.class
+            .getSimpleName();
 
     /*
-     * generates sortOrderAndGroup.sql file in the /data/data/com.imaginea.android.sugarcrm/files/
+     * generates sortOrderAndGroup.sql file in the
+     * /data/data/com.imaginea.android.sugarcrm/files/
      */
     // @SmallTest
     // public void testGeneratingSQLForModuleFieldsOrder() throws Exception {
@@ -34,11 +26,14 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // int updatedGroupId = 0;
     //
     // /*
-    // * use the openFileOutput() method the ActivityContext provides to protect the file from
-    // * others and this is done for security-reasons. We chose MODE_WORLD_READABLE, because we
+    // * use the openFileOutput() method the ActivityContext provides to protect
+    // the file from
+    // * others and this is done for security-reasons. We chose
+    // MODE_WORLD_READABLE, because we
     // * have nothing to hide in our file
     // */
-    // FileOutputStream fOut = getContext().openFileOutput(sqlFile, Context.MODE_WORLD_READABLE);
+    // FileOutputStream fOut = getContext().openFileOutput(sqlFile,
+    // Context.MODE_WORLD_READABLE);
     // OutputStreamWriter out = new OutputStreamWriter(fOut);
     //
     // for (String moduleName : moduleNames) {
@@ -47,7 +42,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // String selection = ModuleColumns.MODULE_NAME + "='" + moduleName + "'";
     // // using the DETAILS_PROJECTION here to select the columns
     // Cursor cursor = db.query(DatabaseHelper.MODULES_TABLE_NAME,
-    // com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules.DETAILS_PROJECTION, selection,
+    // com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules.DETAILS_PROJECTION,
+    // selection,
     // null, null, null, null);
     // cursor.moveToFirst();
     // int moduleId = cursor.getInt(0);
@@ -58,7 +54,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // int groupId = 0;
     //
     // Log.i(TAG, "fieldName - " + fieldName);
-    // selection = "(" + ModuleFieldColumns.NAME + "='" + fieldName + "'" + " AND "
+    // selection = "(" + ModuleFieldColumns.NAME + "='" + fieldName + "'" +
+    // " AND "
     // + ModuleFieldColumns.MODULE_ID + "=" + moduleId
     // + ")";
     // // using the DETAILS_PROJECTION here to select the columns
@@ -72,7 +69,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // if (billingAddressGroup.contains(fieldName)) {
     // if (fieldName.equals(ModuleFields.BILLING_ADDRESS_STREET)) {
     // updatedGroupId++;
-    // String sql = "INSERT INTO " + DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
+    // String sql = "INSERT INTO " +
+    // DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
     // + "(" + ModuleFieldGroupColumns.GROUP_ID
     // + ", " + ModuleFieldGroupColumns.TITLE
     // + ")" + " VALUES (" + updatedGroupId + ", "
@@ -83,7 +81,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // } else if (shippingAddressGroup.contains(fieldName)) {
     // if (fieldName.equals(ModuleFields.SHIPPING_ADDRESS_STREET)) {
     // updatedGroupId++;
-    // String sql = "INSERT INTO " + DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
+    // String sql = "INSERT INTO " +
+    // DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
     // + "(" + ModuleFieldGroupColumns.GROUP_ID
     // + ", " + ModuleFieldGroupColumns.TITLE
     // + ")" + " VALUES (" + updatedGroupId + ", "
@@ -94,7 +93,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // } else if (durationGroup.contains(fieldName)) {
     // if (fieldName.equals(ModuleFields.DURATION_HOURS)) {
     // updatedGroupId++;
-    // String sql = "INSERT INTO " + DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
+    // String sql = "INSERT INTO " +
+    // DatabaseHelper.MODULE_FIELDS_GROUP_TABLE_NAME
     // + "(" + ModuleFieldGroupColumns.GROUP_ID
     // + ", " + ModuleFieldGroupColumns.TITLE
     // + ")" + " VALUES (" + updatedGroupId + ", "
@@ -104,9 +104,11 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // groupId = updatedGroupId;
     // }
     //
-    // Log.i(TAG, moduleName + " " + fieldName + " : itemId - " + i + " groupId - "
+    // Log.i(TAG, moduleName + " " + fieldName + " : itemId - " + i +
+    // " groupId - "
     // + groupId + "");
-    // String sql = "INSERT INTO " + DatabaseHelper.MODULE_FIELDS_SORT_ORDER_TABLE_NAME
+    // String sql = "INSERT INTO " +
+    // DatabaseHelper.MODULE_FIELDS_SORT_ORDER_TABLE_NAME
     // + "(" + ModuleFieldSortOrderColumns.FIELD_SORT_ID
     // + "," + ModuleFieldSortOrderColumns.GROUP_ID + ","
     // + ModuleFieldSortOrderColumns.MODULE_FIELD_ID + ","
@@ -129,7 +131,8 @@ public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
     // db.beginTransaction();
     //
     // /*
-    // * Use the openFileInput() method the ActivityContext provides. Again for security reasons
+    // * Use the openFileInput() method the ActivityContext provides. Again for
+    // security reasons
     // * with openFileInput(...)
     // */
     // FileInputStream fis = getContext().openFileInput(sqlFile);

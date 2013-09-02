@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Asha, Muralidaran.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Asha, Muralidaran - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : RecentModuleListFragment 
+ *  Description :
+ *              RecentModuleListFragment lists the view projections for all the Recently accessed
+ * records.
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm;
 
 import java.util.Map;
@@ -19,62 +35,76 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.imaginea.android.sugarcrm.CustomActionbar.Action;
-import com.imaginea.android.sugarcrm.CustomActionbar.IntentAction;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
-import com.imaginea.android.sugarcrm.ui.RecentModuleMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
 /**
- * RecentListActivity, lists the view projections for all the Recently accessed
- * records.
- * 
- * 
- * @author Jagadeeshwaran K
+ * The Class RecentModuleListFragment.
  */
 public class RecentModuleListFragment extends ListFragment {
 
+    /** The m list view. */
     private ListView mListView;
 
+    /** The list position. */
+    private int mlistPosition = -1;
+
+    /** The m empty. */
     private View mEmpty;
 
+    /** The m list footer view. */
     private View mListFooterView;
 
+    /** The m list footer text. */
     private TextView mListFooterText;
 
+    /** The m list footer progress. */
     private View mListFooterProgress;
 
+    /** The m busy. */
     private boolean mBusy = false;
 
+    /** The m module name. */
     private String mModuleName;
 
+    /** The m module uri. */
     private Uri mModuleUri;
 
+    /** The m intent uri. */
     private Uri mIntentUri;
 
-    // we don't make this final as we may want to use the sugarCRM value
-    // dynamically, but prevent
-    // others from modiying anyway
-    // private static int mMaxResults = 20;
-
+    /** The m adapter. */
     private GenericCursorAdapter mAdapter;
 
+    /** The m selections. */
     private final String mSelections = ModuleFields.DELETED + "=?";
 
+    /** The m selection args. */
     private final String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
 
+    /** The app. */
     private SugarCrmApp app;
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = "RecentModuleList";
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater
+     * , android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(final LayoutInflater inflater,
             final ViewGroup container, final Bundle savedInstanceState) {
@@ -104,12 +134,12 @@ public class RecentModuleListFragment extends ListFragment {
         mListView = getListView();
 
         mIntentUri = intent.getData();
-        // mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> arg0, final View view,
                     final int position, final long id) {
 
+                mAdapter.setSelectedPosition(position);
                 openDetailScreen(position);
             }
         });
@@ -121,7 +151,6 @@ public class RecentModuleListFragment extends ListFragment {
         mListView.setEmptyView(mEmpty);
         mListView.setFastScrollEnabled(false);
         mListView.setScrollbarFadingEnabled(true);
-        // registerForContextMenu(getListView());
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
@@ -142,8 +171,6 @@ public class RecentModuleListFragment extends ListFragment {
                 ContentUtils.getModuleProjections(mModuleName), mSelections,
                 mSelectionArgs, getSortOrder());
 
-        // CRMContentObserver observer = new CRMContentObserver()
-        // cursor.registerContentObserver(observer);
         int[] ids = new int[] { R.id.text1, R.id.text2, R.id.text3, R.id.text5 };
 
         if (mModuleName.equals(Util.CONTACTS) || mModuleName.equals(Util.LEADS)) {
@@ -163,6 +190,14 @@ public class RecentModuleListFragment extends ListFragment {
                     new int[] { android.R.id.text1 });
         }
         setListAdapter(mAdapter);
+
+        /* setting dynamic selector based on modules */
+        final int listResourcesId[] = {
+                ContentUtils.getModuleAlphaColor(mModuleName),
+                ContentUtils.getModuleAlphaColor(mModuleName) };
+
+        mListView.setSelector(Util.getListColorState(getActivity()
+                .getBaseContext(), listResourcesId));
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
 
@@ -189,82 +224,197 @@ public class RecentModuleListFragment extends ListFragment {
         mListFooterProgress = mListFooterView.findViewById(R.id.progress);
         if (ViewUtil.isHoneycombTablet(getActivity())
                 && mAdapter.getCount() != 0) {
-            openDetailScreen(0);
+
         }
 
     }
 
+    /**
+     * Sets the up action bar.
+     */
     private void setUpActionBar() {
 
         final CustomActionbar actionBar = (CustomActionbar) getActivity()
                 .findViewById(R.id.custom_actionbar);
 
-        final Intent myIntent = new Intent(getActivity(),
-                RecentModuleMultiPaneActivity.class);
-        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        myIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
-
-        final Action recentAction = new IntentAction(getActivity(), myIntent);
-
-        actionBar.setHomeAction(recentAction);
         actionBar.setTitle(mModuleName);
+        final LinearLayout menuLayout = (LinearLayout) getActivity()
+                .findViewById(R.id.settings_menu);
+
+        final ImageView search = (ImageView) actionBar
+                .findViewById(R.id.search);
+        search.setVisibility(View.GONE);
+
+        final View transparentView = getActivity().findViewById(
+                R.id.transparent_view);
+        if (transparentView != null) {
+            transparentView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    menuLayout.setVisibility(View.GONE);
+                    transparentView.setVisibility(View.GONE);
+                }
+            });
+        }
+        final LinearLayout logo = (LinearLayout) actionBar
+                .findViewById(R.id.logo);
+        logo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                return;
+
+            }
+        });
 
         final ImageView settingsView = (ImageView) getActivity().findViewById(
                 R.id.settings);
         settingsView.setVisibility(View.VISIBLE);
-        /* Set Action to Settings Button */
-        final Action settingsAction = new IntentAction(
-                RecentModuleListFragment.this.getActivity(),
-                createSettingsIntent());
-        actionBar.setSettingAction(settingsAction);
+        final int settinsResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int tabletSettinsResourcesId[] = {
+                    R.drawable.ico_actionbar_menu_pressed,
+                    R.drawable.ico_actionbar_menu_pressed, R.drawable.settings };
+            settinsResourcesId = tabletSettinsResourcesId;
+        } else {
+            final int phoneSettinsResourcesId[] = {
+                    R.drawable.ico_m_actionbar_menu_pressed,
+                    R.drawable.ico_m_actionbar_menu_pressed,
+                    R.drawable.ico_m_actionbar_menu_nor };
+            settinsResourcesId = phoneSettinsResourcesId;
+        }
+        settingsView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), settinsResourcesId));
+        settingsView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (!(menuLayout.getVisibility() == View.VISIBLE)) {
+                    menuLayout.bringToFront();
+                    menuLayout.setVisibility(View.VISIBLE);
+                    transparentView.setVisibility(View.VISIBLE);
+                } else {
+                    menuLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         final ImageView syncView = (ImageView) getActivity().findViewById(
                 R.id.sync);
+
         syncView.setVisibility(View.VISIBLE);
+        final int syncResourcesId[];
+        if (ViewUtil.isHoneycombTablet(getActivity())) {
+            final int tabletSyncResourcesId[] = {
+                    R.drawable.ico_actionbar_refresh_pressed,
+                    R.drawable.ico_actionbar_refresh_pressed, R.drawable.sync };
+            syncResourcesId = tabletSyncResourcesId;
+        } else {
+            final int phoneSyncResourcesId[] = {
+                    R.drawable.ico_m_actionbar_refresh_pressed,
+                    R.drawable.ico_m_actionbar_refresh_pressed,
+                    R.drawable.ico_m_actionbar_refresh_nor };
+            syncResourcesId = phoneSyncResourcesId;
+        }
+        syncView.setImageDrawable(Util.getPressedImage(getActivity()
+                .getBaseContext(), syncResourcesId));
+
         syncView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO
 
+                SyncAction(v);
             }
         });
 
     }
 
-    private Intent createSettingsIntent() {
-        final Intent myIntent = new Intent(
-                RecentModuleListFragment.this.getActivity(),
-                SugarCrmSettings.class);
-        myIntent.putExtra(RestConstants.MODULE_NAME, "settings");
-        return myIntent;
+    /**
+     * Sync action.
+     * 
+     * @param view
+     *            the view
+     */
+    public void SyncAction(final View view) {
+        if (!Util.isNetworkOn(getActivity().getBaseContext())) {
+            Toast.makeText(getActivity(), R.string.networkUnavailable,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Util.startModuleSync(getActivity(), mModuleName);
+
+        }
     }
 
     /**
-     * GenericCursorAdapter
+     * GenericCursorAdapter.
      */
     private final class GenericCursorAdapter extends SimpleCursorAdapter
             implements Filterable {
 
+        /** The realoffset. */
         private int realoffset = 0;
 
+        /** The limit. */
         private final int limit = 20;
 
+        /** The m content. */
         private final ContentResolver mContent;
 
+        /**
+         * Instantiates a new generic cursor adapter.
+         * 
+         * @param context
+         *            the context
+         * @param layout
+         *            the layout
+         * @param c
+         *            the c
+         * @param from
+         *            the from
+         * @param to
+         *            the to
+         */
         public GenericCursorAdapter(final Context context, final int layout,
                 final Cursor c, final String[] from, final int[] to) {
             super(context, layout, c, from, to);
             mContent = context.getContentResolver();
         }
 
+        /**
+         * Sets the selected position.
+         * 
+         * @param position
+         *            the new selected position
+         */
+        public void setSelectedPosition(int position) {
+            mlistPosition = position;
+            if (mlistPosition != -1) {
+                notifyDataSetChanged();
+            }
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.CursorAdapter#getView(int, android.view.View,
+         * android.view.ViewGroup)
+         */
         @Override
         public View getView(final int position, final View convertView,
                 final ViewGroup parent) {
 
             final View v = super.getView(position, convertView, parent);
             final int count = getCursor().getCount();
+            final TextView text1 = (TextView) v.findViewById(R.id.text1);
+            final TextView text2 = (TextView) v.findViewById(R.id.text2);
+            v.findViewById(R.id.textLastName);
 
+            final TextView text3 = (TextView) v.findViewById(R.id.text3);
+            text3.setVisibility(View.GONE);
             Log.d(LOG_TAG, "Get Item" + getItemId(position));
             if (!mBusy && position != 0 && position == count - 1) {
                 mBusy = true;
@@ -302,14 +452,22 @@ public class RecentModuleListFragment extends ListFragment {
 
             final TextView moduleTextView = (TextView) v
                     .findViewById(R.id.text5);
+            final String moduleName = moduleTextView.getText().toString();
             if (moduleTextView != null) {
-                final String moduleName = moduleTextView.getText().toString();
                 Log.e("Module", "value for moduel name : " + moduleName);
                 Log.e(LOG_TAG,
                         "Module name from textview:: "
                                 + moduleTextView.getText());
                 moduleTextView.setBackgroundColor(getResources().getColor(
-                        ContentUtils.getModuleColor(moduleName)));
+                        ContentUtils.getRecentModulelablesColors(moduleName)));
+            }
+
+            if (moduleName.equals(Util.CONTACTS)
+                    || moduleName.equals(Util.LEADS)) {
+                final String firstName = text1.getText().toString();
+                text1.setText(firstName + " " + text2.getText());
+                text2.setText(" ");
+
             }
 
             if (position % 2 == 0) {
@@ -327,15 +485,45 @@ public class RecentModuleListFragment extends ListFragment {
                             R.color.listview_row1));
                 }
             }
+
+            if (position == mlistPosition) {
+                v.setBackgroundColor(getResources().getColor(
+                        R.color.dashboard_list_color));
+                text1.setTextColor(getResources().getColor(
+                        android.R.color.white));
+                text2.setTextColor(getResources().getColor(
+                        android.R.color.white));
+
+            } else {
+                text1.setTextColor(getResources().getColor(
+                        android.R.color.black));
+                text2.setTextColor(getResources().getColor(
+                        android.R.color.black));
+
+            }
             return v;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.widget.SimpleCursorAdapter#convertToString(android.database
+         * .Cursor)
+         */
         @Override
         public String convertToString(final Cursor cursor) {
             Log.i(LOG_TAG, "convertToString : " + cursor.getString(2));
             return cursor.getString(2);
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.widget.CursorAdapter#runQueryOnBackgroundThread(java.lang
+         * .CharSequence)
+         */
         @Override
         public Cursor runQueryOnBackgroundThread(final CharSequence constraint) {
             if (getFilterQueryProvider() != null)
@@ -359,9 +547,10 @@ public class RecentModuleListFragment extends ListFragment {
     }
 
     /**
-     * opens the Detail Screen
+     * opens the Detail Screen.
      * 
      * @param position
+     *            the position
      */
     void openDetailScreen(final int position) {
         final Intent detailIntent = new Intent(getActivity(),
@@ -396,6 +585,12 @@ public class RecentModuleListFragment extends ListFragment {
         super.onPause();
     }
 
+    /**
+     * Show assigned items.
+     * 
+     * @param view
+     *            the view
+     */
     public void showAssignedItems(final View view) {
         // keep this empty as the header is used from list view
     }
@@ -404,6 +599,7 @@ public class RecentModuleListFragment extends ListFragment {
      * <p>
      * showAllItems
      * </p>
+     * .
      * 
      * @param view
      *            a {@link android.view.View} object.
@@ -418,19 +614,10 @@ public class RecentModuleListFragment extends ListFragment {
     }
 
     /**
-     * <p>
-     * showHome
-     * </p>
+     * Gets the sort order.
      * 
-     * @param view
-     *            a {@link android.view.View} object.
+     * @return the sort order
      */
-    public void showHome(final View view) {
-        final Intent homeIntent = new Intent(getActivity(),
-                DashboardActivity.class);
-        startActivity(homeIntent);
-    }
-
     private String getSortOrder() {
         String sortOrder = null;
         final Map<String, String> sortOrderMap = app

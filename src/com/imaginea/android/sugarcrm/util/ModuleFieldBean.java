@@ -1,132 +1,130 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:  chander - initial API and implementation
+ * Project Name : SugarCrm Pancake
+ * FileName : ModuleFieldBean
+ * Description : 
+ *              The ModuleFieldBean Class
+ ******************************************************************************/
+
 package com.imaginea.android.sugarcrm.util;
 
 /**
- * <p>
- * ModuleFieldBean class.
- * </p>
- * 
+ * The Class ModuleFieldBean.
  */
 public class ModuleFieldBean {
 
+    /** The m module field. */
     private ModuleField mModuleField;
 
+    /** The m module field id. */
     private int mModuleFieldId;
 
+    /** The m field sort id. */
     private int mFieldSortId;
 
+    /** The m group id. */
     private int mGroupId;
 
     /**
-     * <p>
-     * Constructor for ModuleFieldBean.
-     * </p>
+     * Instantiates a new module field bean.
      * 
      * @param moduleField
-     *            a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
+     *            the module field
      * @param moduleFieldId
-     *            a int.
+     *            the module field id
      * @param fieldSortId
-     *            a int.
+     *            the field sort id
      * @param groupId
-     *            a int.
+     *            the group id
      */
-    public ModuleFieldBean(ModuleField moduleField, int moduleFieldId, int fieldSortId, int groupId) {
-        this.mModuleField = moduleField;
-        this.mModuleFieldId = moduleFieldId;
-        this.mFieldSortId = fieldSortId;
-        this.mGroupId = groupId;
+    public ModuleFieldBean(ModuleField moduleField, int moduleFieldId,
+            int fieldSortId, int groupId) {
+        mModuleField = moduleField;
+        mModuleFieldId = moduleFieldId;
+        mFieldSortId = fieldSortId;
+        mGroupId = groupId;
     }
 
     /**
-     * <p>
-     * getModuleField
-     * </p>
+     * Gets the module field.
      * 
-     * @return a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
+     * @return the module field
      */
     public ModuleField getModuleField() {
         return mModuleField;
     }
 
     /**
-     * <p>
-     * setModuleField
-     * </p>
+     * Sets the module field.
      * 
      * @param moduleField
-     *            a {@link com.imaginea.android.sugarcrm.util.ModuleField} object.
+     *            the new module field
      */
     public void setModuleField(ModuleField moduleField) {
-        this.mModuleField = moduleField;
+        mModuleField = moduleField;
     }
 
     /**
-     * <p>
-     * getModuleFieldId
-     * </p>
+     * Gets the module field id.
      * 
-     * @return a int.
+     * @return the module field id
      */
     public int getModuleFieldId() {
         return mModuleFieldId;
     }
 
     /**
-     * <p>
-     * setModuleFieldId
-     * </p>
+     * Sets the module field id.
      * 
      * @param moduleFieldId
-     *            a int.
+     *            the new module field id
      */
     public void setModuleFieldId(int moduleFieldId) {
-        this.mModuleFieldId = moduleFieldId;
+        mModuleFieldId = moduleFieldId;
     }
 
     /**
-     * <p>
-     * getFieldSortId
-     * </p>
+     * Gets the field sort id.
      * 
-     * @return a int.
+     * @return the field sort id
      */
     public int getFieldSortId() {
         return mFieldSortId;
     }
 
     /**
-     * <p>
-     * setFieldSortId
-     * </p>
+     * Sets the field sort id.
      * 
      * @param fieldSortId
-     *            a int.
+     *            the new field sort id
      */
     public void setFieldSortId(int fieldSortId) {
-        this.mFieldSortId = fieldSortId;
+        mFieldSortId = fieldSortId;
     }
 
     /**
-     * <p>
-     * getGroupId
-     * </p>
+     * Gets the group id.
      * 
-     * @return a int.
+     * @return the group id
      */
     public int getGroupId() {
         return mGroupId;
     }
 
     /**
-     * <p>
-     * setGroupId
-     * </p>
+     * Sets the group id.
      * 
      * @param groupId
-     *            a int.
+     *            the new group id
      */
     public void setGroupId(int groupId) {
-        this.mGroupId = groupId;
+        mGroupId = groupId;
     }
 
 }

@@ -1,61 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    >
+    android:paddingLeft="5dp"
+    android:paddingTop="10dp" >
 
-
-    <LinearLayout android:id="@+id/nameLayout"
+    <LinearLayout
+        android:id="@+id/nameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-	    android:orientation="horizontal" >
-	    
-	     <TextView
-	        android:id="@+id/text1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingLeft="3dp"
-	        android:textAppearance="@style/header_2_text_label" />
-	     
-	     <TextView android:id="@+id/textLastName"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingLeft="3dp"
-	        android:textAppearance="@style/header_2_text_label"/>
-     </LinearLayout>
-     
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#3F434F"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textLastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#3F434F"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/nameLayout"
         android:paddingLeft="3dp"
-        android:layout_below="@id/nameLayout"/>
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/text2"
+        android:paddingBottom="10dp"
         android:paddingLeft="3dp"
-        android:layout_below="@id/text2" />
-
-    <TextView
-        android:id="@+id/text4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/text3"
-        android:paddingLeft="3dp"
-        android:visibility="gone" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/text5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/text4"
-        android:layout_marginRight="10dp" />
+        android:layout_below="@id/text3"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

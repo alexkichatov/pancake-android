@@ -10,22 +10,30 @@ import android.test.suitebuilder.TestSuiteBuilder;
  * To run all suites found in this apk: $ adb shell am instrument -w \
  * com.imaginea.android.sugarcrm/android.test.InstrumentationTestRunner
  * 
- * To run just this suite from the command line: $ adb shell am instrument -w \ -e class
- * com.imaginea.android.sugarcrm.AllTests \
+ * To run just this suite from the command line: $ adb shell am instrument -w \
+ * -e class com.imaginea.android.sugarcrm.AllTests \
  * com.imaginea.android.sugarcrm/android.test.InstrumentationTestRunner
  * 
- * To run an individual test case, e.g. {@link com.imaginea.android.sugarcrm.restapi.RestAPITest}: $
- * adb shell am instrument -w \ -e class com.imaginea.android.sugarcrm.restapi.RestAPITest \
+ * To run an individual test case, e.g.
+ * {@link com.imaginea.android.sugarcrm.restapi.RestAPITest}: $ adb shell am
+ * instrument -w \ -e class com.imaginea.android.sugarcrm.restapi.RestAPITest \
  * com.imaginea.android.sugarcrm/android.test.InstrumentationTestRunner
  * 
  * To run an individual test, e.g.
- * {@link com.imaginea.android.sugarcrm.restapi.RestAPITest#testContactList()}: $ adb shell am
- * instrument -w \ -e class com.imaginea.android.sugarcrm.restapi.RestAPITest#testContactList \
+ * {@link com.imaginea.android.sugarcrm.restapi.RestAPITest#testContactList()}:
+ * $ adb shell am instrument -w \ -e class
+ * com.imaginea.android.sugarcrm.restapi.RestAPITest#testContactList \
  * com.imaginea.android.sugarcrm/android.test.InstrumentationTestRunner
  */
 public class AllTests extends TestSuite {
 
+    /**
+     * Suite.
+     * 
+     * @return the test
+     */
     public static Test suite() {
-        return new TestSuiteBuilder(AllTests.class).includeAllPackagesUnderHere().build();
+        return new TestSuiteBuilder(AllTests.class)
+                .includeAllPackagesUnderHere().build();
     }
 }

@@ -13,29 +13,43 @@ import com.imaginea.android.sugarcrm.util.Module;
 import com.imaginea.android.sugarcrm.util.ModuleField;
 
 /**
- * LeadsApiTest, tests the rest api calls
+ * LeadsApiTest, tests the rest api calls.
  * 
  * @author chander
- * 
  */
 public class LeadsApiTest extends RestAPITest {
+
+    /** The module name. */
     String moduleName = "Leads";
 
+    /** The fields. */
     String[] fields = new String[] {};
 
+    /** The custom fields. */
     String[] customFields = new String[] { "a", "b" };
 
+    /** The select fields. */
     String[] selectFields = { ModuleFields.FIRST_NAME, ModuleFields.LAST_NAME,
             ModuleFields.EMAIL1 };
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The order by. */
     String query = "", orderBy = "";
 
+    /** The deleted. */
     int deleted = 0;
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = "LeadsApiTest";
 
+    /**
+     * Test get all module fields.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testGetAllModuleFields() throws Exception {
 
@@ -57,6 +71,12 @@ public class LeadsApiTest extends RestAPITest {
         }
     }
 
+    /**
+     * Test leads list.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testLeadsList() throws Exception {
         final int offset = 0;
@@ -81,9 +101,12 @@ public class LeadsApiTest extends RestAPITest {
      * by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
+     *            the offset
      * @param maxResults
-     * @return
+     *            the max results
+     * @return the sugar beans
      * @throws Exception
+     *             the exception
      */
     private SugarBean[] getSugarBeans(final int offset, final int maxResults)
             throws Exception {

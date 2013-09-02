@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  /*******************************************************************************
+   * Copyright (c) {DATE} {INITIAL COPYRIGHT OWNER} {OTHER COPYRIGHT OWNERS}.
+   * All rights reserved. This program and the accompanying materials
+   * are made available under the terms of the Eclipse Public License v1.0
+   * which accompanies this distribution, and is available at
+   * http://www.eclipse.org/legal/epl-v10.html
+   *
+   * Contributors:
+   *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
+   *******************************************************************************/
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/commonList"
-    android:orientation="vertical"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent">
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
+    android:id="@+id/commonList"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:gravity="center_vertical"
-    android:paddingLeft="5dip"
-    android:singleLine="true"
-    android:textColor="@color/translucenter_dark"
-    android:ellipsize="marquee"
-/>
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_width="fill_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dip"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/translucenter_dark" />
+
 </LinearLayout>

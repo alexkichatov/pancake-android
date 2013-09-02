@@ -11,26 +11,35 @@ import android.util.Log;
 import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.SugarBean;
 
+/**
+ * The Class AccountsDetailsApiTest.
+ */
 public class AccountsDetailsApiTest extends RestAPITest {
 
+    /** The module name. */
     String moduleName = "Accounts";
 
+    /** The fields. */
     String[] fields = new String[] {};
 
+    /** The select fields. */
     String[] selectFields = { NAME };
 
+    /** The link name to fields array. */
     HashMap<String, List<String>> linkNameToFieldsArray = new HashMap<String, List<String>>();
 
-    /*
-     * { ModuleFields.FIRST_NAME, ModuleFields.LAST_NAME,
-     * ModuleFields.ACCOUNT_NAME, ModuleFields.PHONE_MOBILE,
-     * ModuleFields.PHONE_WORK, ModuleFields.EMAIL1 };
-     */
-
+    /** The m link name to fields array. */
     HashMap<String, List<String>> mLinkNameToFieldsArray = new HashMap<String, List<String>>();
 
+    /** The Constant LOG_TAG. */
     public final static String LOG_TAG = "ContactDetailsTest";
 
+    /**
+     * Test account detail.
+     * 
+     * @throws Exception
+     *             the exception
+     */
     @SmallTest
     public void testAccountDetail() throws Exception {
         // get only one sugar bean
@@ -54,14 +63,16 @@ public class AccountsDetailsApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param offset
+     *            the offset
      * @param maxResults
-     * @return
+     *            the max results
+     * @return the sugar beans
      * @throws Exception
+     *             the exception
      */
     private SugarBean[] getSugarBeans(final int offset, final int maxResults)
             throws Exception {
         final String query = "", orderBy = "";
-        final int deleted = 0;
         final SugarBean[] sBeans = Rest.getEntryList(url, mSessionId,
                 moduleName, query, orderBy, offset + "", selectFields,
                 linkNameToFieldsArray, maxResults + "", "");
@@ -74,8 +85,10 @@ public class AccountsDetailsApiTest extends RestAPITest {
      * returned by SugarCRM can be automated, but not yet generated
      * 
      * @param beanId
-     * @return
+     *            the bean id
+     * @return the sugar bean
      * @throws Exception
+     *             the exception
      */
     private SugarBean getSugarBean(final String beanId) throws Exception {
         final SugarBean sBean = Rest.getEntry(url, mSessionId, moduleName,
