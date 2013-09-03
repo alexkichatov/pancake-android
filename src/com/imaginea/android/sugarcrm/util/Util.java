@@ -682,6 +682,10 @@ public class Util {
                 detailIntent.putExtra(RestConstants.BEAN_ID,
                         cursor.getString(1));
             }
+        } else {
+            if (bRecent) {
+                detailIntent.putExtra(RestConstants.MODULE_NAME, Util.RECENT);
+            }
         }
         if (ViewUtil.isTablet(c)) {
             ((BaseMultiPaneActivity) c).openActivityOrFragment(detailIntent);

@@ -83,7 +83,6 @@ import com.imaginea.android.sugarcrm.util.ServiceHelper;
 import com.imaginea.android.sugarcrm.util.Util;
 import com.imaginea.android.sugarcrm.util.ViewUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class EditModuleDetailFragment.
  */
@@ -778,8 +777,7 @@ public class EditModuleDetailFragment extends Fragment {
                             }
 
                             // get the account name using the account row id
-                            // in
-                            // the URI
+                            // in the URI
                             final int accountRowId = Integer
                                     .parseInt(mIntentUri.getPathSegments().get(
                                             1));
@@ -796,8 +794,7 @@ public class EditModuleDetailFragment extends Fragment {
                             cursor.close();
 
                             // pre-populate the field with the account name
-                            // and
-                            // disable it
+                            // and disable it
                             dynamicValueView.setText(accountName);
                             dynamicValueView.setEnabled(false);
                         } else {
@@ -811,7 +808,7 @@ public class EditModuleDetailFragment extends Fragment {
                                     .setOnItemClickListener(new AccountsClickedItemListener());
                         }
                     } else {
-                        // set the apadter to show the auto-suggest
+                        // set the adapter to show the auto-suggest
                         dynamicValueView.setAdapter(mAccountAdapter);
                         dynamicValueView
                                 .setOnItemClickListener(new AccountsClickedItemListener());
@@ -959,7 +956,6 @@ public class EditModuleDetailFragment extends Fragment {
                 if (isCancelled()) {
                     break;
                 }
-
                 final String fieldName = detailsProjection[i];
 
                 // if the field name is excluded in details screen, skip it
@@ -981,6 +977,7 @@ public class EditModuleDetailFragment extends Fragment {
                         textViewForLabel = (TextView) tableRow.getChildAt(0);
                         editTextForValue = (AutoCompleteTextView) tableRow
                                 .getChildAt(1);
+
                     } else {
                         if (staticRowsCount > rowsCount) {
                             tableRow = (ViewGroup) mDetailsOptionalTable
@@ -990,6 +987,7 @@ public class EditModuleDetailFragment extends Fragment {
                                     .getChildAt(0);
                             editTextForValue = (AutoCompleteTextView) tableRow
                                     .getChildAt(1);
+
                         } else {
                             final LayoutInflater inflater = (LayoutInflater) getActivity()
                                     .getBaseContext().getSystemService(
