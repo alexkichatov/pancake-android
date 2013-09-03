@@ -40,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -165,6 +166,17 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         });
 
         mUrlEditText = (EditText) findViewById(R.id.wizardUrl);
+        String restUrlValue = SugarCrmSettings
+                .getSugarRestUrl(WizardAuthActivity.this);
+
+        // valid URL
+        Log.i(LOG_TAG, "resturl value = " + restUrlValue);
+        // first time Url should read from mUrlEditText
+        if (restUrlValue == null || (!URLUtil.isValidUrl(restUrlValue))) {
+            restUrlValue = mUrlEditText.getText().toString();
+        }
+        mUrlEditText.setText(restUrlValue);
+
         /* Override the Done Key in Keyboard and mapped with Handle Login */
         mUrlEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         mUrlEditText.setOnEditorActionListener(new OnEditorActionListener() {

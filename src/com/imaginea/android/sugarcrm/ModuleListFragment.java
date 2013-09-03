@@ -53,7 +53,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -807,11 +806,9 @@ public class ModuleListFragment extends ListFragment implements
             }
         });
         if (ViewUtil.isHoneycombTablet(getActivity())) {
-            final Spinner orderBySpinner = (Spinner) actionBar
-                    .findViewById(R.id.orderBySpinner);
+
             final LinearLayout addnew = (LinearLayout) actionBar
                     .findViewById(R.id.addNew);
-            orderBySpinner.setVisibility(View.GONE);
             addnew.setVisibility(View.GONE);
 
         }
@@ -866,7 +863,8 @@ public class ModuleListFragment extends ListFragment implements
 
                 if (mCurFilter == null && newFilter == null
                         & bQueryDone == false) {
-                    Log.i("ee", "onQueryTextChange. both filters are null....");
+                    Log.i(LOG_TAG,
+                            "onQueryTextChange. both filters are null....");
                     mSelections = null;
                     mSelectionArgs = null;
 
@@ -875,7 +873,7 @@ public class ModuleListFragment extends ListFragment implements
                     openDetailViewOnSearch(null);
                     return true;
                 }
-                Log.i("ee", "onQueryTextChange... newFilter.." + newFilter
+                Log.i(LOG_TAG, "onQueryTextChange... newFilter.." + newFilter
                         + "mCurFilter ===" + mCurFilter);
 
                 mSelections = null;

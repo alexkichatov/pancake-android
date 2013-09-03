@@ -28,6 +28,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -433,6 +435,14 @@ public class SugarCrmSettings extends Activity {
         savedSettings = new HashMap<String, Object>();
         savedSettings.clear();
         savedSettings.put(Util.PREF_REST_URL, crmUrl.getText().toString());
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        if (crmUrl.getText().toString() != null
+                && URLUtil.isValidUrl(crmUrl.getText().toString())) {
+            final Editor editor = prefs.edit();
+            editor.putString(Util.PREF_REST_URL, crmUrl.getText().toString());
+            editor.commit();
+        }
         savedSettings.put(Util.PREF_ALARM_STATE, enableAlarm.isChecked());
 
         savedSettings.put(Util.PREF_SYNC_START_TIME, startDate);

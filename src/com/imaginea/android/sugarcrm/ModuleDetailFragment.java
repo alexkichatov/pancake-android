@@ -24,7 +24,6 @@ import java.util.Map;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -63,7 +62,6 @@ import android.widget.Toast;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent;
-import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 import com.imaginea.android.sugarcrm.rest.Rest;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseActivity;
@@ -327,21 +325,17 @@ public class ModuleDetailFragment extends Fragment {
         final ImageView settingsView = (ImageView) actionBar
                 .findViewById(R.id.settings);
         final int settinsResourcesId[];
-        if (ViewUtil.isHoneycombTablet(getActivity())) {
-            final int tabletSettinsResourcesId[] = {
-                    R.drawable.ico_actionbar_menu_pressed,
-                    R.drawable.ico_actionbar_menu_pressed, R.drawable.settings };
-            settinsResourcesId = tabletSettinsResourcesId;
-        } else {
-            final int phoneSettinsResourcesId[] = {
-                    R.drawable.ico_m_actionbar_menu_pressed,
-                    R.drawable.ico_m_actionbar_menu_pressed,
-                    R.drawable.ico_m_actionbar_menu_nor };
-            settinsResourcesId = phoneSettinsResourcesId;
-        }
+
+        final int phoneSettinsResourcesId[] = {
+                R.drawable.ico_m_actionbar_menu_pressed,
+                R.drawable.ico_m_actionbar_menu_pressed,
+                R.drawable.ico_m_actionbar_menu_nor };
+        settinsResourcesId = phoneSettinsResourcesId;
+
         settingsView.setImageDrawable(Util.getPressedImage(getActivity()
                 .getBaseContext(), settinsResourcesId));
         settingsView.setVisibility(View.VISIBLE);
+
         final LinearLayout menuLayout = (LinearLayout) getActivity()
                 .findViewById(R.id.settings_menu);
         final View transparentView = getActivity().findViewById(
@@ -458,26 +452,9 @@ public class ModuleDetailFragment extends Fragment {
                     Toast.LENGTH_SHORT).show();
         } else {
 
-            startModuleSync();
+            Util.startModuleSync(getActivity(), mModuleName);
 
         }
-    }
-
-    /**
-     * Start module sync.
-     */
-    private void startModuleSync() {
-        Log.d(LOG_TAG, "startModuleSync");
-        final Bundle extras = new Bundle();
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
-        extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULE_DATA);
-        extras.putString(RestConstants.MODULE_NAME, mModuleName);
-        final SugarCrmApp app = (SugarCrmApp) ModuleDetailFragment.this
-                .getActivity().getApplication();
-        final String usr = SugarCrmSettings.getUsername(
-                ModuleDetailFragment.this.getActivity()).toString();
-        ContentResolver.requestSync(app.getAccount(usr),
-                SugarCRMProvider.AUTHORITY, extras);
     }
 
     /**
@@ -743,8 +720,6 @@ public class ModuleDetailFragment extends Fragment {
          * Setup detail views.
          */
         private void setupDetailViews() {
-            Log.i("eeeeeee", "setupDetailViews........");
-
             final TextView titleView;
             if (mlayoutView == null) {
                 mlayoutView = (LinearLayout) inflater.inflate(
@@ -772,10 +747,7 @@ public class ModuleDetailFragment extends Fragment {
             }
             ListView lv;
             if (mlayoutView.getParent() == null) {
-                Log.i("eeeeeee", "mlayoutView parent null...........");
-
                 if (!ViewUtil.isHoneycombTablet(getActivity())) {
-                    Log.i("eeeeeee", "hahah11111111 mlayoutView  phone");
                     final RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
                             LayoutParams.WRAP_CONTENT,
                             LayoutParams.WRAP_CONTENT);
@@ -783,7 +755,6 @@ public class ModuleDetailFragment extends Fragment {
                     mParent.addView(mlayoutView, params1);
 
                 } else {
-                    Log.i("eeeeeee", "heeee1111111 tablet ");
                     mParent.addView(mlayoutView);
                 }
 
