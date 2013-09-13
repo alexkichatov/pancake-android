@@ -17,6 +17,7 @@ package com.imaginea.android.sugarcrm.services;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -44,7 +45,6 @@ public class EntryListServiceTask extends
     /** The m context. */
     private final Context mContext;
 
-    // TODO - remove this
     /** The m session id. */
     private String mSessionId;
 
@@ -55,16 +55,16 @@ public class EntryListServiceTask extends
     private final String[] mSelectFields;
 
     /** The m link name to fields array. */
-    private final HashMap<String, List<String>> mLinkNameToFieldsArray = new HashMap<String, List<String>>();
+    private final Map<String, List<String>> mLinkNameToFieldsArray = new HashMap<String, List<String>>();
 
     /** The m max results. */
-    private final String mMaxResults = "0";
+    private static final String MAX_RESULT = "0";
 
     /** The m uri. */
     private final Uri mUri;
 
     /** The m query. */
-    private final String mQuery = "";
+    private static String mQuery = "";
 
     /** The m order by. */
     private String mOrderBy = "";
@@ -73,7 +73,7 @@ public class EntryListServiceTask extends
     private String mOffset = "0";
 
     /** The m deleted. */
-    private final String mDeleted = "0";
+    private static final String DELETED = "0";
 
     /** The Constant LOG_TAG. */
     public static final String LOG_TAG = "EntryListTask";
@@ -113,7 +113,7 @@ public class EntryListServiceTask extends
         try {
 
             if (mSessionId == null) {
-                mSessionId = ((SugarCrmApp) SugarCrmApp.app).getSessionId();
+                mSessionId = ((SugarCrmApp) SugarCrmApp.mApp).getSessionId();
             }
             final SharedPreferences pref = PreferenceManager
                     .getDefaultSharedPreferences(mContext);
@@ -124,7 +124,7 @@ public class EntryListServiceTask extends
 
             final SugarBean[] sBeans = Rest.getEntryList(url, mSessionId,
                     mModuleName, mQuery, mOrderBy, mOffset, mSelectFields,
-                    mLinkNameToFieldsArray, mMaxResults, mDeleted);
+                    mLinkNameToFieldsArray, MAX_RESULT, DELETED);
 
             // TODO - do a bulk insert in the content provider instead
             for (final SugarBean sBean : sBeans) {
@@ -148,13 +148,4 @@ public class EntryListServiceTask extends
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.imaginea.android.sugarcrm.util.AsyncServiceTask#onCancelled()
-     */
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-    }
 }

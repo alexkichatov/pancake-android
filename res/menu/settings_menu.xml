@@ -11,7 +11,10 @@
    *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
    *******************************************************************************/
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/settings"
-        android:title="settings" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/settings"
+        android:title="settings"/>
+
 </menu>

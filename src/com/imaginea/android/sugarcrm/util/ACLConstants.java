@@ -19,33 +19,33 @@ package com.imaginea.android.sugarcrm.util;
 public interface ACLConstants {
 
     /** The Constant ACL_ALLOW_ADMIN_DEV. */
-    public static final int ACL_ALLOW_ADMIN_DEV = 100;
+    int ACL_ALLOW_ADMIN_DEV = 100;
 
     /** The Constant ACL_ALLOW_ADMIN. */
-    public static final int ACL_ALLOW_ADMIN = 99;
+    int ACL_ALLOW_ADMIN = 99;
 
     /** The Constant ACL_ALLOW_ALL. */
-    public static final int ACL_ALLOW_ALL = 90;
+    int ACL_ALLOW_ALL = 90;
 
     /** The Constant ACL_ALLOW_ENABLED. */
-    public static final int ACL_ALLOW_ENABLED = 89;
+    int ACL_ALLOW_ENABLED = 89;
 
     /** The Constant ACL_ALLOW_OWNER. */
-    public static final int ACL_ALLOW_OWNER = 75;
+    int ACL_ALLOW_OWNER = 75;
 
     /** The Constant ACL_ALLOW_NORMAL. */
-    public static final int ACL_ALLOW_NORMAL = 1;
+    int ACL_ALLOW_NORMAL = 1;
 
     /** The Constant ACL_ALLOW_DEFAULT. */
-    public static final int ACL_ALLOW_DEFAULT = 0;
+    int ACL_ALLOW_DEFAULT = 0;
 
     /** The Constant ACL_ALLOW_DISABLED. */
-    public static final int ACL_ALLOW_DISABLED = -98;
+    int ACL_ALLOW_DISABLED = -98;
 
     /** The Constant ACL_ALLOW_NONE. */
-    public static final int ACL_ALLOW_NONE = -99;
+    int ACL_ALLOW_NONE = -99;
 
     /** The Constant ACL_ALLOW_DEV. */
-    public static final int ACL_ALLOW_DEV = 95;
+    int ACL_ALLOW_DEV = 95;
 
 }

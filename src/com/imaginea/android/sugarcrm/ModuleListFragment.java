@@ -86,15 +86,16 @@ public class ModuleListFragment extends ListFragment implements
     /** The m module name. */
     private String mModuleName;
 
-    /** The query done. */
-    private boolean bQueryDone = false; // this flag is for search view and for
-                                        // when query is applied don't reset the
-                                        // loader
+    /**
+     * The query done. this flag is for search view and for when query is
+     * applied don't reset the loader
+     */
+    private boolean bQueryDone = false;
     /** The m module uri. */
     private Uri mModuleUri;
 
-    /** The m cur filter. */
-    String mCurFilter; // Search Filter
+    /** The m Search filter. */
+    String mCurFilter;
 
     /** The m intent uri. */
     private Uri mIntentUri;
@@ -134,16 +135,16 @@ public class ModuleListFragment extends ListFragment implements
     /** The m selection args. */
     private String[] mSelectionArgs = new String[] { Util.EXCLUDE_DELETED_ITEMS };
 
-    /** The app. */
-    private SugarCrmApp app;
+    /** The m app. */
+    private SugarCrmApp mApp;
 
     /** The b relation item. */
-    private final boolean bRelationItem = true;
+    private static boolean bRelationItem = true;
 
     /** The cursor. */
-    private Cursor c;
+    private Cursor mCursor;
 
-    public final static String LOG_TAG = ModuleListFragment.class
+    public static final String LOG_TAG = ModuleListFragment.class
             .getSimpleName();
 
     /*
@@ -173,7 +174,7 @@ public class ModuleListFragment extends ListFragment implements
         mlistPosition = -1;
 
         mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
-        app = (SugarCrmApp) getActivity().getApplication();
+        mApp = (SugarCrmApp) getActivity().getApplication();
         final Intent intent = getActivity().getIntent();
 
         final Bundle extras = intent.getExtras();
@@ -254,7 +255,6 @@ public class ModuleListFragment extends ListFragment implements
         if (map == null) {
             Log.w(LOG_TAG, "Cannot prepare Options as Map is null for module:"
                     + mModuleName);
-            // TODO return false;
             return;
         }
         mModuleFieldsChoice = new String[mModuleFields.length];
@@ -269,7 +269,7 @@ public class ModuleListFragment extends ListFragment implements
                 mModuleFieldsChoice[i] = "";
             }
 
-            if (mModuleFieldsChoice[i].indexOf(":") > 0) {
+            if (mModuleFieldsChoice[i].indexOf(':') > 0) {
                 mModuleFieldsChoice[i] = mModuleFieldsChoice[i].substring(0,
                         mModuleFieldsChoice[i].length() - 1);
                 fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
@@ -281,7 +281,8 @@ public class ModuleListFragment extends ListFragment implements
 
         /* open details screen with 1st row highlighted */
 
-        c = getActivity().managedQuery(ContentUtils.getModuleUri(mModuleName),
+        mCursor = getActivity().managedQuery(
+                ContentUtils.getModuleUri(mModuleName),
                 ContentUtils.getModuleProjections(mModuleName), mSelections,
                 mSelectionArgs, getSortOrder());
         final Intent detailIntent = new Intent(getActivity(),
@@ -289,8 +290,8 @@ public class ModuleListFragment extends ListFragment implements
         detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
 
         /* open details screen with 1st row highlighted */
-        Util.OpenDetailScreenWithSelectedRow(getActivity(), c, detailIntent,
-                false);
+        Util.openDetailScreenWithSelectedRow(getActivity(), mCursor,
+                detailIntent, false);
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -359,7 +360,7 @@ public class ModuleListFragment extends ListFragment implements
                 mModuleFieldsChoice[i] = "";
             }
 
-            if (mModuleFieldsChoice[i].indexOf(":") > 0) {
+            if (mModuleFieldsChoice[i].indexOf(':') > 0) {
                 mModuleFieldsChoice[i] = mModuleFieldsChoice[i].substring(0,
                         mModuleFieldsChoice[i].length() - 1);
                 fieldMap.put(mModuleFieldsChoice[i], mModuleFields[i]);
@@ -372,7 +373,7 @@ public class ModuleListFragment extends ListFragment implements
         mSelectionArgs = null;
         getLoaderManager().restartLoader(0, null, this);
 
-        c = getActivity().managedQuery(mIntentUri,
+        mCursor = getActivity().managedQuery(mIntentUri,
                 ContentUtils.getModuleProjections(mModuleName), mSelections,
                 mSelectionArgs, getSortOrder());
         final Intent detailIntent = new Intent(getActivity(),
@@ -380,8 +381,8 @@ public class ModuleListFragment extends ListFragment implements
         detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
 
         /* open details screen with 1st row highlighted */
-        Util.OpenDetailScreenWithSelectedRow(getActivity(), c, detailIntent,
-                false);
+        Util.openDetailScreenWithSelectedRow(getActivity(), mCursor,
+                detailIntent, false);
 
     }
 
@@ -439,7 +440,7 @@ public class ModuleListFragment extends ListFragment implements
 
             @Override
             public void onClick(View v) {
-                SyncAction(v);
+                syncAction(v);
 
             }
         });
@@ -469,8 +470,11 @@ public class ModuleListFragment extends ListFragment implements
 
             @Override
             public void onClick(View v) {
-                bSearch = true; // This Flag is used to check if Search is not
-                                // Enable then do not Handle BAck key
+                /*
+                 * This Flag bSearch is used to check if Search is not Enable
+                 * then do not Handle BAck key
+                 */
+                bSearch = true;
                 setupSearchView();
 
             }
@@ -535,19 +539,16 @@ public class ModuleListFragment extends ListFragment implements
             y = (int) (5 * getResources().getDisplayMetrics().density);
             tv.setPadding(x, y, x, y);
             tv.setOnClickListener(new View.OnClickListener() {
-                final LinearLayout menuLayout = (LinearLayout) getActivity()
+                private final LinearLayout menuLayout = (LinearLayout) getActivity()
                         .findViewById(R.id.settings_menu);
-                final View transparentView = getActivity().findViewById(
-                        R.id.transparent_view);
+                private final View transparentView = getActivity()
+                        .findViewById(R.id.transparent_view);
 
                 @Override
                 public void onClick(View v) {
-                    final String sortOrder = tv.getTag().toString() + " ASC";
-                    app.setModuleSortOrder(mModuleName,
+                    mApp.setModuleSortOrder(mModuleName,
                             fieldMap.get(tv.getText().toString()), "ASC");
-                    Log.e(LOG_TAG, "SORT :" + sortOrder);
-                    Log.e(LOG_TAG, "field choice: " + tv.getText().toString());
-                    sortList(sortOrder);
+                    sortList();
                     menuLayout.setVisibility(View.GONE);
                     transparentView.setVisibility(View.GONE);
                 }
@@ -635,7 +636,7 @@ public class ModuleListFragment extends ListFragment implements
 
         addNewMenuItem.setVisibility(View.GONE);
         /* Set Action to Add Button */
-        final Action addAction = new IntentAction(getActivity(), AddAction());
+        final Action addAction = new IntentAction(getActivity(), addAction());
         actionBar.setAddAction(addAction);
 
     }
@@ -675,9 +676,10 @@ public class ModuleListFragment extends ListFragment implements
 
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
         Log.w(LOG_TAG, "openDetailScreen, Cursor is not null ");
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
         final Intent detailIntent = new Intent(getActivity(),
                 ModuleDetailActivity.class);
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(0));
@@ -701,9 +703,10 @@ public class ModuleListFragment extends ListFragment implements
     private void openEditScreen(final int position) {
 
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
         final Intent editDetailsIntent = new Intent(getActivity(),
                 EditModuleDetailActivity.class);
         editDetailsIntent.putExtra(Util.ROW_ID, cursor.getString(0));
@@ -729,9 +732,10 @@ public class ModuleListFragment extends ListFragment implements
     void deleteItem() {
         final Cursor cursor = (Cursor) getListAdapter().getItem(
                 mCurrentSelection);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
 
         final String beanId = cursor.getString(1);
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
@@ -762,15 +766,6 @@ public class ModuleListFragment extends ListFragment implements
             super(handler);
         }
 
-        @Override
-        public boolean deliverSelfNotifications() {
-            return super.deliverSelfNotifications();
-        }
-
-        @Override
-        public void onChange(final boolean selfChange) {
-            super.onChange(selfChange);
-        }
     }
 
     public void setupSearchActionBar() {
@@ -857,12 +852,12 @@ public class ModuleListFragment extends ListFragment implements
                 // Don't do anything if the filter hasn't actually changed.
                 // Prevents restarting the loader when restoring state.
 
-                if (mCurFilter != null && mCurFilter.equals(newFilter))
+                if (mCurFilter != null && mCurFilter.equals(newFilter)) {
                     return true;
+                }
                 mCurFilter = newFilter;
 
-                if (mCurFilter == null && newFilter == null
-                        & bQueryDone == false) {
+                if (mCurFilter == null && newFilter == null & !bQueryDone) {
                     Log.i(LOG_TAG,
                             "onQueryTextChange. both filters are null....");
                     mSelections = null;
@@ -966,9 +961,10 @@ public class ModuleListFragment extends ListFragment implements
         }
 
         final Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
         final int index = cursor.getColumnIndex(ModuleFields.CREATED_BY_NAME);
         final String ownerName = cursor.getString(index);
 
@@ -1053,13 +1049,13 @@ public class ModuleListFragment extends ListFragment implements
      * @param sortOrder
      *            the sort order
      */
-    private void sortList(final String sortOrder) {
+    private void sortList() {
 
         mSelections = null;
         mSelectionArgs = null;
         getLoaderManager().restartLoader(0, null, this);
         if (ViewUtil.isTablet(getActivity())) {
-            c = getActivity().managedQuery(mIntentUri,
+            mCursor = getActivity().managedQuery(mIntentUri,
                     ContentUtils.getModuleProjections(mModuleName),
                     mSelections, mSelectionArgs, getSortOrder());
             final Intent detailIntent = new Intent(getActivity(),
@@ -1067,7 +1063,7 @@ public class ModuleListFragment extends ListFragment implements
             detailIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
 
             /* open details screen with 1st row highlighted */
-            Util.OpenDetailScreenWithSelectedRow(getActivity(), c,
+            Util.openDetailScreenWithSelectedRow(getActivity(), mCursor,
                     detailIntent, false);
 
         }
@@ -1098,7 +1094,7 @@ public class ModuleListFragment extends ListFragment implements
      */
     private String getSortOrder() {
         String sortOrder = null;
-        final Map<String, String> sortOrderMap = app
+        final Map<String, String> sortOrderMap = mApp
                 .getModuleSortOrder(mModuleName);
         for (final Entry<String, String> entry : sortOrderMap.entrySet()) {
             sortOrder = entry.getKey() + " " + entry.getValue();
@@ -1114,9 +1110,10 @@ public class ModuleListFragment extends ListFragment implements
      */
     public void callNumber(final int position) {
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
 
         final int index = cursor.getColumnIndex(ModuleFields.PHONE_WORK);
         final String number = cursor.getString(index);
@@ -1133,9 +1130,10 @@ public class ModuleListFragment extends ListFragment implements
      */
     public void sendMail(final int position) {
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
         // emailAddress
         final int index = cursor.getColumnIndex(ModuleFields.EMAIL1);
         final String emailAddress = cursor.getString(index);
@@ -1150,7 +1148,7 @@ public class ModuleListFragment extends ListFragment implements
      * 
      * @return the intent
      */
-    private Intent AddAction() {
+    private Intent addAction() {
         final Intent myIntent = new Intent(getActivity(),
                 EditModuleDetailActivity.class);
         myIntent.putExtra(RestConstants.MODULE_NAME, mModuleName);
@@ -1164,7 +1162,7 @@ public class ModuleListFragment extends ListFragment implements
      * @param view
      *            the view
      */
-    public void SyncAction(final View view) {
+    public void syncAction(final View view) {
         if (!Util.isNetworkOn(getActivity().getBaseContext())) {
             Toast.makeText(getActivity(), R.string.networkUnavailable,
                     Toast.LENGTH_SHORT).show();
@@ -1241,7 +1239,7 @@ public class ModuleListFragment extends ListFragment implements
             case R.string.sortBy:
                 mSortColumnIndex = 0;
 
-                final Map<String, String> sortOrderMap = app
+                final Map<String, String> sortOrderMap = mApp
                         .getModuleSortOrder(mModuleName);
                 if (sortOrderMap != null) {
                     for (final Entry<String, String> entry : sortOrderMap
@@ -1278,13 +1276,11 @@ public class ModuleListFragment extends ListFragment implements
                                     public void onClick(
                                             final DialogInterface dialog,
                                             final int whichButton) {
-                                        final String sortOrder = mModuleFields[mSortColumnIndex]
-                                                + " ASC";
-                                        app.setModuleSortOrder(
+                                        mApp.setModuleSortOrder(
                                                 mModuleName,
                                                 fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]),
                                                 "ASC");
-                                        sortList(sortOrder);
+                                        sortList();
                                     }
                                 })
 
@@ -1294,14 +1290,11 @@ public class ModuleListFragment extends ListFragment implements
                                     public void onClick(
                                             final DialogInterface dialog,
                                             final int whichButton) {
-                                        // ((FragmentAlertDialog)getActivity()).doNegativeClick();
-                                        final String sortOrder = mModuleFields[mSortColumnIndex]
-                                                + " DESC";
-                                        app.setModuleSortOrder(
+                                        mApp.setModuleSortOrder(
                                                 mModuleName,
                                                 fieldMap.get(mModuleFieldsChoice[mSortColumnIndex]),
                                                 "DESC");
-                                        sortList(sortOrder);
+                                        sortList();
                                     }
                                 }).create();
 

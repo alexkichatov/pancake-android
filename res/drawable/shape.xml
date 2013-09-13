@@ -11,10 +11,16 @@
    *    {INITIAL AUTHOR} - initial API and implementation and/or initial documentation
    *******************************************************************************/
 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
-   <!-- use this for transparent -->
-   <!-- <solid android:color="#00000000" /> -->
-   <!-- use this for a background colour -->
-   <solid android:color="#FFF" />
-   <stroke android:width="1dip" android:color="#c8c9cd" />
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <!-- use this for transparent -->
+    <!-- <solid android:color="#00000000" /> -->
+    <!-- use this for a background colour -->
+    <solid android:color="#FFF" />
+
+    <stroke
+        android:width="1dip"
+        android:color="#c8c9cd" />
+
 </shape>

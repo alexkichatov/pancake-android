@@ -17,7 +17,6 @@ package com.imaginea.android.sugarcrm.util;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
 /**
@@ -46,18 +45,6 @@ public class ActivityHelperHoneycomb extends ActivityHelper {
     public void onPostCreate(Bundle savedInstanceState) {
         // Do nothing in onPostCreate. ActivityHelper creates the old action
         // bar, we don't need to for Honeycomb.
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.imaginea.android.sugarcrm.util.ActivityHelper#onCreateOptionsMenu
-     * (android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
     }
 
     /*

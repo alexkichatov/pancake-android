@@ -126,7 +126,7 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         final boolean netOn = Util.isNetworkOn(mContext);
         try {
 
-            String sessionId = ((SugarCrmApp) SugarCrmApp.app).getSessionId();
+            String sessionId = ((SugarCrmApp) SugarCrmApp.mApp).getSessionId();
 
             final String url = SugarCrmSettings.getSugarRestUrl(mContext);
 
@@ -138,11 +138,11 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                         || (Rest.seamlessLogin(url, sessionId) == 0)) {
                     final String userName = SugarCrmSettings
                             .getUsername(mContext);
-                    final Account account = ((SugarCrmApp) SugarCrmApp.app)
+                    final Account account = ((SugarCrmApp) SugarCrmApp.mApp)
                             .getAccount(userName);
                     sessionId = Rest.loginToSugarCRM(url, userName,
                             AccountManager.get(mContext).getPassword(account));
-                    ((SugarCrmApp) SugarCrmApp.app).setSessionId(sessionId);
+                    ((SugarCrmApp) SugarCrmApp.mApp).setSessionId(sessionId);
                 }
 
                 switch (mCommand) {
@@ -184,20 +184,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                             new String[] { updatedBeanId },
                                             new LinkedHashMap<String, String>(),
                                             Util.EXCLUDE_DELETED_ITEMS);
-                            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                Log.i(TAG,
-                                        "created: " + status.getCreatedCount()
-                                                + " failed: "
-                                                + status.getFailedCount()
-                                                + "deleted: "
-                                                + status.getDeletedCount());
-                            }
 
                             if (status.getCreatedCount() >= 1) {
-                                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                    Log.i(TAG, "Relationship is also set!");
-                                }
-                                // serverUpdated = true;
 
                                 if (!Util.ACCOUNTS.equals(mModuleName)
                                         && !Util.ACCOUNTS
@@ -264,12 +252,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                 }
 
                             } else {
-                                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                    Log.i(TAG, "setRelationship failed!");
-                                }
                                 serverUpdated = false;
                             }
-
                         } else {
                             serverUpdated = false;
                         }
@@ -330,21 +314,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                     new String[] { updatedBeanId },
                                                     new LinkedHashMap<String, String>(),
                                                     Util.EXCLUDE_DELETED_ITEMS);
-                                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                        Log.d(TAG,
-                                                "created: "
-                                                        + status.getCreatedCount()
-                                                        + " failed: "
-                                                        + status.getFailedCount()
-                                                        + " deleted: "
-                                                        + status.getDeletedCount());
-                                    }
 
                                     if (status.getCreatedCount() >= 1) {
-                                        if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                            Log.d(TAG,
-                                                    "Relationship is also set!");
-                                        }
 
                                         serverUpdated = true;
                                     } else {
@@ -410,12 +381,6 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                 moduleName, mUpdateNameValueMap);
                         mUpdateNameValueMap
                                 .remove(ModuleFields.ASSIGNED_USER_ID);
-
-                        if (Log.isLoggable(TAG, Log.DEBUG)) {
-                            Log.d(TAG, "updatedBeanId : " + updatedBeanId
-                                    + "  serverUpdatedBeanId : "
-                                    + serverUpdatedBeanId);
-                        }
 
                         // if the actual beanId (updatedBeanId) is equal to
                         // serverUpdatedBeanId
@@ -501,42 +466,18 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                             + updatedBeanId);
                                         }
 
-                                        final RelationshipStatus status = Rest
-                                                .setRelationship(
-                                                        url,
-                                                        sessionId,
-                                                        Util.ACCOUNTS,
-                                                        accountBeanId,
-                                                        mLinkFieldName,
-                                                        new String[] { updatedBeanId },
-                                                        new LinkedHashMap<String, String>(),
-                                                        Util.DELETED_ITEM);
-
-                                        if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                            Log.d(TAG,
-                                                    "updating delete flag for relationship is also set!"
-                                                            + "created: "
-                                                            + status.getCreatedCount()
-                                                            + " failed: "
-                                                            + status.getFailedCount()
-                                                            + " deleted: "
-                                                            + status.getDeletedCount());
-                                        }
+                                        Rest.setRelationship(
+                                                url,
+                                                sessionId,
+                                                Util.ACCOUNTS,
+                                                accountBeanId,
+                                                mLinkFieldName,
+                                                new String[] { updatedBeanId },
+                                                new LinkedHashMap<String, String>(),
+                                                Util.DELETED_ITEM);
                                     }
                                 }
 
-                                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                    Log.d(TAG,
-                                            "updating relationship with parent module : "
-                                                    + mParentModuleName
-                                                    + " parent bean Id : "
-                                                    + mBeanId);
-                                    Log.d(TAG,
-                                            "updating relationship with link field name : "
-                                                    + mLinkFieldName
-                                                    + " updated bean Id : "
-                                                    + updatedBeanId);
-                                }
                                 // set the new relationship
                                 final RelationshipStatus status = Rest
                                         .setRelationship(
@@ -548,20 +489,9 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                                 new String[] { updatedBeanId },
                                                 new LinkedHashMap<String, String>(),
                                                 Util.EXCLUDE_DELETED_ITEMS);
-                                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                    Log.d(TAG,
-                                            "created: "
-                                                    + status.getCreatedCount()
-                                                    + " failed: "
-                                                    + status.getFailedCount()
-                                                    + " deleted: "
-                                                    + status.getDeletedCount());
-                                }
 
                                 if (status.getCreatedCount() >= 1) {
-                                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                        Log.d(TAG, "Relationship is also set!");
-                                    }
+
                                     serverUpdated = true;
                                 } else {
                                     if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -695,38 +625,17 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                         // set to '1'.
                                         if (!accountBeanId
                                                 .equals(newAccountBeanId)) {
-                                            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                                Log.d(TAG,
-                                                        "updating delete flag for relationship with account bean id : "
-                                                                + accountBeanId
-                                                                + " linkFieldName : "
-                                                                + mDbHelper
-                                                                        .getLinkfieldName(mModuleName)
-                                                                + " bean Id : "
-                                                                + updatedBeanId);
-                                            }
-                                            final RelationshipStatus status = Rest
-                                                    .setRelationship(
-                                                            url,
-                                                            sessionId,
-                                                            Util.ACCOUNTS,
-                                                            accountBeanId,
-                                                            mDbHelper
-                                                                    .getLinkfieldName(mModuleName),
-                                                            new String[] { updatedBeanId },
-                                                            new LinkedHashMap<String, String>(),
-                                                            Util.DELETED_ITEM);
+                                            Rest.setRelationship(
+                                                    url,
+                                                    sessionId,
+                                                    Util.ACCOUNTS,
+                                                    accountBeanId,
+                                                    mDbHelper
+                                                            .getLinkfieldName(mModuleName),
+                                                    new String[] { updatedBeanId },
+                                                    new LinkedHashMap<String, String>(),
+                                                    Util.DELETED_ITEM);
 
-                                            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                                Log.d(TAG,
-                                                        "updating delete flag for relationship is also set!"
-                                                                + "created: "
-                                                                + status.getCreatedCount()
-                                                                + " failed: "
-                                                                + status.getFailedCount()
-                                                                + " deleted: "
-                                                                + status.getDeletedCount());
-                                            }
                                         }
                                     }
 
@@ -767,11 +676,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
                                     }
 
                                     if (status.getCreatedCount() >= 1) {
-                                        if (Log.isLoggable(TAG, Log.DEBUG)) {
-                                            Log.d(TAG,
-                                                    "Relationship is also set!");
-                                        }
 
+                                        /* Relationship is also set! */
                                         serverUpdated = true;
                                     } else {
                                         if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -989,8 +895,8 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
             insertSyncRecord(mUri);
         } else {
             if (mUri.getPathSegments().size() == 3) {
-                rec.syncRelatedId = Long.parseLong(mUri.getPathSegments()
-                        .get(3));
+                rec.mSyncRelatedId = Long.parseLong(mUri.getPathSegments().get(
+                        3));
             }
             mDbHelper.updateSyncRecord(rec);
         }
@@ -1006,16 +912,16 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
      */
     private void insertSyncRecord(Uri insertUri) throws SugarCrmException {
         final SyncRecord record = new SyncRecord();
-        record.syncId = Long.parseLong(insertUri.getPathSegments().get(1));
+        record.mSsyncId = Long.parseLong(insertUri.getPathSegments().get(1));
         if (mUri.getPathSegments().size() == 3) {
-            record.syncRelatedId = Long.parseLong(insertUri.getPathSegments()
+            record.mSyncRelatedId = Long.parseLong(insertUri.getPathSegments()
                     .get(3));
         }
-        record.syncCommand = mCommand;
-        record.moduleName = mLinkFieldName != null ? mParentModuleName
+        record.mSyncCommand = mCommand;
+        record.mModuleName = mLinkFieldName != null ? mParentModuleName
                 : mModuleName;
-        record.relatedModuleName = mModuleName;
-        record.status = Util.UNSYNCED;
+        record.mRelatedModuleName = mModuleName;
+        record.mStatus = Util.UNSYNCED;
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             debug(record);
         }
@@ -1033,15 +939,15 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
             Log.d(TAG, "Sync Record is null");
             return;
         }
-        Log.d(TAG, " id:" + record._id);
-        Log.d(TAG, "Sync id:" + record.syncId);
-        Log.d(TAG, "Sync command:" + record.syncCommand);
-        Log.d(TAG, "Module name:" + record.moduleName);
-        Log.d(TAG, "Related Module Name:" + record.relatedModuleName);
+        Log.d(TAG, " id:" + record.mid);
+        Log.d(TAG, "Sync id:" + record.mSsyncId);
+        Log.d(TAG, "Sync command:" + record.mSyncCommand);
+        Log.d(TAG, "Module name:" + record.mModuleName);
+        Log.d(TAG, "Related Module Name:" + record.mRelatedModuleName);
         Log.d(TAG, "Sync command:"
-                + (record.syncCommand == 1 ? "INSERT" : "UPDATE/DELETE"));
+                + (record.mSyncCommand == 1 ? "INSERT" : "UPDATE/DELETE"));
         Log.d(TAG, "Sync Status:"
-                + (record.status == Util.UNSYNCED ? "UNSYNCHD" : "CONFLICTS"));
+                + (record.mStatus == Util.UNSYNCED ? "UNSYNCHD" : "CONFLICTS"));
     }
 
     /**
@@ -1058,9 +964,4 @@ public class UpdateServiceTask extends AsyncServiceTask<Object, Void, Object> {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-    }
 }

@@ -27,6 +27,10 @@ import android.widget.Toast;
  */
 public class ViewUtil {
 
+    private ViewUtil() {
+
+    }
+
     /** handle to a progress dialog used by all the activities. */
     private static ProgressDialog mProgressDialog;
 

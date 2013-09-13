@@ -2,9 +2,6 @@ package com.imaginea.android.sugarcrm.restapi;
 
 public class ModuleFieldsSortOrderSQLGenerationTest extends RestAPITest {
 
-    private final String TAG = ModuleFieldsSortOrderSQLGenerationTest.class
-            .getSimpleName();
-
     /*
      * generates sortOrderAndGroup.sql file in the
      * /data/data/com.imaginea.android.sugarcrm/files/

@@ -64,8 +64,9 @@ public class ModulesActivity extends BaseActivity implements
         menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
 
         mModuleName = getIntent().getStringExtra(RestConstants.MODULE_NAME);
+        /* Stub Only For Test Cases */
         if (mModuleName == null) {
-            mModuleName = Util.ACCOUNTS; // Stub Only For Test Cases
+            mModuleName = Util.ACCOUNTS;
         }
         if (mModuleName.equalsIgnoreCase(Util.RECENT)) {
             menuLayout.findViewById(R.id.orderByListContainer).setVisibility(
@@ -123,7 +124,7 @@ public class ModulesActivity extends BaseActivity implements
                     @Override
                     public void run() {
                         // TODO Auto-generated method stub
-                        final String sessionId = ((SugarCrmApp) SugarCrmApp.app)
+                        final String sessionId = ((SugarCrmApp) SugarCrmApp.mApp)
                                 .getSessionId();
                         final String restUrl = SugarCrmSettings
                                 .getSugarRestUrl(ModulesActivity.this);
@@ -153,24 +154,11 @@ public class ModulesActivity extends BaseActivity implements
                 final FragmentTransaction ft = getSupportFragmentManager()
                         .beginTransaction();
                 ft.replace(R.id.list_frag_holder, moduleListFragment);
-                ModuleImageListFragment.bOpenFromImageFragment = false;
                 ft.replace(R.id.list_imagefrag, new ModuleImageListFragment());
                 ft.commit();
             }
         });
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.imaginea.android.sugarcrm.ui.BaseActivity#onPostCreate(android.os
-     * .Bundle)
-     */
-    @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
     }
 
     public void showAssignedItems(final View view) {
@@ -251,7 +239,7 @@ public class ModulesActivity extends BaseActivity implements
     public void onBackPressed() {
 
         if (moduleListFragment instanceof ModuleListFragment
-                && ((ModuleListFragment) moduleListFragment).bSearch == true) {
+                && ((ModuleListFragment) moduleListFragment).bSearch) {
 
             final SearchView searchView = (SearchView) findViewById(R.id.searchView);
             final ImageView backView = (ImageView) findViewById(R.id.actionbar_back);
@@ -272,7 +260,6 @@ public class ModulesActivity extends BaseActivity implements
             final FragmentTransaction ft = getSupportFragmentManager()
                     .beginTransaction();
             ft.replace(R.id.list_frag_holder, moduleListFragment);
-            ModuleImageListFragment.bOpenFromImageFragment = false;
             ft.replace(R.id.list_imagefrag, new ModuleImageListFragment());
             ft.commit();
 

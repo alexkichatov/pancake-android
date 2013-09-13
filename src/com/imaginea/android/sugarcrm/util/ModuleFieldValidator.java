@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 2013 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,10 +19,19 @@ package com.imaginea.android.sugarcrm.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.util.Log;
+
 /**
  * The Class ModuleFieldValidator.
  */
 public class ModuleFieldValidator {
+
+    /**
+     * Instantiates a new module field validator.
+     */
+    private ModuleFieldValidator() {
+
+    }
 
     /**
      * isEmailValid: Validate email address using Java reg ex. This method
@@ -131,7 +141,7 @@ public class ModuleFieldValidator {
     public static boolean isNotEmpty(final String input) {
         boolean isValid = false;
         if (input == null) {
-
+            Log.i("TAG", "input is null");
         } else {
             if (input.length() > 0) {
                 isValid = true;

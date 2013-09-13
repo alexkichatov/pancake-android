@@ -49,9 +49,7 @@ public class SugarCRMOperations {
 
     private long mRawId;
 
-    private boolean mIsNewId;
-
-    private final static String TAG = "SugarCRMOperations";
+    private static final String TAG = "SugarCRMOperations";
 
     /**
      * Returns an instance of SugarCRMOperations instance for adding new module
@@ -72,9 +70,8 @@ public class SugarCRMOperations {
      */
     public static SugarCRMOperations createNewModuleItem(final Context context,
             final String moduleName, final String accountName,
-            final SugarBean sBean, final BatchOperation batchOperation) {
-        return new SugarCRMOperations(context, moduleName, accountName,
-                batchOperation);
+            final BatchOperation batchOperation) {
+        return new SugarCRMOperations(context, moduleName, batchOperation);
     }
 
     /**
@@ -102,11 +99,10 @@ public class SugarCRMOperations {
      */
     public static SugarCRMOperations createNewRelatedModuleItem(
             final Context context, final String moduleName,
-            final String relationModuleName, final String accountName,
-            final long rawId, final SugarBean sBean,
-            final SugarBean relatedBean, final BatchOperation batchOperation) {
+            final String relationModuleName, final long rawId,
+            final SugarBean sBean, final BatchOperation batchOperation) {
         return new SugarCRMOperations(context, moduleName, relationModuleName,
-                sBean, rawId, batchOperation);
+                rawId, batchOperation);
     }
 
     /**
@@ -130,7 +126,7 @@ public class SugarCRMOperations {
             final Context context, final String moduleName,
             final SugarBean sBean, final long rawId,
             final BatchOperation batchOperation) {
-        return new SugarCRMOperations(context, moduleName, sBean, rawId,
+        return new SugarCRMOperations(context, moduleName, rawId,
                 batchOperation);
     }
 
@@ -167,12 +163,10 @@ public class SugarCRMOperations {
      *            object.
      */
     public SugarCRMOperations(final Context context, final String moduleName,
-            final String relationModuleName, final String accountName,
-            final BatchOperation batchOperation) {
+            final String relationModuleName, final BatchOperation batchOperation) {
         this(context, batchOperation);
         mModuleName = moduleName;
         mRelatedModuleName = relationModuleName;
-        mIsNewId = true;
     }
 
     /**
@@ -190,10 +184,9 @@ public class SugarCRMOperations {
      *            object.
      */
     public SugarCRMOperations(final Context context, final String moduleName,
-            final String accountName, final BatchOperation batchOperation) {
+            final BatchOperation batchOperation) {
         this(context, batchOperation);
         mModuleName = moduleName;
-        mIsNewId = true;
 
     }
 
@@ -213,11 +206,9 @@ public class SugarCRMOperations {
      *            object.
      */
     public SugarCRMOperations(final Context context, final String moduleName,
-            final SugarBean sBean, final long rawId,
-            final BatchOperation batchOperation) {
+            final long rawId, final BatchOperation batchOperation) {
         this(context, batchOperation);
         mModuleName = moduleName;
-        mIsNewId = false;
         mRawId = rawId;
     }
 
@@ -239,12 +230,11 @@ public class SugarCRMOperations {
      *            object.
      */
     public SugarCRMOperations(final Context context, final String moduleName,
-            final String relationModuleName, final SugarBean sBean,
-            final long rawId, final BatchOperation batchOperation) {
+            final String relationModuleName, final long rawId,
+            final BatchOperation batchOperation) {
         this(context, batchOperation);
         mModuleName = moduleName;
         mRelatedModuleName = relationModuleName;
-        mIsNewId = false;
         mRawId = rawId;
     }
 
@@ -334,11 +324,6 @@ public class SugarCRMOperations {
 
         mBuilder = newInsertCpo(contentUri, mYield);
         mBuilder.withValues(mValues);
-        // TODO - check out the undocumented Value backreferences
-        if (mIsNewId) {
-            // mBuilder.withValueBackReference(SugarCRMContent.RECORD_ID,
-            // mBackReference);
-        }
         mYield = false;
         mBatchOperation.add(mBuilder.build());
     }

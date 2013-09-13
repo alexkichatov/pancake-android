@@ -10,7 +10,6 @@
  * Project Name : SugarCrm Pancake
  * FileName : EditModuleDetailActivity 
  ******************************************************************************/
-
 package com.imaginea.android.sugarcrm;
 
 import android.app.AlertDialog;

@@ -125,17 +125,6 @@
         android:src="@drawable/search"
         android:visibility="gone" />
 
-    <Spinner
-        android:id="@+id/orderBySpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/actionbar_moduleName"
-        android:gravity="center_vertical"
-        android:paddingLeft="5dp"
-        android:visibility="gone" />
-
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="400dp"

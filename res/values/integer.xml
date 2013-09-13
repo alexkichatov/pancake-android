@@ -12,6 +12,8 @@
    *******************************************************************************/
 -->
 <resources>
+
     <integer name="actionbar_popupheight">48</integer>
     <integer name="actionbar_dropdownoffset">0</integer>
+
 </resources>

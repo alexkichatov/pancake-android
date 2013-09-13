@@ -77,8 +77,9 @@ public class SBParser {
      *             the sugar crm exception
      */
     public SugarBean[] getSugarBeans() throws SugarCrmException {
-        if (mEntryListJson == null)
+        if (mEntryListJson == null) {
             return null;
+        }
         final SugarBean[] sugarBeans = new SugarBean[mEntryListJson.length()];
         for (int i = 0; i < mEntryListJson.length(); i++) {
             sugarBeans[i] = new SugarBean();
@@ -115,12 +116,14 @@ public class SBParser {
      */
     public Map<String, SugarBean[]> getRelationshipBeans(int index)
             throws SugarCrmException {
-        if (mRelationshipListJson == null)
+        if (mRelationshipListJson == null) {
             return null;
+        }
         final Map<String, SugarBean[]> relationshipList = new HashMap<String, SugarBean[]>();
         try {
-            if (index >= mRelationshipListJson.length())
+            if (index >= mRelationshipListJson.length()) {
                 return relationshipList;
+            }
             final JSONArray relationshipJson = mRelationshipListJson
                     .getJSONArray(index);
             if (relationshipJson.length() != 0) {

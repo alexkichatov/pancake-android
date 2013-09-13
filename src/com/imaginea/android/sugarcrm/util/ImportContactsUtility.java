@@ -25,6 +25,13 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsColumns;
  */
 public class ImportContactsUtility {
 
+    /**
+     * Instantiates a new import contacts utility.
+     */
+    private ImportContactsUtility() {
+
+    }
+
     /** The contacts api names vs module field names. */
     private static Map<String, String> contactsApiNamesVsModuleFieldNames;
 

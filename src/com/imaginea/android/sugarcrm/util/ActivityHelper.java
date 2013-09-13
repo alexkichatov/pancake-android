@@ -69,8 +69,7 @@ public class ActivityHelper {
         // Create the action bar
         final SimpleMenu menu = new SimpleMenu(mActivity);
         mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu);
-        for (int i = 0; i < menu.size(); i++) {
-        }
+
     }
 
     /**
@@ -111,8 +110,9 @@ public class ActivityHelper {
      * @return true, if successful
      */
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU)
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
             return true;
+        }
         return false;
     }
 
@@ -126,9 +126,9 @@ public class ActivityHelper {
      * @return true, if successful
      */
     public boolean onKeyLongPress(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK)
-            // goHome();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
+        }
         return false;
     }
 

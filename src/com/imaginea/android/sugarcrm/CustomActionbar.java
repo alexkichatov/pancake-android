@@ -28,12 +28,6 @@ import android.widget.TextView;
  */
 public class CustomActionbar extends RelativeLayout implements OnClickListener {
 
-    /** The m inflater. */
-    private final LayoutInflater mInflater;
-
-    /** The m action bar view. */
-    private final RelativeLayout mActionBarView;
-
     /** The m dashboard view. */
     private final ImageView mDashboardView;
 
@@ -53,8 +47,14 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
      */
     public CustomActionbar(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        /* The inflater. */
+        final LayoutInflater mInflater;
+
         mInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        /* The action bar view. */
+        final RelativeLayout mActionBarView;
 
         mActionBarView = (RelativeLayout) mInflater.inflate(
                 R.layout.custom_actionbar, null);
@@ -76,7 +76,6 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
      *            the new home action
      */
     public void setHomeAction(Action action) {
-        ModuleImageListFragment.bOpenFromImageFragment = false;
         mDashboardView.setOnClickListener(this);
         mDashboardView.setTag(action);
 
@@ -129,7 +128,7 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
          * 
          * @return the title
          */
-        public String getTitle();
+        String getTitle();
 
         /**
          * Perform action.
@@ -137,13 +136,13 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
          * @param view
          *            the view
          */
-        public void performAction(View view);
+        void performAction(View view);
     }
 
     /**
      * The Class AbstractAction.
      */
-    public static abstract class AbstractAction implements Action {
+    public abstract static class AbstractAction implements Action {
 
         /** The m title. */
         private String mTitle;
@@ -163,7 +162,7 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
          * @param title
          *            the title
          */
-        public AbstractAction(int drawable, String title) {
+        public AbstractAction(String title) {
             this();
             mTitle = title;
         }
@@ -216,9 +215,8 @@ public class CustomActionbar extends RelativeLayout implements OnClickListener {
          * @param title
          *            the title
          */
-        public IntentAction(Context context, Intent intent, int drawable,
-                String title) {
-            super(drawable, title);
+        public IntentAction(Context context, Intent intent, String title) {
+            super(title);
             mContext = context;
             mIntent = intent;
         }

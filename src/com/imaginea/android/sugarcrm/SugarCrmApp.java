@@ -35,14 +35,13 @@ public class SugarCrmApp extends Application {
 
     // easy ref to App instance for classes which do not have access to
     // Activity/Service context
-    /** The app. */
-    public static Application app = null;
+    /** The m app. */
+    public static Application mApp = null;
 
     /*
      * sessionId is obtained after successful login into the Sugar CRM instance
      * Now, sessionId will be available to the entire application Access the
-     * sessionId from any part of the application as follows : SugarCrmApp app =
-     * ((SugarCrmApp) getApplication()); app.getSessionId();
+     * sessionId from any part of the application as follows sessionId
      */
     /** The m session id. */
     private String mSessionId;
@@ -63,9 +62,9 @@ public class SugarCrmApp extends Application {
      */
     public String getSessionId() {
         final long currentTime = SystemClock.currentThreadTimeMillis();
-
+        final int TIME_INTERVAL = 30000;
         if (Util.isNetworkOn(this)
-                && (mSessionId == null || currentTime - mLastLoginTime > 30000)) {
+                && (mSessionId == null || currentTime - mLastLoginTime > TIME_INTERVAL)) {
             final String userName = SugarCrmSettings.getUsername(this);
             final SharedPreferences pref = PreferenceManager
                     .getDefaultSharedPreferences(this);
@@ -104,7 +103,6 @@ public class SugarCrmApp extends Application {
         Account userAccount = null;
         for (final Account account : accounts) {
             // never print the password
-            // Log.i(LOG_TAG, "user name is " + account.name);
             if (account.name.equals(userName)) {
                 userAccount = account;
                 break;
@@ -161,7 +159,7 @@ public class SugarCrmApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        app = this;
+        mApp = this;
 
         setDefaultModuleSortOrders();
     }

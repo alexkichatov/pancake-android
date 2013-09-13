@@ -17,12 +17,12 @@ package com.imaginea.android.sugarcrm.ui;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.EditModuleDetailActivity;
 import com.imaginea.android.sugarcrm.EditModuleDetailFragment;
+import com.imaginea.android.sugarcrm.ModuleCalendarFragment;
 import com.imaginea.android.sugarcrm.ModuleDetailActivity;
 import com.imaginea.android.sugarcrm.ModuleDetailFragment;
 import com.imaginea.android.sugarcrm.ModuleImageListFragment.OnItemSelectedListener;
@@ -43,10 +43,8 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
 
     private static final String TAG = RecentModuleMultiPaneActivity.class
             .getSimpleName();
-    RecentModuleListFragment moduleListFragment;
 
-    /* menu Drop Down */
-    LinearLayout menuLayout;
+    private static final String MODULE_DETAILS = "module_detail";
 
     /*
      * (non-Javadoc)
@@ -59,33 +57,33 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
         setContentView(R.layout.recent_modules);
 
         ModuleDetailFragment moduleDetailFragment = (ModuleDetailFragment) getSupportFragmentManager()
-                .findFragmentByTag("module_detail");
+                .findFragmentByTag(MODULE_DETAILS);
         moduleListFragment = (RecentModuleListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.list_frag);
-        menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
+        /* The m menu Drop Down Layout */
+        final LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.settings_menu);
         final TextView settingsView = (TextView) findViewById(R.id.settingsTv);
-        final View transparentView = (View) findViewById(R.id.transparent_view);
+        final View transparentView = findViewById(R.id.transparent_view);
         settingsView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 /* Set Action to Settings Button */
                 Util.startSettingsActivity(RecentModuleMultiPaneActivity.this);
-                menuLayout.setVisibility(View.GONE);
+                mMenuLayout.setVisibility(View.GONE);
                 transparentView.setVisibility(View.GONE);
             }
         });
 
         final TextView logoutView = (TextView) findViewById(R.id.logoutTv);
         logoutView.setOnClickListener(new View.OnClickListener() {
-
+            /* Set Action to Settings Button */
             @Override
             public void onClick(View v) {
-                /* Set Action to Settings Button */
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final String sessionId = ((SugarCrmApp) SugarCrmApp.app)
+                        final String sessionId = ((SugarCrmApp) SugarCrmApp.mApp)
                                 .getSessionId();
                         final String restUrl = SugarCrmSettings
                                 .getSugarRestUrl(RecentModuleMultiPaneActivity.this);
@@ -96,13 +94,14 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
                         }
                     }
                 }).start();
-
+                /* Launch the Logout Activity */
+                final View transparentView = findViewById(R.id.transparent_view);
                 Util.logout(RecentModuleMultiPaneActivity.this);
-                menuLayout.setVisibility(View.GONE);
+                mMenuLayout.setVisibility(View.GONE);
                 transparentView.setVisibility(View.GONE);
+
             }
         });
-
         if (moduleDetailFragment == null) {
             moduleDetailFragment = new ModuleDetailFragment();
             moduleDetailFragment
@@ -111,7 +110,7 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container_module_detail,
-                            moduleDetailFragment, "module_detail").commit();
+                            moduleDetailFragment, MODULE_DETAILS).commit();
         }
     }
 
@@ -127,11 +126,6 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
         super.onPostCreate(savedInstanceState);
         getActivityHelper().setupSubActivity();
 
-        final ViewGroup detailContainer = (ViewGroup) findViewById(R.id.fragment_container_module_detail);
-        if (detailContainer != null && detailContainer.getChildCount() > 0) {
-            findViewById(R.id.fragment_container_module_detail)
-                    .setBackgroundColor(0xffffffff);
-        }
     }
 
     /*
@@ -143,21 +137,18 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
     @Override
     public FragmentReplaceInfo onSubstituteFragmentForActivityLaunch(
             String activityClassName) {
-        if (RecentModuleActivity.class.getName().equals(activityClassName))
+        if (RecentModuleActivity.class.getName().equals(activityClassName)) {
             // this won't happen as Module list fragment is not reloaded
             return new FragmentReplaceInfo(RecentModuleListFragment.class,
                     "modules", R.id.fragment_container_module_detail);
-        else if (ModuleDetailActivity.class.getName().equals(activityClassName)) {
-            findViewById(R.id.fragment_container_module_detail)
-                    .setBackgroundColor(0xffffffff);
+        } else if (ModuleDetailActivity.class.getName().equals(
+                activityClassName)) {
             return new FragmentReplaceInfo(ModuleDetailFragment.class,
-                    "module_detail", R.id.fragment_container_module_detail);
+                    MODULE_DETAILS, R.id.fragment_container_module_detail);
         } else if (EditModuleDetailActivity.class.getName().equals(
                 activityClassName)) {
-            findViewById(R.id.fragment_container_module_detail)
-                    .setBackgroundColor(0xffffffff);
             return new FragmentReplaceInfo(EditModuleDetailFragment.class,
-                    "module_detail", R.id.fragment_container_module_detail);
+                    MODULE_DETAILS, R.id.fragment_container_module_detail);
         }
         return null;
     }
