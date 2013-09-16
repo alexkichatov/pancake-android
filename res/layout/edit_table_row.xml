@@ -28,9 +28,9 @@
     <AutoCompleteTextView
         android:id="@+id/editRowValue"
         style="@style/text_row_value"
-        android:layout_marginRight="30dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginRight="30dp"
         android:completionThreshold="2"
         android:singleLine="true" />
 

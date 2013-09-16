@@ -19,17 +19,17 @@
 
     <TextView
         android:id="@+id/headerview1"
+        style="@style/detail_header_text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="?android:text"
-       style="@style/detail_header_text1"/>
+        android:contentDescription="?android:text" />
 
     <TextView
         android:id="@+id/headerview2"
+        style="@style/detail_header_text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:autoLink="all"
-        android:contentDescription="?android:text"
-        style="@style/detail_header_text2"/>
+        android:contentDescription="?android:text" />
 
 </LinearLayout>

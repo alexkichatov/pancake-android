@@ -26,11 +26,11 @@ import android.os.IBinder;
  */
 public class SyncService extends Service {
 
-    /** The Constant sSyncAdapterLock. */
-    private static final Object sSyncAdapterLock = new Object();
+    /** The Constant m sSyncAdapterLock. */
+    private static Object msSyncAdapterLock = new Object();
 
-    /** The s sync adapter. */
-    private static SyncAdapter sSyncAdapter = null;
+    /** The m s sync adapter. */
+    private static SyncAdapter msSyncAdapter = null;
 
     /*
      * (non-Javadoc)
@@ -39,9 +39,9 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
-        synchronized (sSyncAdapterLock) {
-            if (sSyncAdapter == null) {
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+        synchronized (msSyncAdapterLock) {
+            if (msSyncAdapter == null) {
+                msSyncAdapter = new SyncAdapter(getApplicationContext(), true);
             }
         }
     }
@@ -53,6 +53,6 @@ public class SyncService extends Service {
      */
     @Override
     public IBinder onBind(Intent intent) {
-        return sSyncAdapter.getSyncAdapterBinder();
+        return msSyncAdapter.getSyncAdapterBinder();
     }
 }

@@ -174,11 +174,13 @@ public class SimpleMenuItem implements MenuItem {
      */
     @Override
     public Drawable getIcon() {
-        if (mIconDrawable != null)
+        if (mIconDrawable != null) {
             return mIconDrawable;
+        }
 
-        if (mIconResId != 0)
+        if (mIconResId != 0) {
             return mMenu.getResources().getDrawable(mIconResId);
+        }
 
         return null;
     }

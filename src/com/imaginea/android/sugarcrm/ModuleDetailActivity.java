@@ -27,9 +27,6 @@ import com.imaginea.android.sugarcrm.ui.BaseSinglePaneActivity;
  */
 public class ModuleDetailActivity extends BaseSinglePaneActivity {
 
-    /** The menu layout. */
-    LinearLayout menuLayout;
-
     /*
      * (non-Javadoc)
      * 
@@ -63,7 +60,8 @@ public class ModuleDetailActivity extends BaseSinglePaneActivity {
     @Override
     public boolean onKeyDown(int keycode, KeyEvent e) {
         final View transparentView = findViewById(R.id.transparent_view);
-        menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
+
+        final LinearLayout menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
 
         switch (keycode) {
         case KeyEvent.KEYCODE_MENU:

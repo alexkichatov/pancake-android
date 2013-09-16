@@ -46,19 +46,31 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
  */
 public class ModuleImageListFragment extends Fragment {
     private List<String> mModuleNames;
-    private View root;
-    ImageListAdapter adapter;
-    private static int storedpos = 0;
+
+    /** The m root. */
+    private View mRoot;
+
+    /** The m adapter. */
+    ImageListAdapter mAdapter;
+
+    /** The m storedpos. */
+    private static int mStoredpos = 0;
+
+    /** The b open from image fragment. */
     public static boolean bOpenFromImageFragment;
-    private OnItemSelectedListener listener;
+
+    private static int mInitialPosition = -2;
+
+    /** The m listener. */
+    private OnItemSelectedListener mListener;
 
     @Override
     public View onCreateView(final LayoutInflater inflater,
             final ViewGroup container, final Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.dashboardlist, container, false);
-        adapter = new ImageListAdapter(getActivity());
+        mRoot = inflater.inflate(R.layout.dashboardlist, container, false);
+        mAdapter = new ImageListAdapter(getActivity());
 
-        return root;
+        return mRoot;
     }
 
     /*
@@ -71,11 +83,11 @@ public class ModuleImageListFragment extends Fragment {
         super.onResume();
         if (mModuleNames.size() < 2) {
 
-            if (adapter != null) {
-                adapter.removeAll();
+            if (mAdapter != null) {
+                mAdapter.removeAll();
             }
             mModuleNames = ContentUtils.getModuleList(getActivity());
-            adapter.addItems(mModuleNames);
+            mAdapter.addItems(mModuleNames);
         }
 
     }
@@ -92,7 +104,7 @@ public class ModuleImageListFragment extends Fragment {
         if ((activity instanceof ModuleDetailsMultiPaneActivity)
                 || activity instanceof ModulesActivity) {
             Log.e("OnAttach", "listener updated");
-            listener = (OnItemSelectedListener) activity;
+            mListener = (OnItemSelectedListener) activity;
         }
     }
 
@@ -116,16 +128,24 @@ public class ModuleImageListFragment extends Fragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final ListView listview = (ListView) root.findViewById(R.id.imagelist);
-        listview.setAdapter(adapter);
+        final ListView listview = (ListView) mRoot.findViewById(R.id.imagelist);
+        listview.setAdapter(mAdapter);
 
         mModuleNames = ContentUtils.getModuleList(getActivity());
 
-        adapter.addItems(mModuleNames);
+        mAdapter.addItems(mModuleNames);
 
-        if (bOpenFromImageFragment == true) {
-            adapter.setSelectedPosition(storedpos);
-            bOpenFromImageFragment = false;
+        final Intent intent = getActivity().getIntent();
+
+        final Bundle extras = intent.getExtras();
+
+        if (extras != null) {
+            bOpenFromImageFragment = extras
+                    .getBoolean(Util.isOpenFromImageFragment);
+        }
+
+        if (bOpenFromImageFragment) {
+            mAdapter.setSelectedPosition(mStoredpos);
         }
 
         listview.setOnItemClickListener(new OnItemClickListener() {
@@ -133,8 +153,8 @@ public class ModuleImageListFragment extends Fragment {
             public void onItemClick(final AdapterView<?> arg0, final View view,
                     final int arg2, final long arg3) {
 
-                adapter.setSelectedPosition(arg2);
-                storedpos = arg2;
+                mAdapter.setSelectedPosition(arg2);
+                mStoredpos = arg2;
                 disableSearchActionBar();
                 viewModuleList(view);
             }
@@ -163,13 +183,13 @@ public class ModuleImageListFragment extends Fragment {
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         myIntent.putExtra(Util.ROW_ID, "1");
         myIntent.putExtra(RestConstants.MODULE_NAME, moduleName);
-        bOpenFromImageFragment = true;
-        if (listener != null) {
+        myIntent.putExtra(Util.isOpenFromImageFragment, true);
+        if (mListener != null) {
             Log.d("onClick viewModuleList listener", moduleName);
-            listener.onItemSelected(moduleName);
+            mListener.onItemSelected(moduleName);
         } else {
             startActivity(myIntent);
-            adapter.setSelectedPosition(-2);
+            mAdapter.setSelectedPosition(mInitialPosition);
 
         }
     }
@@ -186,7 +206,7 @@ public class ModuleImageListFragment extends Fragment {
      * @see OnItemSelectedEvent
      */
     public interface OnItemSelectedListener {
-        public void onItemSelected(String moduleName);
+        void onItemSelected(String moduleName);
     }
 
     /**
@@ -195,7 +215,7 @@ public class ModuleImageListFragment extends Fragment {
     private class ImageListAdapter extends BaseAdapter {
 
         private final Context mContext;
-        private final ArrayList<String> mList = new ArrayList<String>();
+        private final List<String> mList = new ArrayList<String>();
         private int selectedPos = -1;
 
         public ImageListAdapter(final Context context) {
@@ -260,9 +280,8 @@ public class ModuleImageListFragment extends Fragment {
                 final ViewGroup parent) {
 
             LinearLayout ls;
-
-            if (convertView == null) { // if it's not recycled, initialize some
-                                       // attributes
+            /* if it's not recycled, initialize some attributes */
+            if (convertView == null) {
                 final LayoutInflater inflater = (LayoutInflater) mContext
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 ls = (LinearLayout) inflater.inflate(
@@ -318,7 +337,7 @@ public class ModuleImageListFragment extends Fragment {
          */
         public void setSelectedPosition(int pos) {
             selectedPos = pos;
-            if (selectedPos != -2) {
+            if (selectedPos != mInitialPosition) {
                 notifyDataSetChanged();
             }
         }

@@ -31,6 +31,13 @@ import org.json.JSONObject;
 public class SBParseHelper {
 
     /**
+     * Instantiates a new sB parse helper.
+     */
+    private SBParseHelper() {
+
+    }
+
+    /**
      * Gets the name value pairs.
      * 
      * @param nameValueList

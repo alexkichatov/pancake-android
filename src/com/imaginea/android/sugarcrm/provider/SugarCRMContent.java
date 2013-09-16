@@ -30,6 +30,14 @@ import com.imaginea.android.sugarcrm.util.Util;
  */
 public final class SugarCRMContent {
 
+    private static final String SCHEME = "content://";
+
+    /** The Constant SORTBY_ASC. */
+    private static final String SORTBY_ASC = " ASC";
+
+    /** The Constant SORTBY_DESC. */
+    private static final String SORTBY_DESC = " DESC";
+
     /** The Constant AUTHORITY. */
     public static final String AUTHORITY = SugarCRMProvider.AUTHORITY;
 
@@ -45,17 +53,21 @@ public final class SugarCRMContent {
     /** The Constant ROLE_ROW_ID. */
     public static final String ROLE_ROW_ID = "role_id";
 
+    private SugarCRMContent() {
+
+    }
+
     /**
      * The Class Accounts.
      */
     public static final class Accounts implements AccountsColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.ACCOUNTS);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -95,100 +107,100 @@ public final class SugarCRMContent {
     public interface AccountsColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The EMAI l1. */
-        public String EMAIL1 = ModuleFields.EMAIL1;
+        String EMAIL1 = ModuleFields.EMAIL1;
 
         /** The parent name. */
-        public String PARENT_NAME = ModuleFields.PARENT_NAME;
+        String PARENT_NAME = ModuleFields.PARENT_NAME;
 
         /** The phone office. */
-        public String PHONE_OFFICE = ModuleFields.PHONE_OFFICE;
+        String PHONE_OFFICE = ModuleFields.PHONE_OFFICE;
 
         /** The phone fax. */
-        public String PHONE_FAX = ModuleFields.PHONE_FAX;
+        String PHONE_FAX = ModuleFields.PHONE_FAX;
 
         /** The website. */
-        public String WEBSITE = ModuleFields.WEBSITE;
+        String WEBSITE = ModuleFields.WEBSITE;
 
         /** The employees. */
-        public String EMPLOYEES = ModuleFields.EMPLOYEES;
+        String EMPLOYEES = ModuleFields.EMPLOYEES;
 
         /** The ticker symbol. */
-        public String TICKER_SYMBOL = ModuleFields.TICKER_SYMBOL;
+        String TICKER_SYMBOL = ModuleFields.TICKER_SYMBOL;
 
         /** The annual revenue. */
-        public String ANNUAL_REVENUE = ModuleFields.ANNUAL_REVENUE;
+        String ANNUAL_REVENUE = ModuleFields.ANNUAL_REVENUE;
 
         /** The billing address street. */
-        public String BILLING_ADDRESS_STREET = ModuleFields.BILLING_ADDRESS_STREET;
+        String BILLING_ADDRESS_STREET = ModuleFields.BILLING_ADDRESS_STREET;
 
         /** The BILLIN g_ addres s_ stree t_2. */
-        public String BILLING_ADDRESS_STREET_2 = ModuleFields.BILLING_ADDRESS_STREET_2;
+        String BILLING_ADDRESS_STREET_2 = ModuleFields.BILLING_ADDRESS_STREET_2;
 
         /** The BILLIN g_ addres s_ stree t_3. */
-        public String BILLING_ADDRESS_STREET_3 = ModuleFields.BILLING_ADDRESS_STREET_3;
+        String BILLING_ADDRESS_STREET_3 = ModuleFields.BILLING_ADDRESS_STREET_3;
 
         /** The BILLIN g_ addres s_ stree t_4. */
-        public String BILLING_ADDRESS_STREET_4 = ModuleFields.BILLING_ADDRESS_STREET_4;
+        String BILLING_ADDRESS_STREET_4 = ModuleFields.BILLING_ADDRESS_STREET_4;
 
         /** The billing address city. */
-        public String BILLING_ADDRESS_CITY = ModuleFields.BILLING_ADDRESS_CITY;
+        String BILLING_ADDRESS_CITY = ModuleFields.BILLING_ADDRESS_CITY;
 
         /** The billing address state. */
-        public String BILLING_ADDRESS_STATE = ModuleFields.BILLING_ADDRESS_STATE;
+        String BILLING_ADDRESS_STATE = ModuleFields.BILLING_ADDRESS_STATE;
 
         /** The billing address postalcode. */
-        public String BILLING_ADDRESS_POSTALCODE = ModuleFields.BILLING_ADDRESS_POSTALCODE;;
+        String BILLING_ADDRESS_POSTALCODE = ModuleFields.BILLING_ADDRESS_POSTALCODE;;
 
         /** The billing address country. */
-        public String BILLING_ADDRESS_COUNTRY = ModuleFields.BILLING_ADDRESS_COUNTRY;;
+        String BILLING_ADDRESS_COUNTRY = ModuleFields.BILLING_ADDRESS_COUNTRY;;
 
         /** The shipping address street. */
-        public String SHIPPING_ADDRESS_STREET = ModuleFields.SHIPPING_ADDRESS_STREET;
+        String SHIPPING_ADDRESS_STREET = ModuleFields.SHIPPING_ADDRESS_STREET;
 
         /** The SHIPPIN g_ addres s_ stree t_2. */
-        public String SHIPPING_ADDRESS_STREET_2 = ModuleFields.SHIPPING_ADDRESS_STREET_2;
+        String SHIPPING_ADDRESS_STREET_2 = ModuleFields.SHIPPING_ADDRESS_STREET_2;
 
         /** The SHIPPIN g_ addres s_ stree t_3. */
-        public String SHIPPING_ADDRESS_STREET_3 = ModuleFields.SHIPPING_ADDRESS_STREET_3;
+        String SHIPPING_ADDRESS_STREET_3 = ModuleFields.SHIPPING_ADDRESS_STREET_3;
 
         /** The SHIPPIN g_ addres s_ stree t_4. */
-        public String SHIPPING_ADDRESS_STREET_4 = ModuleFields.SHIPPING_ADDRESS_STREET_4;
+        String SHIPPING_ADDRESS_STREET_4 = ModuleFields.SHIPPING_ADDRESS_STREET_4;
 
         /** The shipping address city. */
-        public String SHIPPING_ADDRESS_CITY = ModuleFields.SHIPPING_ADDRESS_CITY;
+        String SHIPPING_ADDRESS_CITY = ModuleFields.SHIPPING_ADDRESS_CITY;
 
         /** The shipping address state. */
-        public String SHIPPING_ADDRESS_STATE = ModuleFields.SHIPPING_ADDRESS_STATE;
+        String SHIPPING_ADDRESS_STATE = ModuleFields.SHIPPING_ADDRESS_STATE;
 
         /** The shipping address postalcode. */
-        public String SHIPPING_ADDRESS_POSTALCODE = ModuleFields.SHIPPING_ADDRESS_POSTALCODE;
+        String SHIPPING_ADDRESS_POSTALCODE = ModuleFields.SHIPPING_ADDRESS_POSTALCODE;
 
         /** The shipping address country. */
-        public String SHIPPING_ADDRESS_COUNTRY = ModuleFields.SHIPPING_ADDRESS_COUNTRY;
+        String SHIPPING_ADDRESS_COUNTRY = ModuleFields.SHIPPING_ADDRESS_COUNTRY;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
     }
 
@@ -198,7 +210,7 @@ public final class SugarCRMContent {
     public static final class Contacts implements ContactsColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.CONTACTS);
 
         /** The Constant ID_COLUMN. */
@@ -232,7 +244,7 @@ public final class SugarCRMContent {
         public static final int EMAIL1_COLUMN = 9;
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = FIRST_NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = FIRST_NAME + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -260,54 +272,53 @@ public final class SugarCRMContent {
     public interface ContactsColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The first name. */
-        public String FIRST_NAME = ModuleFields.FIRST_NAME;
+        String FIRST_NAME = ModuleFields.FIRST_NAME;
 
         /** The last name. */
-        public String LAST_NAME = ModuleFields.LAST_NAME;
+        String LAST_NAME = ModuleFields.LAST_NAME;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The phone mobile. */
-        public String PHONE_MOBILE = ModuleFields.PHONE_MOBILE;
+        String PHONE_MOBILE = ModuleFields.PHONE_MOBILE;
 
         /** The phone work. */
-        public String PHONE_WORK = ModuleFields.PHONE_WORK;
+        String PHONE_WORK = ModuleFields.PHONE_WORK;
 
         /** The EMAI l1. */
-        public String EMAIL1 = ModuleFields.EMAIL1;
+        String EMAIL1 = ModuleFields.EMAIL1;
 
         /** The created by. */
-        public String CREATED_BY = ModuleFields.CREATED_BY;
+        String CREATED_BY = ModuleFields.CREATED_BY;
 
         /** The modified by name. */
-        public String MODIFIED_BY_NAME = ModuleFields.MODIFIED_BY_NAME;
+        String MODIFIED_BY_NAME = ModuleFields.MODIFIED_BY_NAME;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
-        // TODO: may move out to separate table having the contact beanId and
         // accountId
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
     }
 
     /**
@@ -316,16 +327,16 @@ public final class SugarCRMContent {
     public interface AccountsContactsColumns {
 
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         /** The contact id. */
-        public String CONTACT_ID = ModuleFields.CONTACT_ID;
+        String CONTACT_ID = ModuleFields.CONTACT_ID;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
     }
 
     /**
@@ -334,16 +345,16 @@ public final class SugarCRMContent {
     public interface AccountsOpportunitiesColumns {
 
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         /** The opportunity id. */
-        public String OPPORTUNITY_ID = ModuleFields.OPPORTUNITY_ID;
+        String OPPORTUNITY_ID = ModuleFields.OPPORTUNITY_ID;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
     }
 
     /**
@@ -352,16 +363,16 @@ public final class SugarCRMContent {
     public interface AccountsCasesColumns {
 
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         /** The case id. */
-        public String CASE_ID = Util.CASE_ID;
+        String CASE_ID = Util.CASE_ID;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
     }
 
     /**
@@ -370,16 +381,16 @@ public final class SugarCRMContent {
     public interface ContactsOpportunitiesColumns {
 
         /** The contact id. */
-        public String CONTACT_ID = ModuleFields.CONTACT_ID;
+        String CONTACT_ID = ModuleFields.CONTACT_ID;
 
         /** The opportunity id. */
-        public String OPPORTUNITY_ID = ModuleFields.OPPORTUNITY_ID;
+        String OPPORTUNITY_ID = ModuleFields.OPPORTUNITY_ID;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
     }
 
     /**
@@ -388,17 +399,17 @@ public final class SugarCRMContent {
     public interface ContactsCasesColumns {
 
         /** The contact id. */
-        public String CONTACT_ID = ModuleFields.CONTACT_ID;
+        String CONTACT_ID = ModuleFields.CONTACT_ID;
 
         // TODO - not really a todo but a cross check to see
         /** The case id. */
-        public String CASE_ID = Util.CASE_ID;
+        String CASE_ID = Util.CASE_ID;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
     }
 
     /**
@@ -407,25 +418,25 @@ public final class SugarCRMContent {
     public interface RecentColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The actual id. */
-        public String ACTUAL_ID = ModuleFields.ACTUAL_RECORD_ID;
+        String ACTUAL_ID = ModuleFields.ACTUAL_RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The ref module name. */
-        public String REF_MODULE_NAME = ModuleFields.MODULE_NAME;
+        String REF_MODULE_NAME = ModuleFields.MODULE_NAME;
 
         /** The NAM e_1. */
-        public String NAME_1 = ModuleFields.NAME_1;
+        String NAME_1 = ModuleFields.NAME_1;
 
         /** The NAM e_2. */
-        public String NAME_2 = ModuleFields.NAME_2;
+        String NAME_2 = ModuleFields.NAME_2;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
     }
 
@@ -435,12 +446,12 @@ public final class SugarCRMContent {
     public static final class Recent implements RecentColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.RECENT);
 
         /** The default sort order for this table. */
         public static final String DEFAULT_SORT_ORDER = ModuleFields.NAME
-                + " ASC";
+                + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -462,12 +473,12 @@ public final class SugarCRMContent {
     public static final class Leads implements LeadsColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.LEADS);
 
         /** The default sort order for this table. */
         public static final String DEFAULT_SORT_ORDER = ModuleFields.LAST_NAME
-                + " ASC";
+                + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -475,7 +486,7 @@ public final class SugarCRMContent {
 
         /** The Constant LIST_VIEW_PROJECTION. */
         public static final String[] LIST_VIEW_PROJECTION = { FIRST_NAME,
-        	LAST_NAME, ACCOUNT_NAME, EMAIL1 };
+                LAST_NAME, ACCOUNT_NAME, EMAIL1 };
 
         /** The Constant DETAILS_PROJECTION. */
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -492,55 +503,55 @@ public final class SugarCRMContent {
     public interface LeadsColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The first name. */
-        public String FIRST_NAME = ModuleFields.FIRST_NAME;
+        String FIRST_NAME = ModuleFields.FIRST_NAME;
 
         /** The last name. */
-        public String LAST_NAME = ModuleFields.LAST_NAME;
+        String LAST_NAME = ModuleFields.LAST_NAME;
 
         /** The lead source. */
-        public String LEAD_SOURCE = ModuleFields.LEAD_SOURCE;
+        String LEAD_SOURCE = ModuleFields.LEAD_SOURCE;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The phone mobile. */
-        public String PHONE_MOBILE = ModuleFields.PHONE_MOBILE;
+        String PHONE_MOBILE = ModuleFields.PHONE_MOBILE;
 
         /** The EMAI l1. */
-        public String EMAIL1 = ModuleFields.EMAIL1;
+        String EMAIL1 = ModuleFields.EMAIL1;
 
         /** The phone work. */
-        public String PHONE_WORK = ModuleFields.PHONE_WORK;
+        String PHONE_WORK = ModuleFields.PHONE_WORK;
 
         /** The phone fax. */
-        public String PHONE_FAX = ModuleFields.PHONE_FAX;
+        String PHONE_FAX = ModuleFields.PHONE_FAX;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The title. */
-        public String TITLE = ModuleFields.TITLE;
+        String TITLE = ModuleFields.TITLE;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
     }
 
     /**
@@ -549,11 +560,11 @@ public final class SugarCRMContent {
     public static final class Opportunities implements OpportunitiesColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.OPPORTUNITIES);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -578,87 +589,85 @@ public final class SugarCRMContent {
     public interface OpportunitiesColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The modified user id. */
-        public String MODIFIED_USER_ID = ModuleFields.MODIFIED_USER_ID;
+        String MODIFIED_USER_ID = ModuleFields.MODIFIED_USER_ID;
 
         /** The modified by name. */
-        public String MODIFIED_BY_NAME = ModuleFields.MODIFIED_BY_NAME;
+        String MODIFIED_BY_NAME = ModuleFields.MODIFIED_BY_NAME;
 
         /** The created by. */
-        public String CREATED_BY = ModuleFields.CREATED_BY;
+        String CREATED_BY = ModuleFields.CREATED_BY;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
 
         /** The assigned user id. */
-        public String ASSIGNED_USER_ID = ModuleFields.ASSIGNED_USER_ID;
+        String ASSIGNED_USER_ID = ModuleFields.ASSIGNED_USER_ID;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
-        // public String CREATED_BY_NAME = ModuleFields.T;
-        //
         /** The opportunity type. */
-        public String OPPORTUNITY_TYPE = ModuleFields.OPPORTUNITY_TYPE;
+        String OPPORTUNITY_TYPE = ModuleFields.OPPORTUNITY_TYPE;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The campaign name. */
-        public String CAMPAIGN_NAME = ModuleFields.CAMPAIGN_NAME;
+        String CAMPAIGN_NAME = ModuleFields.CAMPAIGN_NAME;
 
         /** The lead source. */
-        public String LEAD_SOURCE = ModuleFields.LEAD_SOURCE;
+        String LEAD_SOURCE = ModuleFields.LEAD_SOURCE;
 
         /** The amount. */
-        public String AMOUNT = ModuleFields.AMOUNT;
+        String AMOUNT = ModuleFields.AMOUNT;
 
         /** The amount usdollar. */
-        public String AMOUNT_USDOLLAR = ModuleFields.AMOUNT_USDOLLAR;
+        String AMOUNT_USDOLLAR = ModuleFields.AMOUNT_USDOLLAR;
 
         /** The currency id. */
-        public String CURRENCY_ID = ModuleFields.CURRENCY_ID;
+        String CURRENCY_ID = ModuleFields.CURRENCY_ID;
 
         /** The currency name. */
-        public String CURRENCY_NAME = ModuleFields.CURRENCY_NAME;
+        String CURRENCY_NAME = ModuleFields.CURRENCY_NAME;
 
         /** The currency symbol. */
-        public String CURRENCY_SYMBOL = ModuleFields.CURRENCY_SYMBOL;
+        String CURRENCY_SYMBOL = ModuleFields.CURRENCY_SYMBOL;
 
         /** The date closed. */
-        public String DATE_CLOSED = ModuleFields.DATE_CLOSED;
+        String DATE_CLOSED = ModuleFields.DATE_CLOSED;
 
         /** The next step. */
-        public String NEXT_STEP = ModuleFields.NEXT_STEP;
+        String NEXT_STEP = ModuleFields.NEXT_STEP;
 
         /** The sales stage. */
-        public String SALES_STAGE = ModuleFields.SALES_STAGE;
+        String SALES_STAGE = ModuleFields.SALES_STAGE;
 
         /** The probability. */
-        public String PROBABILITY = ModuleFields.PROBABILITY;
+        String PROBABILITY = ModuleFields.PROBABILITY;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The account id. */
-        public String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
+        String ACCOUNT_ID = ModuleFields.ACCOUNT_ID;
 
     }
 
@@ -668,11 +677,12 @@ public final class SugarCRMContent {
     public static final class Cases implements CasesColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.CASES);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = DATE_MODIFIED + " ASC";
+        public static final String DEFAULT_SORT_ORDER = DATE_MODIFIED
+                + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -696,46 +706,46 @@ public final class SugarCRMContent {
     public interface CasesColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The case number. */
-        public String CASE_NUMBER = ModuleFields.CASE_NUMBER;
+        String CASE_NUMBER = ModuleFields.CASE_NUMBER;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The priority. */
-        public String PRIORITY = ModuleFields.PRIORITY;
+        String PRIORITY = ModuleFields.PRIORITY;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The status. */
-        public String STATUS = ModuleFields.STATUS;
+        String STATUS = ModuleFields.STATUS;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
 
         /** The resolution. */
-        public String RESOLUTION = ModuleFields.RESOLUTION;
+        String RESOLUTION = ModuleFields.RESOLUTION;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
     }
 
@@ -745,11 +755,11 @@ public final class SugarCRMContent {
     public static final class Calls implements CallsColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.CALLS);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
+        public static final String DEFAULT_SORT_ORDER = START_DATE + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -773,46 +783,46 @@ public final class SugarCRMContent {
     public interface CallsColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The status. */
-        public String STATUS = ModuleFields.STATUS;
+        String STATUS = ModuleFields.STATUS;
 
         /** The start date. */
-        public String START_DATE = ModuleFields.DATE_START;
+        String START_DATE = ModuleFields.DATE_START;
 
         /** The duration hours. */
-        public String DURATION_HOURS = ModuleFields.DURATION_HOURS;
+        String DURATION_HOURS = ModuleFields.DURATION_HOURS;
 
         /** The duration minutes. */
-        public String DURATION_MINUTES = ModuleFields.DURATION_MINUTES;
+        String DURATION_MINUTES = ModuleFields.DURATION_MINUTES;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
     }
 
@@ -822,11 +832,11 @@ public final class SugarCRMContent {
     public static final class Meetings implements MeetingsColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.MEETINGS);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
+        public static final String DEFAULT_SORT_ORDER = START_DATE + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -838,10 +848,9 @@ public final class SugarCRMContent {
 
         /** The Constant DETAILS_PROJECTION. */
         public static final String[] DETAILS_PROJECTION = { RECORD_ID, BEAN_ID,
-                NAME, START_DATE, DURATION_HOURS,/* ACCOUNT_NAME */
-                STATUS, LOCATION, DURATION_MINUTES, ASSIGNED_USER_NAME,
-                DESCRIPTION, CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED,
-                DELETED };
+                NAME, START_DATE, DURATION_HOURS, STATUS, LOCATION,
+                DURATION_MINUTES, ASSIGNED_USER_NAME, DESCRIPTION,
+                CREATED_BY_NAME, DATE_ENTERED, DATE_MODIFIED, DELETED };
 
     }
 
@@ -851,49 +860,49 @@ public final class SugarCRMContent {
     public interface MeetingsColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The status. */
-        public String STATUS = ModuleFields.STATUS;
+        String STATUS = ModuleFields.STATUS;
 
         /** The location. */
-        public String LOCATION = ModuleFields.LOCATION;
+        String LOCATION = ModuleFields.LOCATION;
 
         /** The start date. */
-        public String START_DATE = ModuleFields.DATE_START;
+        String START_DATE = ModuleFields.DATE_START;
 
         /** The duration hours. */
-        public String DURATION_HOURS = ModuleFields.DURATION_HOURS;
+        String DURATION_HOURS = ModuleFields.DURATION_HOURS;
 
         /** The duration minutes. */
-        public String DURATION_MINUTES = ModuleFields.DURATION_MINUTES;
+        String DURATION_MINUTES = ModuleFields.DURATION_MINUTES;
 
         /** The account name. */
-        public String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
+        String ACCOUNT_NAME = ModuleFields.ACCOUNT_NAME;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
     }
 
@@ -903,11 +912,11 @@ public final class SugarCRMContent {
     public static final class Campaigns implements CampaignColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.CAMPAIGNS);
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = START_DATE + " ASC";
+        public static final String DEFAULT_SORT_ORDER = START_DATE + SORTBY_ASC;
 
         /** The Constant LIST_PROJECTION. */
         public static final String[] LIST_PROJECTION = { RECORD_ID, BEAN_ID,
@@ -932,64 +941,64 @@ public final class SugarCRMContent {
     public interface CampaignColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The bean id. */
-        public String BEAN_ID = SUGAR_BEAN_ID;
+        String BEAN_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The status. */
-        public String STATUS = ModuleFields.STATUS;
+        String STATUS = ModuleFields.STATUS;
 
         /** The start date. */
-        public String START_DATE = ModuleFields.START_DATE;
+        String START_DATE = ModuleFields.START_DATE;
 
         /** The end date. */
-        public String END_DATE = ModuleFields.END_DATE;
+        String END_DATE = ModuleFields.END_DATE;
 
         /** The campaign type. */
-        public String CAMPAIGN_TYPE = ModuleFields.CAMPAIGN_TYPE;
+        String CAMPAIGN_TYPE = ModuleFields.CAMPAIGN_TYPE;
 
         /** The budget. */
-        public String BUDGET = ModuleFields.BUDGET;
+        String BUDGET = ModuleFields.BUDGET;
 
         /** The actual cost. */
-        public String ACTUAL_COST = ModuleFields.ACTUAL_COST;
+        String ACTUAL_COST = ModuleFields.ACTUAL_COST;
 
         /** The expected cost. */
-        public String EXPECTED_COST = ModuleFields.EXPECTED_COST;
+        String EXPECTED_COST = ModuleFields.EXPECTED_COST;
 
         /** The expected revenue. */
-        public String EXPECTED_REVENUE = ModuleFields.EXPECTED_REVENUE;
+        String EXPECTED_REVENUE = ModuleFields.EXPECTED_REVENUE;
 
         /** The impressions. */
-        public String IMPRESSIONS = ModuleFields.IMPRESSIONS;
+        String IMPRESSIONS = ModuleFields.IMPRESSIONS;
 
         /** The objective. */
-        public String OBJECTIVE = ModuleFields.OBJECTIVE;
+        String OBJECTIVE = ModuleFields.OBJECTIVE;
 
         /** The frequency. */
-        public String FREQUENCY = ModuleFields.FREQUENCY;
+        String FREQUENCY = ModuleFields.FREQUENCY;
 
         /** The assigned user name. */
-        public String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
+        String ASSIGNED_USER_NAME = ModuleFields.ASSIGNED_USER_NAME;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
 
         /** The date entered. */
-        public String DATE_ENTERED = ModuleFields.DATE_ENTERED;
+        String DATE_ENTERED = ModuleFields.DATE_ENTERED;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The deleted. */
-        public String DELETED = ModuleFields.DELETED;
+        String DELETED = ModuleFields.DELETED;
 
         /** The created by name. */
-        public String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
+        String CREATED_BY_NAME = ModuleFields.CREATED_BY_NAME;
 
     }
 
@@ -1003,10 +1012,11 @@ public final class SugarCRMContent {
                 MODULE_NAME, LAST_SYNC_TIME };
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = MODULE_NAME + " DESC";
+        public static final String DEFAULT_SORT_ORDER = MODULE_NAME
+                + SORTBY_DESC;
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES);
     }
 
@@ -1016,19 +1026,19 @@ public final class SugarCRMContent {
     public interface ModuleColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The module name. */
-        public String MODULE_NAME = RestConstants.NAME;
+        String MODULE_NAME = RestConstants.NAME;
 
         /** The last sync time. */
-        public String LAST_SYNC_TIME = "last_sync_time";
+        String LAST_SYNC_TIME = "last_sync_time";
     }
 
     /**
-     * The Class ModuleFields_TableInfo.
+     * The Class ModuleFieldsTableInfo.
      */
-    public static final class ModuleFields_TableInfo implements
+    public static final class ModuleFieldsTableInfo implements
             ModuleFieldColumns {
 
         /** The Constant DETAILS_PROJECTION. */
@@ -1036,10 +1046,10 @@ public final class SugarCRMContent {
                 LABEL, TYPE, IS_REQUIRED, MODULE_ID };
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " DESC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_DESC;
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES_FIELDS);
     }
 
@@ -1049,22 +1059,22 @@ public final class SugarCRMContent {
     public interface ModuleFieldColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The name. */
-        public String NAME = RestConstants.NAME;
+        String NAME = RestConstants.NAME;
 
         /** The label. */
-        public String LABEL = RestConstants.LABEL;
+        String LABEL = RestConstants.LABEL;
 
         /** The type. */
-        public String TYPE = RestConstants.TYPE;
+        String TYPE = RestConstants.TYPE;
 
         /** The is required. */
-        public String IS_REQUIRED = RestConstants.REQUIRED;
+        String IS_REQUIRED = RestConstants.REQUIRED;
 
         /** The module id. */
-        public String MODULE_ID = MODULE_ROW_ID;
+        String MODULE_ID = MODULE_ROW_ID;
     }
 
     /**
@@ -1077,7 +1087,7 @@ public final class SugarCRMContent {
                 TYPE, RELATIONSHIP, MODULE, BEAN_NAME, MODULE_ID };
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " DESC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_DESC;
     }
 
     /**
@@ -1086,25 +1096,25 @@ public final class SugarCRMContent {
     public interface LinkFieldColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The name. */
-        public String NAME = RestConstants.NAME;
+        String NAME = RestConstants.NAME;
 
         /** The type. */
-        public String TYPE = RestConstants.TYPE;
+        String TYPE = RestConstants.TYPE;
 
         /** The relationship. */
-        public String RELATIONSHIP = RestConstants.RELATIONSHIP;
+        String RELATIONSHIP = RestConstants.RELATIONSHIP;
 
         /** The module. */
-        public String MODULE = RestConstants.MODULE;
+        String MODULE = RestConstants.MODULE;
 
         /** The bean name. */
-        public String BEAN_NAME = RestConstants.BEAN_NAME;
+        String BEAN_NAME = RestConstants.BEAN_NAME;
 
         /** The module id. */
-        public String MODULE_ID = MODULE_ROW_ID;
+        String MODULE_ID = MODULE_ROW_ID;
     }
 
     /**
@@ -1113,28 +1123,28 @@ public final class SugarCRMContent {
     public interface SyncColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The sync id. */
-        public String SYNC_ID = Util.SYNC_ID;
+        String SYNC_ID = Util.SYNC_ID;
 
         /** The sync related id. */
-        public String SYNC_RELATED_ID = Util.SYNC_RELATED_ID;
+        String SYNC_RELATED_ID = Util.SYNC_RELATED_ID;
 
         /** The sync command. */
-        public String SYNC_COMMAND = Util.SYNC_COMMAND;
+        String SYNC_COMMAND = Util.SYNC_COMMAND;
 
         /** The module. */
-        public String MODULE = RestConstants.MODULE;
+        String MODULE = RestConstants.MODULE;
 
         /** The related module. */
-        public String RELATED_MODULE = Util.RELATED_MODULE;
+        String RELATED_MODULE = Util.RELATED_MODULE;
 
         /** The date modified. */
-        public String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
+        String DATE_MODIFIED = ModuleFields.DATE_MODIFIED;
 
         /** The sync status. */
-        public String SYNC_STATUS = Util.STATUS;
+        String SYNC_STATUS = Util.STATUS;
 
     }
 
@@ -1142,11 +1152,6 @@ public final class SugarCRMContent {
      * The Class Sync.
      */
     public static final class Sync implements SyncColumns {
-
-        // public static final Uri CONTENT_URI = Uri.parse("content://" +
-        // SugarCRMProvider.AUTHORITY
-        // + "/" + Util.LEADS);
-
         /** The Constant ID_COLUMN. */
         public static final int ID_COLUMN = 0;
 
@@ -1173,7 +1178,7 @@ public final class SugarCRMContent {
 
         /** The default sort order for this table. */
         public static final String DEFAULT_SORT_ORDER = ModuleFields.DATE_MODIFIED
-                + " DESC";
+                + SORTBY_DESC;
 
         /** The Constant DETAILS_PROJECTION. */
         public static final String[] DETAILS_PROJECTION = { ID, SYNC_ID,
@@ -1188,19 +1193,19 @@ public final class SugarCRMContent {
     public interface ACLRoleColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The role id. */
-        public String ROLE_ID = SUGAR_BEAN_ID;
+        String ROLE_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The type. */
-        public String TYPE = ModuleFields.TYPE;
+        String TYPE = ModuleFields.TYPE;
 
         /** The description. */
-        public String DESCRIPTION = ModuleFields.DESCRIPTION;
+        String DESCRIPTION = ModuleFields.DESCRIPTION;
     }
 
     /**
@@ -1217,7 +1222,7 @@ public final class SugarCRMContent {
                 SUGAR_BEAN_ID, NAME, TYPE, DESCRIPTION };
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " DESC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_DESC;
     }
 
     /**
@@ -1226,25 +1231,25 @@ public final class SugarCRMContent {
     public interface ACLActionColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The action id. */
-        public String ACTION_ID = SUGAR_BEAN_ID;
+        String ACTION_ID = SUGAR_BEAN_ID;
 
         /** The name. */
-        public String NAME = ModuleFields.NAME;
+        String NAME = ModuleFields.NAME;
 
         /** The category. */
-        public String CATEGORY = "category";
+        String CATEGORY = "category";
 
         /** The aclaccess. */
-        public String ACLACCESS = "aclaccess";
+        String ACLACCESS = "aclaccess";
 
         /** The acltype. */
-        public String ACLTYPE = "acltype";
+        String ACLTYPE = "acltype";
 
         /** The role id. */
-        public String ROLE_ID = ROLE_ROW_ID;
+        String ROLE_ID = ROLE_ROW_ID;
     }
 
     /**
@@ -1261,7 +1266,7 @@ public final class SugarCRMContent {
                 ACTION_ID, NAME, CATEGORY, ACLACCESS, ACLTYPE };
 
         /** The default sort order for this table. */
-        public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = NAME + SORTBY_ASC;
     }
 
     /**
@@ -1270,19 +1275,19 @@ public final class SugarCRMContent {
     public interface UserColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The user id. */
-        public String USER_ID = ModuleFields.ID;
+        String USER_ID = ModuleFields.ID;
 
         /** The user name. */
-        public String USER_NAME = ModuleFields.USER_NAME;
+        String USER_NAME = ModuleFields.USER_NAME;
 
         /** The first name. */
-        public String FIRST_NAME = ModuleFields.FIRST_NAME;
+        String FIRST_NAME = ModuleFields.FIRST_NAME;
 
         /** The last name. */
-        public String LAST_NAME = ModuleFields.LAST_NAME;
+        String LAST_NAME = ModuleFields.LAST_NAME;
     }
 
     /**
@@ -1291,7 +1296,7 @@ public final class SugarCRMContent {
     public static final class Users implements UserColumns {
 
         /** The Constant CONTENT_URI. */
-        public static final Uri CONTENT_URI = Uri.parse("content://"
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.USERS);
 
         /** The Constant INSERT_PROJECTION. */
@@ -1309,13 +1314,13 @@ public final class SugarCRMContent {
     public interface ModuleFieldGroupColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The title. */
-        public String TITLE = "title";
+        String TITLE = "title";
 
         /** The group id. */
-        public String GROUP_ID = "group_id";
+        String GROUP_ID = "group_id";
     }
 
     /**
@@ -1338,19 +1343,19 @@ public final class SugarCRMContent {
     public interface ModuleFieldSortOrderColumns {
 
         /** The id. */
-        public String ID = RECORD_ID;
+        String ID = RECORD_ID;
 
         /** The field sort id. */
-        public String FIELD_SORT_ID = "field_sort_id";
+        String FIELD_SORT_ID = "field_sort_id";
 
         /** The group id. */
-        public String GROUP_ID = "group_id";
+        String GROUP_ID = "group_id";
 
         /** The module field id. */
-        public String MODULE_FIELD_ID = "module_field_id";
+        String MODULE_FIELD_ID = "module_field_id";
 
         /** The module id. */
-        public String MODULE_ID = "module_id";
+        String MODULE_ID = "module_id";
     }
 
     /**
@@ -1368,7 +1373,8 @@ public final class SugarCRMContent {
                 FIELD_SORT_ID, GROUP_ID, MODULE_FIELD_ID, MODULE_ID };
 
         /** The Constant DEFAULT_SORT_ORDER. */
-        public static final String DEFAULT_SORT_ORDER = FIELD_SORT_ID + " ASC";
+        public static final String DEFAULT_SORT_ORDER = FIELD_SORT_ID
+                + SORTBY_ASC;
     }
 
     /**
@@ -1377,9 +1383,9 @@ public final class SugarCRMContent {
     public interface AlarmColumns {
 
         /** The id. */
-        public String ID = Util.ROW_ID;
+        String ID = Util.ROW_ID;
 
         /** The alarm state. */
-        public String ALARM_STATE = Util.PREF_ALARM_STATE;
+        String ALARM_STATE = Util.PREF_ALARM_STATE;
     }
 }

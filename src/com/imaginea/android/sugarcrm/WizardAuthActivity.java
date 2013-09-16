@@ -88,10 +88,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
     private String mAuthtokenType;
 
     /** Was the original caller asking for an entirely new account?. */
-    protected boolean mRequestNewAccount = false;
+    private boolean mRequestNewAccount = false;
 
-    /** The app. */
-    private SugarCrmApp app;
+    /** The m app. */
+    private SugarCrmApp mApp;
 
     /** The m auth task. */
     private AuthenticationTask mAuthTask;
@@ -126,7 +126,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
-        app = (SugarCrmApp) getApplication();
+        mApp = (SugarCrmApp) getApplication();
 
         mAccountManager = AccountManager.get(this);
         final Intent intent = getIntent();
@@ -186,8 +186,9 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     handleLogin(v);
                     return true;
-                } else
+                } else {
                     return false;
+                }
             }
         });
         mUsrEditText = (EditText) findViewById(R.id.loginUsername);
@@ -303,16 +304,16 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         private String usr;
 
         /** The has exceptions. */
-        boolean hasExceptions = false;
+        private boolean hasExceptions = false;
 
         /** The sce desc. */
         private String sceDesc;
 
         /** The prefs. */
-        SharedPreferences prefs;
+        private SharedPreferences prefs;
 
         /** The sync handler. */
-        Object syncHandler;
+        private Object syncHandler;
 
         /*
          * (non-Javadoc)
@@ -322,7 +323,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            ;
             prefs = PreferenceManager
                     .getDefaultSharedPreferences(WizardAuthActivity.this);
             mProgressDialog = ViewUtil.getProgressDialog(
@@ -374,8 +374,12 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             }
 
             try {
+                Log.i("ee", "prnt usr name = " + usr + " Pass = " + mPassword
+                        + " url = " + restUrl);
                 sessionId = Rest.loginToSugarCRM(restUrl, usr, mPassword);
                 Log.i(LOG_TAG, "SessionId - " + sessionId);
+                Log.i("ee", "SessionId usr name = " + sessionId);
+
                 if (sessionId != null) {
                     onAuthenticationResult();
 
@@ -384,8 +388,9 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                     editor.putString(Util.PREF_REST_URL, restUrl);
                     editor.commit();
 
-                } else
+                } else {
                     return null;
+                }
                 final boolean metaDataSyncCompleted = prefs.getBoolean(
                         Util.SYNC_METADATA_COMPLETED, false);
                 if (!metaDataSyncCompleted) {
@@ -414,24 +419,15 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         /*
          * (non-Javadoc)
          * 
-         * @see android.os.AsyncTask#onCancelled()
-         */
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
         protected void onPostExecute(final Object sessionId) {
             super.onPostExecute(sessionId);
             if (isCancelled()
-                    && !prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false))
+                    && !prefs.getBoolean(Util.SYNC_METADATA_COMPLETED, false)) {
                 return;
+            }
 
             if (hasExceptions) {
                 Toast.makeText(WizardAuthActivity.this, sceDesc,
@@ -451,7 +447,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
 
                 // save the sessionId in the application context after the
                 // successful login
-                app.setSessionId(sessionId.toString());
+                mApp.setSessionId(sessionId.toString());
 
                 if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
@@ -472,7 +468,7 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
                             ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
                     extras.putInt(Util.SYNC_TYPE, Util.SYNC_MODULES_DATA);
                     savePrefs();
-                    ContentResolver.requestSync(app.getAccount(usr),
+                    ContentResolver.requestSync(mApp.getAccount(usr),
                             SugarCRMProvider.AUTHORITY, extras);
                 }
                 showDashboard();
@@ -486,10 +482,10 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         private void savePrefs() {
             final SharedPreferences pref = PreferenceManager
                     .getDefaultSharedPreferences(getBaseContext());
-            final long SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000L;
+            final long sevenDays = 7 * 24 * 60 * 60 * 1000L;
             final long time = System.currentTimeMillis();
 
-            final long startMillis = time - SEVEN_DAYS;
+            final long startMillis = time - sevenDays;
             final long endMillis = time;
             final Editor editor = pref.edit();
             editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
@@ -525,7 +521,6 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
         private void startMetaDataSync() {
             Log.d(LOG_TAG, "startMetaDataSync");
             final Bundle extras = new Bundle();
-            // extras.putInt(key, value)
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
             extras.putInt(Util.SYNC_TYPE, Util.SYNC_ALL_META_DATA);
             final SugarCrmApp app = (SugarCrmApp) getApplication();

@@ -28,7 +28,6 @@ import com.imaginea.android.sugarcrm.EditModuleDetailActivity;
 import com.imaginea.android.sugarcrm.EditModuleDetailFragment;
 import com.imaginea.android.sugarcrm.ModuleDetailActivity;
 import com.imaginea.android.sugarcrm.ModuleDetailFragment;
-import com.imaginea.android.sugarcrm.ModuleImageListFragment;
 import com.imaginea.android.sugarcrm.ModuleImageListFragment.OnItemSelectedListener;
 import com.imaginea.android.sugarcrm.ModuleListFragment;
 import com.imaginea.android.sugarcrm.ModulesActivity;
@@ -45,17 +44,10 @@ import com.imaginea.android.sugarcrm.util.Util;
  */
 public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
         implements OnItemSelectedListener {
-    /** The menu layout. */
 
-    ModuleListFragment moduleListFragment;
-    ModuleImageListFragment moduleImageListFragment;
-    ModuleDetailFragment moduleDetailFragment;
-    private TextView mSettingsView;
+    private ModuleListFragment mModuleListFragment;
     private static final String TAG = ModuleDetailsMultiPaneActivity.class
             .getSimpleName();
-
-    /* menu Drop Down */
-    LinearLayout menuLayout;
 
     /*
      * (non-Javadoc)
@@ -66,19 +58,17 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.modules);
+        /* The settings view. */
+        final TextView settingsView;
 
-        moduleDetailFragment = (ModuleDetailFragment) getSupportFragmentManager()
-                .findFragmentByTag("module_detail");
-        moduleListFragment = (ModuleListFragment) getSupportFragmentManager()
+        mModuleListFragment = (ModuleListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.list_frag);
 
-        moduleImageListFragment = (ModuleImageListFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.list_imagefrag);
-
-        mSettingsView = (TextView) findViewById(R.id.settingsTv);
-        menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
+        settingsView = (TextView) findViewById(R.id.settingsTv);
+        /* menu Drop Down */
+        final LinearLayout menuLayout = (LinearLayout) findViewById(R.id.settings_menu);
         final View transparentView = findViewById(R.id.transparent_view);
-        mSettingsView.setOnClickListener(new View.OnClickListener() {
+        settingsView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -91,15 +81,13 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
 
         final TextView logoutView = (TextView) findViewById(R.id.logoutTv);
         logoutView.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 /* Set Action to Settings Button */
                 new Thread(new Runnable() {
-
                     @Override
                     public void run() {
-                        final String sessionId = ((SugarCrmApp) SugarCrmApp.app)
+                        final String sessionId = ((SugarCrmApp) SugarCrmApp.mApp)
                                 .getSessionId();
                         final String restUrl = SugarCrmSettings
                                 .getSugarRestUrl(ModuleDetailsMultiPaneActivity.this);
@@ -142,18 +130,18 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
     @Override
     public FragmentReplaceInfo onSubstituteFragmentForActivityLaunch(
             final String activityClassName) {
-        if (ModulesActivity.class.getName().equals(activityClassName))
+        if (ModulesActivity.class.getName().equals(activityClassName)) {
             return new FragmentReplaceInfo(ModuleListFragment.class, "modules",
                     R.id.fragment_container_module_detail);
-        else if (ModuleDetailActivity.class.getName().equals(activityClassName))
-
+        } else if (ModuleDetailActivity.class.getName().equals(
+                activityClassName)) {
             return new FragmentReplaceInfo(ModuleDetailFragment.class,
                     "module_detail", R.id.fragment_container_module_detail);
-        else if (EditModuleDetailActivity.class.getName().equals(
-                activityClassName))
-
+        } else if (EditModuleDetailActivity.class.getName().equals(
+                activityClassName)) {
             return new FragmentReplaceInfo(EditModuleDetailFragment.class,
                     "module_detail", R.id.fragment_container_module_detail);
+        }
         return null;
     }
 
@@ -161,12 +149,12 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
      * (non-Javadoc)
      * 
      * @see
-     * com.imaginea.android.sugarcrm.ModuleImageListFragment.OnItemSelectedListener
+     * com.imaginea.android.sugarcrm.ModuleListFragment.OnItemSelectedListener
      * #onItemSelected(java.lang.String)
      */
     @Override
     public void onItemSelected(String moduleName) {
-        moduleListFragment.reloadListData(moduleName);
+        mModuleListFragment.reloadListData(moduleName);
     }
 
     /*
@@ -182,9 +170,9 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
 
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            moduleListFragment.onLandscapeChange();
+            mModuleListFragment.onLandscapeChange();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            moduleListFragment.onPortraitChange();
+            mModuleListFragment.onPortraitChange();
         }
     }
 
@@ -195,7 +183,7 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
      */
     @Override
     public void onBackPressed() {
-        if (moduleListFragment.bSearch == true) {
+        if (mModuleListFragment.bSearch) {
 
             final SearchView searchView = (SearchView) findViewById(R.id.searchView);
             final ImageView backView = (ImageView) findViewById(R.id.actionbar_back);
@@ -205,8 +193,8 @@ public class ModuleDetailsMultiPaneActivity extends BaseMultiPaneActivity
             searchView.setQuery("", false);
             backView.setVisibility(View.GONE);
             logoview.setVisibility(View.VISIBLE);
-            moduleListFragment.setUpActionBar();
-            moduleListFragment.bSearch = false;
+            mModuleListFragment.setUpActionBar();
+            mModuleListFragment.bSearch = false;
         } else {
             final Intent myIntent;
             myIntent = new Intent(this, RecentModuleMultiPaneActivity.class);

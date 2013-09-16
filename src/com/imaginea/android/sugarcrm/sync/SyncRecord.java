@@ -20,23 +20,23 @@ package com.imaginea.android.sugarcrm.sync;
 public class SyncRecord {
 
     /** The _id. */
-    public long _id;
+    public long mid;
 
-    /** The sync id. */
-    public long syncId;
+    /** The m sync id. */
+    public long mSsyncId;
 
-    /** The sync related id. */
-    public long syncRelatedId;
+    /** The m sync related id. */
+    public long mSyncRelatedId;
 
-    /** The sync command. */
-    public int syncCommand;
+    /** The m sync command. */
+    public int mSyncCommand;
 
-    /** The module name. */
-    public String moduleName;
+    /** The m module name. */
+    public String mModuleName;
 
-    /** The related module name. */
-    public String relatedModuleName;
+    /** The m related module name. */
+    public String mRelatedModuleName;
 
-    /** The status. */
-    public int status;
+    /** The m status. */
+    public int mStatus;
 }

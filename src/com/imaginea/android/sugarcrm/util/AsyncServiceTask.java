@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 .
+ * Copyright (c) 2013 . 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,14 +63,14 @@ public abstract class AsyncServiceTask<Params, Progress, Result> {
     private static final int KEEP_ALIVE = 10;
 
     /** The Constant sWorkQueue. */
-    private static final BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue<Runnable>(
+    private static BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue<Runnable>(
             10);
 
     /** The Constant TAG. */
     private static final String TAG = "AsyncServiceTask";
 
     /** define our custom thread factory for creating threads for the pool. */
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+    private static ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         @Override
@@ -81,7 +81,7 @@ public abstract class AsyncServiceTask<Params, Progress, Result> {
     };
 
     /** Thread pool for our Service threads. */
-    private static final ThreadPoolExecutor sExecutor = new ThreadPoolExecutor(
+    private static ThreadPoolExecutor sExecutor = new ThreadPoolExecutor(
             CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS,
             sWorkQueue, sThreadFactory);
 
@@ -137,30 +137,25 @@ public abstract class AsyncServiceTask<Params, Progress, Result> {
         mFuture = new FutureTask<Result>(mWorker) {
             @Override
             protected void done() {
-                // Message message;
-                Result result = null;
-
                 try {
-                    result = get();
+                    super.get();
                 } catch (final InterruptedException e) {
-                    android.util.Log.w(TAG, e);
+                    Log.w(TAG, e);
                 } catch (final ExecutionException e) {
-                    throw new RuntimeException(
-                            "An error occured while executing doInBackground()",
-                            e.getCause());
+                    Log.e(TAG, "An error occured while executing "
+                            + "doInBackground()" + e.getCause());
                 } catch (final CancellationException e) {
                     // send the cancellation message
                     onCancelled();
                     return;
-                } catch (final Throwable t) {
-                    throw new RuntimeException(
-                            "An error occured while executing "
-                                    + "doInBackground()", t);
+                } catch (final Exception t) {
+                    Log.e(TAG, "An error occured while executing "
+                            + "doInBackground()" + t);
                 } finally {
                     // we are reference counted wake lock, release it once we
                     // are done with the task
                     releaseWakeLock();
-                    finish(result);
+                    finish();
                 }
 
             }
@@ -349,8 +344,7 @@ public abstract class AsyncServiceTask<Params, Progress, Result> {
      * @param result
      *            the result
      */
-    private void finish(final Result result) {
-        // onPostExecute(result);
+    private void finish() {
         mStatus = Status.FINISHED;
     }
 
@@ -362,11 +356,11 @@ public abstract class AsyncServiceTask<Params, Progress, Result> {
      * @param <Result>
      *            the generic type
      */
-    private static abstract class WorkerRunnable<Params, Result> implements
+    private abstract static class WorkerRunnable<Params, Result> implements
             Callable<Result> {
 
         /** The m params. */
-        Params[] mParams;
+        protected Params[] mParams;
     }
 
     /**

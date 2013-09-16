@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.imaginea.android.sugarcrm.provider.DatabaseHelper;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.AlarmColumns;
@@ -40,7 +41,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 /**
  * The Class AlarmUtils.
  */
-public class AlarmUtils {
+public final class AlarmUtils {
 
     /** The Constant INTENT_EXTRA_EVENT_DETAILS. */
     public static final String INTENT_EXTRA_EVENT_DETAILS = "eventextras";
@@ -53,6 +54,10 @@ public class AlarmUtils {
 
     /** The Constant ALARM_STATE_NA. */
     public static final int ALARM_STATE_NA = -1;
+
+    private AlarmUtils() {
+        // not called
+    }
 
     /**
      * Sets the event alarm.
@@ -241,7 +246,7 @@ public class AlarmUtils {
             final Date date = formatter.parse(dateString);
             return date.getTime();
         } catch (final ParseException e) {
-            e.printStackTrace();
+            Log.e("TAG", "ParseException found " + e);
         }
         return SystemClock.elapsedRealtime();
     }

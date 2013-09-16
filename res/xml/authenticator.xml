@@ -4,9 +4,8 @@
 <!-- for the Account Manager. -->
 
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountPreferences="@xml/account_preferences"
     android:accountType="com.imaginea.android.sugarcrm"
     android:icon="@drawable/icon"
-    android:smallIcon="@drawable/icon"
     android:label="@string/appName"
-    android:accountPreferences="@xml/account_preferences"    
-/>
+    android:smallIcon="@drawable/icon" />

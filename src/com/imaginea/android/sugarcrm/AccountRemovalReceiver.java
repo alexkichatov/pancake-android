@@ -25,6 +25,12 @@ import com.imaginea.android.sugarcrm.services.AccountRemovalService;
  */
 public class AccountRemovalReceiver extends BroadcastReceiver {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
+     * android.content.Intent)
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
 

@@ -16,7 +16,6 @@ package com.imaginea.android.sugarcrm;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +78,8 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
  */
 public class ModuleDetailFragment extends Fragment {
 
-    /** The m row id. */
-    private String mRowId; /* Record ID */
+    /** The m Record id. */
+    private String mRowId;
 
     /** The m sugar bean id. */
     private String mSugarBeanId;
@@ -92,7 +91,7 @@ public class ModuleDetailFragment extends Fragment {
     private Cursor mCursor;
 
     /** The adapter. */
-    private SeparatedListAdapter adapter = null;
+    private SeparatedListAdapter mAdapter = null;
 
     /** The m select fields. */
     private String[] mSelectFields;
@@ -116,16 +115,13 @@ public class ModuleDetailFragment extends Fragment {
     private RelativeLayout mParent;
 
     /** The bundle. */
-    private Bundle bundle;
-
-    /** The Header item. */
-    final Map<String, String> HeaderItem = new HashMap<String, String>();
+    private Bundle mBundle;
 
     /** The layout view. */
     private LinearLayout mlayoutView;
 
     /** The inflater. */
-    private LayoutInflater inflater;
+    private LayoutInflater mInflater;
 
     /** The Constant LOG_TAG. */
     private static final String LOG_TAG = ModuleDetailFragment.class
@@ -144,7 +140,7 @@ public class ModuleDetailFragment extends Fragment {
         /* Inflate the layout for this fragment */
         mParent = (RelativeLayout) inflater.inflate(R.layout.account_details,
                 container, false);
-        bundle = getArguments();
+        mBundle = getArguments();
         return mParent;
     }
 
@@ -171,9 +167,9 @@ public class ModuleDetailFragment extends Fragment {
             mModuleName = extras.getString(RestConstants.MODULE_NAME);
 
         } else {
-            mRowId = bundle.getString(Util.ROW_ID);
-            mSugarBeanId = bundle.getString(RestConstants.BEAN_ID);
-            mModuleName = bundle.getString(RestConstants.MODULE_NAME);
+            mRowId = mBundle.getString(Util.ROW_ID);
+            mSugarBeanId = mBundle.getString(RestConstants.BEAN_ID);
+            mModuleName = mBundle.getString(RestConstants.MODULE_NAME);
 
         }
 
@@ -192,11 +188,12 @@ public class ModuleDetailFragment extends Fragment {
         mRelationshipModules = ContentUtils
                 .getModuleRelationshipItems(mModuleName);
 
-        inflater = (LayoutInflater) getActivity().getBaseContext()
+        mInflater = (LayoutInflater) getActivity().getBaseContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         /* inflate the Detail Module Fragment layout */
-        mlayoutView = (LinearLayout) inflater.inflate(R.layout.table_row, null);
+        mlayoutView = (LinearLayout) mInflater
+                .inflate(R.layout.table_row, null);
 
         /* Open the Edit Screen when clicked on edit image */
         startEditDetailModule();
@@ -228,15 +225,15 @@ public class ModuleDetailFragment extends Fragment {
                 .findViewById(R.id.deleteimage);
         final int deleteResourcesId[];
         if (ViewUtil.isHoneycombTablet(getActivity())) {
-            final int TabletdeleteResourcesId[] = {
+            final int tabletDeleteResourcesId[] = {
                     R.drawable.ico_trash_pressed, R.drawable.ico_trash_pressed,
                     R.drawable.delete };
-            deleteResourcesId = TabletdeleteResourcesId;
+            deleteResourcesId = tabletDeleteResourcesId;
         } else {
-            final int PhonedeleteResourcesId[] = {
+            final int phoneDeleteResourcesId[] = {
                     R.drawable.icon_m_trash_pressed,
                     R.drawable.icon_m_trash_pressed, R.drawable.icon_m_trash };
-            deleteResourcesId = PhonedeleteResourcesId;
+            deleteResourcesId = phoneDeleteResourcesId;
         }
         deleteImageView.setImageDrawable(Util.getPressedImage(getActivity()
                 .getBaseContext(), deleteResourcesId));
@@ -260,14 +257,14 @@ public class ModuleDetailFragment extends Fragment {
                 .findViewById(R.id.editimage);
         final int editResourcesId[];
         if (ViewUtil.isHoneycombTablet(getActivity())) {
-            final int TableteditResourcesId[] = { R.drawable.ico_edit_pressed,
+            final int tabletEditResourcesId[] = { R.drawable.ico_edit_pressed,
                     R.drawable.ico_edit_pressed, R.drawable.edit };
-            editResourcesId = TableteditResourcesId;
+            editResourcesId = tabletEditResourcesId;
         } else {
-            final int PhoneeditResourcesId[] = { R.drawable.ico_m_edit_pressed,
+            final int phoneEditResourcesId[] = { R.drawable.ico_m_edit_pressed,
                     R.drawable.ico_m_edit_pressed, R.drawable.ico_m_edit };
 
-            editResourcesId = PhoneeditResourcesId;
+            editResourcesId = phoneEditResourcesId;
         }
         editImageView.setImageDrawable(Util.getPressedImage(getActivity()
                 .getBaseContext(), editResourcesId));
@@ -388,7 +385,7 @@ public class ModuleDetailFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                SyncAction(v);
+                syncAction(v);
 
             }
         });
@@ -419,7 +416,7 @@ public class ModuleDetailFragment extends Fragment {
 
                     @Override
                     public void run() {
-                        final String sessionId = ((SugarCrmApp) SugarCrmApp.app)
+                        final String sessionId = ((SugarCrmApp) SugarCrmApp.mApp)
                                 .getSessionId();
                         final String restUrl = SugarCrmSettings
                                 .getSugarRestUrl(getActivity());
@@ -446,7 +443,7 @@ public class ModuleDetailFragment extends Fragment {
      * @param view
      *            the view
      */
-    public void SyncAction(final View view) {
+    public void syncAction(final View view) {
         if (!Util.isNetworkOn(getActivity().getBaseContext())) {
             Toast.makeText(getActivity(), R.string.networkUnavailable,
                     Toast.LENGTH_SHORT).show();
@@ -509,10 +506,8 @@ public class ModuleDetailFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (mProgressDialog != null) {
-            if (mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
-            }
+        if ((mProgressDialog != null) && (mProgressDialog.isShowing())) {
+            mProgressDialog.dismiss();
         }
 
     }
@@ -530,7 +525,7 @@ public class ModuleDetailFragment extends Fragment {
             Log.i(LOG_TAG, "is Inser Successful = "
                     + EditModuleDetailFragment.bInsertSuccessful);
 
-            if (EditModuleDetailFragment.bInsertSuccessful == true) {
+            if (EditModuleDetailFragment.bInsertSuccessful) {
                 mTask = new LoadContentTask(getActivity());
                 mTask.execute(null, null, null);
                 EditModuleDetailFragment.bInsertSuccessful = false;
@@ -608,7 +603,7 @@ public class ModuleDetailFragment extends Fragment {
         private final List<String> mFieldsExcludedForDetails = new ArrayList<String>();
 
         /** The detail items. */
-        private final LinkedHashMap<String, DetailsItem> detailItems = new LinkedHashMap<String, DetailsItem>();
+        private final Map<String, DetailsItem> detailItems = new LinkedHashMap<String, DetailsItem>();
 
         /**
          * Instantiates a new load content task.
@@ -722,7 +717,7 @@ public class ModuleDetailFragment extends Fragment {
         private void setupDetailViews() {
             final TextView titleView;
             if (mlayoutView == null) {
-                mlayoutView = (LinearLayout) inflater.inflate(
+                mlayoutView = (LinearLayout) mInflater.inflate(
                         R.layout.table_row, null);
 
             }
@@ -777,9 +772,9 @@ public class ModuleDetailFragment extends Fragment {
                 lv = new ListView(getActivity());
             }
 
-            if (adapter == null) {
-                adapter = new SeparatedListAdapter(detailItems);
-                lv.setAdapter(adapter);
+            if (mAdapter == null) {
+                mAdapter = new SeparatedListAdapter(detailItems);
+                lv.setAdapter(mAdapter);
             }
 
         }
@@ -789,47 +784,29 @@ public class ModuleDetailFragment extends Fragment {
          */
         private void prepareDetailItems() {
             final String[] detailsProjection = mSelectFields;
-
             if (mCursor.moveToFirst()) {
-
                 if (mDbHelper == null) {
                     mDbHelper = new DatabaseHelper(getActivity()
                             .getBaseContext());
                 }
-
                 Arrays.asList(ContentUtils.getModuleListSelections(mModuleName));
-
                 Arrays.asList(ContentUtils.getModuleListSelections(mModuleName));
-
                 String value = "";
                 final Map<String, ModuleField> fieldNameVsModuleField = ContentUtils
                         .getModuleFields(mContext, mModuleName);
-
                 for (int i = 0; i < detailsProjection.length; i++) {
-
                     final String fieldName = detailsProjection[i];
-
                     // if the field name is excluded in details screen, skip it
                     if (mFieldsExcludedForDetails.contains(fieldName)) {
                         continue;
                     }
-
                     final int columnIndex = mCursor.getColumnIndex(fieldName);
-                    if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-                        Log.d(LOG_TAG, "Col:" + columnIndex + " moduleName : "
-                                + mModuleName + " fieldName : " + fieldName);
-                    }
-
                     final String tempValue = mCursor.getString(columnIndex);
-
                     // get the attributes of the moduleField
                     final ModuleField moduleField = fieldNameVsModuleField
                             .get(fieldName);
-
                     if (moduleField != null) {
-
                         String label = moduleField.getLabel();
-
                         /*
                          * check for the billing and shipping address groups
                          * only if the module is 'Accounts'
@@ -846,7 +823,6 @@ public class ModuleDetailFragment extends Fragment {
                                 } else if (fieldName
                                         .equals(ModuleFields.BILLING_ADDRESS_COUNTRY)) {
                                     // last field in the group
-
                                     value = value
                                             + (!TextUtils.isEmpty(tempValue) ? tempValue
                                                     : "");
@@ -872,7 +848,6 @@ public class ModuleDetailFragment extends Fragment {
                                 } else if (fieldName
                                         .equals(ModuleFields.SHIPPING_ADDRESS_COUNTRY)) {
                                     // Last field in the group
-
                                     value = value
                                             + (!TextUtils.isEmpty(tempValue) ? tempValue
                                                     : "");
@@ -1035,25 +1010,6 @@ public class ModuleDetailFragment extends Fragment {
             super(handler);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.database.ContentObserver#deliverSelfNotifications()
-         */
-        @Override
-        public boolean deliverSelfNotifications() {
-            return super.deliverSelfNotifications();
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.database.ContentObserver#onChange(boolean)
-         */
-        @Override
-        public void onChange(final boolean selfChange) {
-            super.onChange(selfChange);
-        }
     }
 
     /**
@@ -1215,37 +1171,36 @@ public class ModuleDetailFragment extends Fragment {
         public TextView headerview2;
 
         /** The assigned icon view. */
-        public ImageView assignedIconView;
+        private ImageView assignedIconView;
 
         /** The lable view. */
-        public TextView lableView;
+        private TextView lableView;
 
         /** The summry view. */
-        public TextView summryView;
+        private TextView summryView;
 
         /** The m keys. */
-        String[] mKeys;
+        private final String[] mKeys;
 
         /** The list item_1. */
-        int listItem_1 = 1;
+        private static final int LISTITEM_1 = 1;
 
         /** The list item_2. */
-        int listItem_2 = 2;
+        private static final int LISTITEM_2 = 2;
 
         /** The list item_3. */
-        int listItem_3 = 3;
+        private static final int LISTITEM_3 = 3;
 
         /**
          * Instantiates a new separated list adapter.
          * 
-         * @param data
+         * @param detailItems
          *            the data
          */
-        public SeparatedListAdapter(
-                final LinkedHashMap<String, DetailsItem> data) {
+        public SeparatedListAdapter(final Map<String, DetailsItem> detailItems) {
 
-            mData = data;
-            mKeys = mData.keySet().toArray(new String[data.size()]);
+            mData = (LinkedHashMap<String, DetailsItem>) detailItems;
+            mKeys = mData.keySet().toArray(new String[detailItems.size()]);
 
         }
 
@@ -1291,9 +1246,9 @@ public class ModuleDetailFragment extends Fragment {
                      */
                     if (mModuleName.equals(Util.CONTACTS)
                             || mModuleName.equals(Util.LEADS)) {
-                        pos = position + listItem_2;
+                        pos = position + LISTITEM_2;
                     } else {
-                        pos = position + listItem_1;
+                        pos = position + LISTITEM_1;
 
                     }
                     headerview1.setText((mData.get(mKeys[pos])).getValue()
@@ -1303,10 +1258,10 @@ public class ModuleDetailFragment extends Fragment {
                 if (headerview2 != null) {
                     if (mModuleName.equals(Util.CONTACTS)
                             || mModuleName.equals(Util.LEADS)) {
-                        headerview2.setText((mData.get(mKeys[listItem_3]))
+                        headerview2.setText((mData.get(mKeys[LISTITEM_3]))
                                 .getValue().toString());
                     } else {
-                        headerview2.setText((mData.get(mKeys[listItem_2]))
+                        headerview2.setText((mData.get(mKeys[LISTITEM_2]))
                                 .getValue().toString());
                     }
                 }
@@ -1320,15 +1275,15 @@ public class ModuleDetailFragment extends Fragment {
 
                 if (mModuleName.equals(Util.CONTACTS)
                         || mModuleName.equals(Util.LEADS)) {
-                    if (position == listItem_1 || position == listItem_2
-                            || position == listItem_3) {
+                    if (position == LISTITEM_1 || position == LISTITEM_2
+                            || position == LISTITEM_3) {
                         lableView.setHeight(0);
                         summryView.setHeight(0);
                         return convertView;
 
                     }
                 } else {
-                    if (position == listItem_1 || position == listItem_2) {
+                    if (position == LISTITEM_1 || position == LISTITEM_2) {
                         lableView.setHeight(0);
                         summryView.setHeight(0);
                         return convertView;
@@ -1356,45 +1311,42 @@ public class ModuleDetailFragment extends Fragment {
                 if (ModuleFields.SHIPPING_ADDRESS_COUNTRY.equals(mData.get(
                         mKeys[position]).getFieldName())
                         || ModuleFields.BILLING_ADDRESS_COUNTRY.equals(mData
-                                .get(mKeys[position]).getFieldName())) {
-                    if (!TextUtils.isEmpty(value)
-                            && (!value.contains("Not Available"))) {
-                        summryView.setLinksClickable(true);
-                        summryView.setClickable(true);
+                                .get(mKeys[position]).getFieldName())
+                        && (!TextUtils.isEmpty(value) && (!value
+                                .contains("Not Available")))) {
+                    summryView.setLinksClickable(true);
+                    summryView.setClickable(true);
 
-                        final SpannableString spannableString = new SpannableString(
-                                value);
-                        spannableString.setSpan(
-                                new InternalURLSpan(new OnClickListener() {
-                                    @Override
-                                    public void onClick(final View v) {
-                                        Log.i(LOG_TAG, "trying to locate - "
-                                                + value);
-                                        final Uri uri = Uri.parse("geo:0,0?q="
-                                                + URLEncoder.encode(value));
-                                        final Intent intent = new Intent(
-                                                Intent.ACTION_VIEW, uri);
-                                        intent.setData(uri);
-                                        startActivity(Intent
-                                                .createChooser(
-                                                        intent,
-                                                        getString(R.string.showAddressMsg)));
-                                    }
-                                }), 0, value.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    final SpannableString spannableString = new SpannableString(
+                            value);
+                    spannableString.setSpan(
+                            new InternalURLSpan(new OnClickListener() {
+                                @Override
+                                public void onClick(final View v) {
+                                    Log.i(LOG_TAG, "trying to locate - "
+                                            + value);
+                                    final Uri uri = Uri.parse("geo:0,0?q="
+                                            + URLEncoder.encode(value));
+                                    final Intent intent = new Intent(
+                                            Intent.ACTION_VIEW, uri);
+                                    intent.setData(uri);
+                                    startActivity(Intent.createChooser(intent,
+                                            getString(R.string.showAddressMsg)));
+                                }
+                            }), 0, value.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                        summryView.setText(spannableString);
+                    summryView.setText(spannableString);
 
-                        // for trackball movement
-                        final MovementMethod m = summryView.getMovementMethod();
-                        if ((m == null) || !(m instanceof LinkMovementMethod)) {
-                            if (summryView.getLinksClickable()) {
-                                summryView.setMovementMethod(LinkMovementMethod
-                                        .getInstance());
-                            }
-                        }
+                    // for trackball movement
+                    final MovementMethod m = summryView.getMovementMethod();
+                    if ((m == null) || !(m instanceof LinkMovementMethod)
+                            && (summryView.getLinksClickable())) {
+                        summryView.setMovementMethod(LinkMovementMethod
+                                .getInstance());
 
                     }
+
                 }
 
             }

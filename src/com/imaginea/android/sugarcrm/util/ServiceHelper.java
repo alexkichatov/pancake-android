@@ -30,6 +30,13 @@ import com.imaginea.android.sugarcrm.services.SugarService;
 public class ServiceHelper {
 
     /**
+     * Instantiates a new service helper.
+     */
+    private ServiceHelper() {
+
+    }
+
+    /**
      * startService
      * 
      * @param context

@@ -31,18 +31,8 @@ import com.imaginea.android.sugarcrm.util.ActivityHelper;
  * The Class BaseActivity.
  */
 public abstract class BaseActivity extends FragmentActivity {
-    final ActivityHelper mActivityHelper = ActivityHelper.createInstance(this);
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onPostCreate(android.os.Bundle)
-     */
-    @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-    }
+    private final ActivityHelper mActivityHelper = ActivityHelper
+            .createInstance(this);
 
     /*
      * (non-Javadoc)
@@ -123,8 +113,9 @@ public abstract class BaseActivity extends FragmentActivity {
      */
     public static Bundle intentToFragmentArguments(final Intent intent) {
         final Bundle arguments = new Bundle();
-        if (intent == null)
+        if (intent == null) {
             return arguments;
+        }
 
         final Uri data = intent.getData();
         if (data != null) {
@@ -148,8 +139,9 @@ public abstract class BaseActivity extends FragmentActivity {
      */
     public static Intent fragmentArgumentsToIntent(final Bundle arguments) {
         final Intent intent = new Intent();
-        if (arguments == null)
+        if (arguments == null) {
             return intent;
+        }
 
         final Uri data = arguments.getParcelable("_uri");
         if (data != null) {

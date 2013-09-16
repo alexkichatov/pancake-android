@@ -32,9 +32,13 @@ import com.imaginea.android.sugarcrm.util.Util;
  */
 public class AccountRemovalService extends IntentService {
 
-    // Action used for BroadcastReceiver entry point
-    /** The Constant ACTION_BROADCAST. */
+    /**
+     * The Constant ACTION_BROADCAST. action used for BroadcastReceiver entry
+     * point
+     */
     private static final String ACTION_BROADCAST = "broadcast_receiver";
+
+    private static final String SCHEME = "content://";
 
     /**
      * Instantiates a new account removal service.
@@ -55,94 +59,94 @@ public class AccountRemovalService extends IntentService {
 
         final ContentResolver contentResolver = getContentResolver();
 
-        final Uri accountsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.ACCOUNTS);
+        final Uri accountsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.ACCOUNTS);
         contentResolver.delete(accountsUrl, null, null);
 
-        final Uri accountsCasesUrl = Uri.parse("content://"
+        final Uri accountsCasesUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.ACCOUNTS_CASES);
         contentResolver.delete(accountsCasesUrl, null, null);
 
-        final Uri accountsContUrl = Uri.parse("content://"
+        final Uri accountsContUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.ACCOUNTS_CONTACTS);
         contentResolver.delete(accountsContUrl, null, null);
 
-        final Uri accountsOpporUrl = Uri.parse("content://"
+        final Uri accountsOpporUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/"
                 + Util.ACCOUNTS_OPPORTUNITIES);
         contentResolver.delete(accountsOpporUrl, null, null);
 
-        final Uri aclActionsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.ACL_ACTIONS);
+        final Uri aclActionsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.ACL_ACTIONS);
         contentResolver.delete(aclActionsUrl, null, null);
 
-        final Uri aclRolesUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.ACL_ROLES);
+        final Uri aclRolesUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.ACL_ROLES);
         contentResolver.delete(aclRolesUrl, null, null);
 
-        final Uri alarmUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.ALARMS);
+        final Uri alarmUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.ALARMS);
         contentResolver.delete(alarmUrl, null, null);
 
-        final Uri callsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.CALLS);
+        final Uri callsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.CALLS);
         contentResolver.delete(callsUrl, null, null);
 
-        final Uri campaignsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.CAMPAIGNS);
+        final Uri campaignsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.CAMPAIGNS);
         contentResolver.delete(campaignsUrl, null, null);
 
-        final Uri casesUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.CASES);
+        final Uri casesUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.CASES);
         contentResolver.delete(casesUrl, null, null);
 
-        final Uri contactsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.CONTACTS);
+        final Uri contactsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.CONTACTS);
         contentResolver.delete(contactsUrl, null, null);
 
-        final Uri contactsCasesUrl = Uri.parse("content://"
+        final Uri contactsCasesUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.CONTACTS_CASES);
         contentResolver.delete(contactsCasesUrl, null, null);
 
-        final Uri contactsOpporUrl = Uri.parse("content://"
+        final Uri contactsOpporUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/"
                 + Util.CONTACTS_OPPORTUNITIES);
         contentResolver.delete(contactsOpporUrl, null, null);
 
-        final Uri leadsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.LEADS);
+        final Uri leadsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.LEADS);
         contentResolver.delete(leadsUrl, null, null);
 
-        final Uri linkFieldsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.LINK_FIELDS);
+        final Uri linkFieldsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.LINK_FIELDS);
         contentResolver.delete(linkFieldsUrl, null, null);
 
-        final Uri meetingsUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.MEETINGS);
+        final Uri meetingsUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.MEETINGS);
         contentResolver.delete(meetingsUrl, null, null);
 
-        final Uri modulesUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES);
+        final Uri modulesUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.MODULES);
         contentResolver.delete(modulesUrl, null, null);
 
-        final Uri moduleFieldsUrl = Uri.parse("content://"
+        final Uri moduleFieldsUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.MODULES_FIELDS);
         contentResolver.delete(moduleFieldsUrl, null, null);
 
-        final Uri opportunitiesUrl = Uri.parse("content://"
+        final Uri opportunitiesUrl = Uri.parse(SCHEME
                 + SugarCRMProvider.AUTHORITY + "/" + Util.OPPORTUNITIES);
         contentResolver.delete(opportunitiesUrl, null, null);
 
-        final Uri recentUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.RECENT);
+        final Uri recentUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.RECENT);
         contentResolver.delete(recentUrl, null, null);
 
-        final Uri syncUrl = Uri.parse("content://" + SugarCRMProvider.AUTHORITY
-                + "/" + Util.SYNC_TABLE);
+        final Uri syncUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY + "/"
+                + Util.SYNC_TABLE);
         contentResolver.delete(syncUrl, null, null);
 
-        final Uri uesersUrl = Uri.parse("content://"
-                + SugarCRMProvider.AUTHORITY + "/" + Util.USERS);
+        final Uri uesersUrl = Uri.parse(SCHEME + SugarCRMProvider.AUTHORITY
+                + "/" + Util.USERS);
         contentResolver.delete(uesersUrl, null, null);
 
     }

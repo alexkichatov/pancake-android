@@ -117,11 +117,17 @@ import com.imaginea.android.sugarcrm.util.Util;
  * "Invalid session Ids" care not propagated back, so we keep the time low for
  * the time being.
  */
-public class Rest {
+public final class Rest {
 
-    public final static String LOG_TAG = "RestUtil";
+    public static final String LOG_TAG = "RestUtil";
 
-    private static HttpClient httpClient = new DefaultHttpClient();
+    private static final String ERROR_MSG = "FAILED TO CONNECT!";
+
+    private static final String KEY = "name";
+    private static final String VALUE = "value";
+
+    /** The m http client. */
+    private static HttpClient mHttpClient = new DefaultHttpClient();
 
     /**
      * Retrieve a list of beans. This is the primary method for getting list of
@@ -151,6 +157,11 @@ public class Rest {
      * @throws SugarCrmException
      *             the sugar crm exception
      */
+
+    private Rest() {
+
+    }
+
     public static SugarBean[] getEntryList(String url, String sessionId,
             String moduleName, String query, String orderBy, String offset,
             String[] selectFields,
@@ -176,8 +187,8 @@ public class Rest {
                 for (final Entry<String, List<String>> entry : linkNameToFieldsArray
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", new JSONArray(entry.getValue()));
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, new JSONArray(entry.getValue()));
                     nameValueArray.put(nameValue);
                 }
             }
@@ -204,11 +215,10 @@ public class Rest {
             final HttpResponse res = httpClient.execute(req);
             response = EntityUtils.toString(res.getEntity());
             if (response == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
-            final SugarBean[] beans = new SBParser(response).getSugarBeans();
-            return beans;
+            return new SBParser(response).getSugarBeans();
         } catch (final JSONException jo) {
             Log.e(LOG_TAG, "response is : " + response);
             throw new SugarCrmException(JSON_EXCEPTION, jo.getMessage());
@@ -259,8 +269,8 @@ public class Rest {
                 for (final Entry<String, List<String>> entry : linkNameToFieldsArray
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", new JSONArray(entry.getValue()));
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, new JSONArray(entry.getValue()));
                     nameValueArray.put(nameValue);
                 }
             }
@@ -284,8 +294,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final SugarBean[] beans = new SBParser(EntityUtils.toString(
                     res.getEntity()).toString()).getSugarBeans();
@@ -337,8 +347,8 @@ public class Rest {
                 for (final Entry<String, List<String>> entry : linkNameToFieldsArray
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", new JSONArray(entry.getValue()));
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, new JSONArray(entry.getValue()));
                     nameValueArray.put(nameValue);
                 }
             }
@@ -361,8 +371,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             return new SugarBean(EntityUtils.toString(res.getEntity())
                     .toString());
@@ -420,8 +430,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -463,8 +473,8 @@ public class Rest {
                 for (final Entry<String, String> entry : nameValueList
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", entry.getValue());
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, entry.getValue());
                     nameValueArray.put(nameValue);
                 }
             }
@@ -488,8 +498,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -536,8 +546,8 @@ public class Rest {
                     for (final Entry<String, String> entry : nameValueList
                             .entrySet()) {
                         final JSONObject nameValue = new JSONObject();
-                        nameValue.put("name", entry.getKey());
-                        nameValue.put("value", entry.getValue());
+                        nameValue.put(KEY, entry.getKey());
+                        nameValue.put(VALUE, entry.getValue());
                         beanNameValueArray.put(nameValue);
                     }
                     nameValueArray.put(beanNameValueArray);
@@ -563,8 +573,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -652,8 +662,8 @@ public class Rest {
                 for (final Entry<String, List<String>> entry : relatedModuleLinkNameToFieldsArray
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", new JSONArray(entry.getValue()));
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, new JSONArray(entry.getValue()));
                     linkNametoFieldJson.put(nameValue);
                 }
             }
@@ -681,14 +691,13 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.i(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.i(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
             Log.e(LOG_TAG, "getRelationships response : " + response);
-            final SugarBean[] beans = new SBParser(response).getSugarBeans();
-            return beans;
+            return new SBParser(response).getSugarBeans();
         } catch (final JSONException jo) {
             throw new SugarCrmException(JSON_EXCEPTION, jo.getMessage());
         } catch (final IOException ioe) {
@@ -753,8 +762,8 @@ public class Rest {
                     for (final Entry<String, String> entry : nameValueList
                             .entrySet()) {
                         final JSONObject nameValue = new JSONObject();
-                        nameValue.put("name", entry.getKey());
-                        nameValue.put("value", entry.getValue());
+                        nameValue.put(KEY, entry.getKey());
+                        nameValue.put(VALUE, entry.getValue());
                         beanNameValueArray.put(nameValue);
                     }
                     nameValueArray.put(beanNameValueArray);
@@ -782,8 +791,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -843,8 +852,8 @@ public class Rest {
                 for (final Entry<String, String> entry : nameValueList
                         .entrySet()) {
                     final JSONObject nameValue = new JSONObject();
-                    nameValue.put("name", entry.getKey());
-                    nameValue.put("value", entry.getValue());
+                    nameValue.put(KEY, entry.getKey());
+                    nameValue.put(VALUE, entry.getValue());
                     nameValueArray.put(nameValue);
                 }
             }
@@ -870,8 +879,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -911,7 +920,6 @@ public class Rest {
     public static Map<String, SugarBean[]> searchByModule(String url,
             String sessionId, String searchString, String[] modules,
             String offset, String maxResults) throws SugarCrmException {
-
         final Map<String, Object> data = new LinkedHashMap<String, Object>();
         data.put(SESSION, sessionId);
         data.put(SEARCH_STRING, searchString != null ? searchString : "");
@@ -925,7 +933,6 @@ public class Rest {
         try {
             final String restData = org.json.simple.JSONValue
                     .toJSONString(data);
-
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost req = new HttpPost(url);
             // Add your data
@@ -936,18 +943,16 @@ public class Rest {
             nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
             nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData));
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
             // Send POST request
             httpClient.getParams().setBooleanParameter(
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
-            Log.i(LOG_TAG, "search response : " + response);
             return new SearchResultParser(response).getSearchResults();
         } catch (final IOException ioe) {
             throw new SugarCrmException(ioe.getMessage());
@@ -976,8 +981,7 @@ public class Rest {
         final JSONObject credentials = new JSONObject();
         try {
             credentials.put(USER_NAME, username);
-            password = Util.MD5(password);
-            credentials.put(PASSWORD, password);
+            credentials.put(PASSWORD, Util.MD5(password));
 
             final JSONArray jsonArray = new JSONArray();
             jsonArray.put(credentials);
@@ -997,22 +1001,20 @@ public class Rest {
             nameValuePairs.add(new BasicNameValuePair(NAME_VALUE_LIST, ""));
 
             reqLogin.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            // Log.i(LOG_TAG, EntityUtils.toString(reqLogin.getEntity()));
-            httpClient.getParams().setBooleanParameter(
+            mHttpClient.getParams().setBooleanParameter(
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             // Send POST request
-            final HttpResponse resLogin = httpClient.execute(reqLogin);
+            final HttpResponse resLogin = mHttpClient.execute(reqLogin);
 
             if (resLogin.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
 
             final String response = EntityUtils.toString(resLogin.getEntity());
             final JSONObject responseObj = new JSONObject(response);
             try {
-                final String sessionId = responseObj.get(ID).toString();
-                return sessionId;
+                return responseObj.get(ID).toString();
             } catch (final JSONException e) {
                 throw new SugarCrmException(responseObj.get(NAME).toString(),
                         responseObj.get(DESCRIPTION).toString());
@@ -1056,8 +1058,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
         } catch (final IOException ioe) {
             throw new SugarCrmException(ioe.getMessage());
@@ -1094,13 +1096,13 @@ public class Rest {
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
-            httpClient.getParams().setBooleanParameter(
+            mHttpClient.getParams().setBooleanParameter(
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
-            final HttpResponse res = httpClient.execute(req);
+            final HttpResponse res = mHttpClient.execute(req);
 
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
 
             final String response = EntityUtils.toString(res.getEntity());
@@ -1112,7 +1114,6 @@ public class Rest {
             final List<String> modules = new ArrayList<String>();
             for (int i = 0; i < modulesArray.length(); i++) {
                 final String module = modulesArray.getString(i).toString();
-                // Log.d(LOG_TAG, "getAvailableModules: module - " + module);
                 modules.add(module);
             }
 
@@ -1165,12 +1166,8 @@ public class Rest {
                     .add(new BasicNameValuePair(METHOD, GET_MODULE_FIELDS));
             nameValuePairs.add(new BasicNameValuePair(INPUT_TYPE, JSON));
             nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
-            nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData
-                    .toString()));
+            nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData));
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-                Log.d(LOG_TAG, EntityUtils.toString(req.getEntity()));
-            }
 
             // Send POST request
             httpClient.getParams().setBooleanParameter(
@@ -1178,15 +1175,11 @@ public class Rest {
             final HttpResponse res = httpClient.execute(req);
 
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
 
             final String response = EntityUtils.toString(res.getEntity());
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-                Log.v(LOG_TAG, "moduleFields for " + moduleName + ": "
-                        + response);
-            }
 
             final ModuleFieldsParser parser = new ModuleFieldsParser(response);
             return new Module(moduleName, parser.getModuleFields(),
@@ -1231,8 +1224,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
             final String response = EntityUtils.toString(res.getEntity())
                     .toString();
@@ -1242,8 +1235,7 @@ public class Rest {
                 jsonResponse = new JSONObject(response);
                 version = (String) jsonResponse.get("version");
             } catch (final JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(LOG_TAG, "Ops! Error" + e);
             }
         } catch (final IOException ioe) {
             throw new SugarCrmException(ioe.getMessage());
@@ -1286,8 +1278,7 @@ public class Rest {
             nameValuePairs.add(new BasicNameValuePair(METHOD, SEAMLESS_LOGIN));
             nameValuePairs.add(new BasicNameValuePair(INPUT_TYPE, JSON));
             nameValuePairs.add(new BasicNameValuePair(RESPONSE_TYPE, JSON));
-            nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData
-                    .toString()));
+            nameValuePairs.add(new BasicNameValuePair(REST_DATA, restData));
             req.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Send POST request
@@ -1295,8 +1286,8 @@ public class Rest {
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
             final HttpResponse res = httpClient.execute(req);
             if (res.getEntity() == null) {
-                Log.e(LOG_TAG, "FAILED TO CONNECT!");
-                throw new SugarCrmException("FAILED TO CONNECT!");
+                Log.e(LOG_TAG, ERROR_MSG);
+                throw new SugarCrmException(ERROR_MSG);
             }
 
             final String response = EntityUtils.toString(res.getEntity())

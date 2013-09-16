@@ -35,17 +35,17 @@ import com.imaginea.android.sugarcrm.util.SugarCrmException;
  */
 public class SugarBean {
 
-    /** The bean id. */
-    private String beanId;
+    /** The m bean id. */
+    private String mBeanId;
 
     /** The module name. */
     private String moduleName;
 
     /** The entry list. */
-    private Map<String, String> entryList;
+    private Map<String, String> mEntryList;
 
     /** The relationship list. */
-    private Map<String, SugarBean[]> relationshipList;
+    private Map<String, SugarBean[]> mRelationshipList;
 
     /**
      * Instantiates a new sugar bean.
@@ -91,7 +91,7 @@ public class SugarBean {
      * @throws SugarCrmException
      *             the sugar crm exception
      */
-    private Map<String, SugarBean[]> getRelationshipBeans(
+    private final Map<String, SugarBean[]> getRelationshipBeans(
             JSONArray mRelationshipListJson) throws SugarCrmException {
         final Map<String, SugarBean[]> relationshipList = new HashMap<String, SugarBean[]>();
         try {
@@ -148,7 +148,7 @@ public class SugarBean {
      * @return a {@link java.lang.String} object.
      */
     public String getBeanId() {
-        return beanId;
+        return mBeanId;
     }
 
     /**
@@ -158,8 +158,8 @@ public class SugarBean {
      * @param beanId
      *            a {@link java.lang.String} object.
      */
-    public void setBeanId(String beanId) {
-        this.beanId = beanId;
+    public final void setBeanId(String beanId) {
+        mBeanId = beanId;
     }
 
     /**
@@ -188,7 +188,7 @@ public class SugarBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getEntryList() {
-        return entryList;
+        return mEntryList;
     }
 
     /**
@@ -197,8 +197,8 @@ public class SugarBean {
      * @param map
      *            a {@link java.util.Map} object.
      */
-    public void setEntryList(Map<String, String> map) {
-        entryList = map;
+    public final void setEntryList(Map<String, String> map) {
+        mEntryList = map;
     }
 
     /**
@@ -209,7 +209,7 @@ public class SugarBean {
      * @return a {@link java.lang.String} object.
      */
     public String getFieldValue(String fieldName) {
-        return entryList.get(fieldName);
+        return mEntryList.get(fieldName);
     }
 
     /**
@@ -218,7 +218,7 @@ public class SugarBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, SugarBean[]> getRelationshipList() {
-        return relationshipList;
+        return mRelationshipList;
     }
 
     /**
@@ -227,8 +227,9 @@ public class SugarBean {
      * @param relationshipList
      *            a {@link java.util.Map} object.
      */
-    public void setRelationshipList(Map<String, SugarBean[]> relationshipList) {
-        this.relationshipList = relationshipList;
+    public final void setRelationshipList(
+            Map<String, SugarBean[]> relationshipList) {
+        mRelationshipList = relationshipList;
     }
 
     /**
@@ -240,7 +241,7 @@ public class SugarBean {
      *         objects.
      */
     public SugarBean[] getRelationshipBeans(String linkField) {
-        return relationshipList.get(linkField);
+        return mRelationshipList.get(linkField);
     }
 
 }

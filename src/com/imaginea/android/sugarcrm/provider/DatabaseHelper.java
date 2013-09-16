@@ -59,7 +59,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldSortOrder;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldSortOrderColumns;
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFields_TableInfo;
+import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ModuleFieldsTableInfo;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.OpportunitiesColumns;
 import com.imaginea.android.sugarcrm.provider.SugarCRMContent.RecentColumns;
@@ -85,6 +85,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /** The Constant DATABASE_NAME. */
     private static final String DATABASE_NAME = "sugar_crm.db";
+
+    /** The Constant INTEGER_COMMA. */
+    private static final String INTEGER_COMMA = " INTEGER,";
+
+    /** The Constant TEXT. */
+    private static final String TEXT_COMMA = " TEXT,";
+
+    /** The Constant INTEGER_PRIMARY_KEY. */
+    private static final String INTEGER_PRIMARY_KEY = " INTEGER PRIMARY KEY,";
+
+    /** The Constant INTEGER. */
+    private static final String INTEGER = " INTEGER";
+
+    /** The Constant CREATE_TABLE. */
+    private static final String CREATE_TABLE = "CREATE TABLE ";
+
+    /** The Constant DROPTABLE_IF_EXIST. */
+    private static final String DROPTABLE_IF_EXIST = "DROP TABLE IF EXISTS ";
 
     // TODO: RESET the database version to 1
     /** The Constant DATABASE_VERSION. */
@@ -166,19 +184,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     /** The link fields. */
-    private static HashMap<String, HashMap<String, LinkField>> linkFields;
+    private static Map<String, HashMap<String, LinkField>> linkFields;
 
     /** The Constant relationshipTables. */
-    private static final HashMap<String, String[]> relationshipTables = new HashMap<String, String[]>();
+    private static Map<String, String[]> relationshipTables = new HashMap<String, String[]>();
 
     /** The Constant accountRelationsSelection. */
-    private static final HashMap<String, String> accountRelationsSelection = new HashMap<String, String>();
+    private static Map<String, String> accountRelationsSelection = new HashMap<String, String>();
 
     /** The Constant accountRelationsTableName. */
-    private static final HashMap<String, String> accountRelationsTableName = new HashMap<String, String>();
+    private static Map<String, String> accountRelationsTableName = new HashMap<String, String>();
 
     /** The Constant linkfieldNames. */
-    private static final HashMap<String, String> linkfieldNames = new HashMap<String, String>();
+    private static Map<String, String> linkfieldNames = new HashMap<String, String>();
 
     /** The access map. */
     private final Map<String, Map<String, Integer>> accessMap = new HashMap<String, Map<String, Integer>>();
@@ -330,7 +348,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAccountsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACCOUNTS_TABLE_NAME);
     }
 
     /**
@@ -340,7 +358,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropContactsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CONTACTS_TABLE_NAME);
     }
 
     /**
@@ -350,7 +368,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropLeadsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + LEADS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + LEADS_TABLE_NAME);
     }
 
     /**
@@ -360,7 +378,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropOpportunitiesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + OPPORTUNITIES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + OPPORTUNITIES_TABLE_NAME);
     }
 
     /**
@@ -370,7 +388,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropCasesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CASES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CASES_TABLE_NAME);
     }
 
     /**
@@ -380,7 +398,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropCallsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CALLS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CALLS_TABLE_NAME);
     }
 
     /**
@@ -390,7 +408,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropMeetingsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + MEETINGS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + MEETINGS_TABLE_NAME);
     }
 
     /**
@@ -400,7 +418,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropCampaignsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGNS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CAMPAIGNS_TABLE_NAME);
     }
 
     /**
@@ -410,7 +428,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropModulesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + MODULES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + MODULES_TABLE_NAME);
     }
 
     /**
@@ -420,7 +438,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropModuleFieldsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + MODULE_FIELDS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + MODULE_FIELDS_TABLE_NAME);
     }
 
     /**
@@ -430,7 +448,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropLinkFieldsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + LINK_FIELDS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + LINK_FIELDS_TABLE_NAME);
     }
 
     /**
@@ -440,7 +458,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAccountsContactsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_CONTACTS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACCOUNTS_CONTACTS_TABLE_NAME);
     }
 
     /**
@@ -450,7 +468,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAccountsCasesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_CASES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACCOUNTS_CASES_TABLE_NAME);
     }
 
     /**
@@ -460,7 +478,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAccountsOpportunitiesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_OPPORTUNITIES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACCOUNTS_OPPORTUNITIES_TABLE_NAME);
     }
 
     /**
@@ -470,7 +488,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropContactsOpportunitiesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_OPPORTUNITIES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CONTACTS_OPPORTUNITIES_TABLE_NAME);
     }
 
     /**
@@ -480,7 +498,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropContactsCasesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_CASES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + CONTACTS_CASES_TABLE_NAME);
     }
 
     /**
@@ -490,7 +508,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropSyncTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + SYNC_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + SYNC_TABLE_NAME);
     }
 
     /**
@@ -500,7 +518,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropUsersTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + USERS_TABLE_NAME);
     }
 
     /**
@@ -510,7 +528,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAclRolesTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACL_ROLES_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACL_ROLES_TABLE_NAME);
     }
 
     /**
@@ -520,7 +538,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropAclActionsTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + ACL_ACTIONS_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + ACL_ACTIONS_TABLE_NAME);
     }
 
     /**
@@ -530,8 +548,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropModuleFieldsSortOrderTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS "
-                + MODULE_FIELDS_SORT_ORDER_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + MODULE_FIELDS_SORT_ORDER_TABLE_NAME);
     }
 
     /**
@@ -541,7 +558,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropModuleFieldsGroupTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + MODULE_FIELDS_GROUP_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + MODULE_FIELDS_GROUP_TABLE_NAME);
     }
 
     /**
@@ -551,7 +568,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     void dropRecentTable(final SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + RECENT_TABLE_NAME);
+        db.execSQL(DROPTABLE_IF_EXIST + RECENT_TABLE_NAME);
     }
 
     /** {@inheritDoc} */
@@ -608,8 +625,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAlarmsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ALARM_TABLE_NAME + " (" + AlarmColumns.ID
-                + " INTEGER," + AlarmColumns.ALARM_STATE + " INTEGER" + ");");
+        db.execSQL(CREATE_TABLE + ALARM_TABLE_NAME + " (" + AlarmColumns.ID
+                + INTEGER_COMMA + AlarmColumns.ALARM_STATE + INTEGER + ");");
     }
 
     /**
@@ -620,12 +637,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createRecentTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + RECENT_TABLE_NAME + " ("
-                + RecentColumns.ID + " INTEGER," + RecentColumns.ACTUAL_ID
-                + " INTEGER," + RecentColumns.BEAN_ID + " TEXT,"
-                + RecentColumns.REF_MODULE_NAME + " TEXT,"
-                + RecentColumns.NAME_1 + " TEXT," + RecentColumns.NAME_2
-                + " TEXT," + RecentColumns.DELETED + " INTEGER" + ");");
+        db.execSQL(CREATE_TABLE + RECENT_TABLE_NAME + " (" + RecentColumns.ID
+                + INTEGER_COMMA + RecentColumns.ACTUAL_ID + INTEGER_COMMA
+                + RecentColumns.BEAN_ID + TEXT_COMMA
+                + RecentColumns.REF_MODULE_NAME + TEXT_COMMA
+                + RecentColumns.NAME_1 + TEXT_COMMA + RecentColumns.NAME_2
+                + TEXT_COMMA + RecentColumns.DELETED + INTEGER + ");");
+
     }
 
     /**
@@ -636,38 +654,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAccountsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACCOUNTS_TABLE_NAME + " ("
-                + AccountsColumns.ID + " INTEGER PRIMARY KEY,"
-                + AccountsColumns.BEAN_ID + " TEXT," + AccountsColumns.NAME
-                + " TEXT," + AccountsColumns.EMAIL1 + " TEXT,"
-                + AccountsColumns.PARENT_NAME + " TEXT,"
-                + AccountsColumns.PHONE_OFFICE + " TEXT,"
-                + AccountsColumns.PHONE_FAX + " TEXT,"
-                + AccountsColumns.WEBSITE + " TEXT,"
-                + AccountsColumns.EMPLOYEES + " TEXT,"
-                + AccountsColumns.TICKER_SYMBOL + " TEXT,"
-                + AccountsColumns.ANNUAL_REVENUE + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_STREET + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_STREET_2 + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_STREET_3 + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_STREET_4 + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_CITY + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_STATE + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_POSTALCODE + " TEXT,"
-                + AccountsColumns.BILLING_ADDRESS_COUNTRY + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_STREET + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_STREET_2 + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_STREET_3 + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_STREET_4 + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_CITY + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_STATE + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_POSTALCODE + " TEXT,"
-                + AccountsColumns.SHIPPING_ADDRESS_COUNTRY + " TEXT,"
-                + AccountsColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + AccountsColumns.CREATED_BY_NAME + " TEXT,"
-                + AccountsColumns.DATE_ENTERED + " TEXT,"
-                + AccountsColumns.DATE_MODIFIED + " TEXT,"
-                + AccountsColumns.DELETED + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + ACCOUNTS_TABLE_NAME + " ("
+                + AccountsColumns.ID + INTEGER_PRIMARY_KEY
+                + AccountsColumns.BEAN_ID + TEXT_COMMA + AccountsColumns.NAME
+                + TEXT_COMMA + AccountsColumns.EMAIL1 + TEXT_COMMA
+                + AccountsColumns.PARENT_NAME + TEXT_COMMA
+                + AccountsColumns.PHONE_OFFICE + TEXT_COMMA
+                + AccountsColumns.PHONE_FAX + TEXT_COMMA
+                + AccountsColumns.WEBSITE + TEXT_COMMA
+                + AccountsColumns.EMPLOYEES + TEXT_COMMA
+                + AccountsColumns.TICKER_SYMBOL + TEXT_COMMA
+                + AccountsColumns.ANNUAL_REVENUE + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_STREET + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_STREET_2 + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_STREET_3 + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_STREET_4 + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_CITY + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_STATE + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_POSTALCODE + TEXT_COMMA
+                + AccountsColumns.BILLING_ADDRESS_COUNTRY + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_STREET + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_STREET_2 + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_STREET_3 + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_STREET_4 + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_CITY + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_STATE + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_POSTALCODE + TEXT_COMMA
+                + AccountsColumns.SHIPPING_ADDRESS_COUNTRY + TEXT_COMMA
+                + AccountsColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + AccountsColumns.CREATED_BY_NAME + TEXT_COMMA
+                + AccountsColumns.DATE_ENTERED + TEXT_COMMA
+                + AccountsColumns.DATE_MODIFIED + TEXT_COMMA
+                + AccountsColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + AccountsColumns.BEAN_ID + ")" + ");");
     }
 
@@ -679,23 +697,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createContactsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CONTACTS_TABLE_NAME + " ("
-                + ContactsColumns.ID + " INTEGER PRIMARY KEY,"
-                + ContactsColumns.BEAN_ID + " TEXT,"
-                + ContactsColumns.FIRST_NAME + " TEXT,"
-                + ContactsColumns.LAST_NAME + " TEXT,"
-                + ContactsColumns.ACCOUNT_NAME + " TEXT,"
-                + ContactsColumns.PHONE_MOBILE + " TEXT,"
-                + ContactsColumns.PHONE_WORK + " TEXT,"
-                + ContactsColumns.EMAIL1 + " TEXT,"
-                + ContactsColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + ContactsColumns.CREATED_BY + " TEXT,"
-                + ContactsColumns.MODIFIED_BY_NAME + " TEXT,"
-                + ContactsColumns.CREATED_BY_NAME + " TEXT,"
-                + ContactsColumns.DATE_ENTERED + " TEXT,"
-                + ContactsColumns.DATE_MODIFIED + " TEXT,"
-                + ContactsColumns.DELETED + " INTEGER,"
-                + ContactsColumns.ACCOUNT_ID + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + CONTACTS_TABLE_NAME + " ("
+                + ContactsColumns.ID + INTEGER_PRIMARY_KEY
+                + ContactsColumns.BEAN_ID + TEXT_COMMA
+                + ContactsColumns.FIRST_NAME + TEXT_COMMA
+                + ContactsColumns.LAST_NAME + TEXT_COMMA
+                + ContactsColumns.ACCOUNT_NAME + TEXT_COMMA
+                + ContactsColumns.PHONE_MOBILE + TEXT_COMMA
+                + ContactsColumns.PHONE_WORK + TEXT_COMMA
+                + ContactsColumns.EMAIL1 + TEXT_COMMA
+                + ContactsColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + ContactsColumns.CREATED_BY + TEXT_COMMA
+                + ContactsColumns.MODIFIED_BY_NAME + TEXT_COMMA
+                + ContactsColumns.CREATED_BY_NAME + TEXT_COMMA
+                + ContactsColumns.DATE_ENTERED + TEXT_COMMA
+                + ContactsColumns.DATE_MODIFIED + TEXT_COMMA
+                + ContactsColumns.DELETED + INTEGER_COMMA
+                + ContactsColumns.ACCOUNT_ID + INTEGER_COMMA + " UNIQUE("
                 + ContactsColumns.BEAN_ID + ")" + ");");
     }
 
@@ -707,19 +725,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createLeadsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + LEADS_TABLE_NAME + " (" + LeadsColumns.ID
-                + " INTEGER PRIMARY KEY," + LeadsColumns.BEAN_ID + " TEXT,"
-                + LeadsColumns.FIRST_NAME + " TEXT," + LeadsColumns.LAST_NAME
-                + " TEXT," + LeadsColumns.LEAD_SOURCE + " TEXT,"
-                + LeadsColumns.EMAIL1 + " TEXT," + LeadsColumns.PHONE_WORK
-                + " TEXT," + LeadsColumns.PHONE_FAX + " TEXT,"
-                + LeadsColumns.ACCOUNT_NAME + " TEXT," + LeadsColumns.TITLE
-                + " TEXT," + LeadsColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + LeadsColumns.CREATED_BY_NAME + " TEXT,"
-                + LeadsColumns.DATE_ENTERED + " TEXT,"
-                + LeadsColumns.DATE_MODIFIED + " TEXT," + LeadsColumns.DELETED
-                + " INTEGER," + LeadsColumns.ACCOUNT_ID + " INTEGER,"
-                + " UNIQUE(" + LeadsColumns.BEAN_ID + ")" + ");");
+        db.execSQL(CREATE_TABLE + LEADS_TABLE_NAME + " (" + LeadsColumns.ID
+                + INTEGER_PRIMARY_KEY + LeadsColumns.BEAN_ID + TEXT_COMMA
+                + LeadsColumns.FIRST_NAME + TEXT_COMMA + LeadsColumns.LAST_NAME
+                + TEXT_COMMA + LeadsColumns.LEAD_SOURCE + TEXT_COMMA
+                + LeadsColumns.EMAIL1 + TEXT_COMMA + LeadsColumns.PHONE_WORK
+                + TEXT_COMMA + LeadsColumns.PHONE_FAX + TEXT_COMMA
+                + LeadsColumns.ACCOUNT_NAME + TEXT_COMMA + LeadsColumns.TITLE
+                + TEXT_COMMA + LeadsColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + LeadsColumns.CREATED_BY_NAME + TEXT_COMMA
+                + LeadsColumns.DATE_ENTERED + TEXT_COMMA
+                + LeadsColumns.DATE_MODIFIED + TEXT_COMMA
+                + LeadsColumns.DELETED + INTEGER_COMMA
+                + LeadsColumns.ACCOUNT_ID + INTEGER_COMMA + " UNIQUE("
+                + LeadsColumns.BEAN_ID + ")" + ");");
     }
 
     /**
@@ -730,34 +749,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createOpportunitiesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + OPPORTUNITIES_TABLE_NAME + " ("
-                + OpportunitiesColumns.ID + " INTEGER PRIMARY KEY,"
-                + OpportunitiesColumns.BEAN_ID + " TEXT,"
-                + OpportunitiesColumns.NAME + " TEXT,"
-                + OpportunitiesColumns.ACCOUNT_NAME + " TEXT,"
-                + OpportunitiesColumns.AMOUNT + " TEXT,"
-                + OpportunitiesColumns.AMOUNT_USDOLLAR + " TEXT,"
-                + OpportunitiesColumns.ASSIGNED_USER_ID + " TEXT,"
-                + OpportunitiesColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + OpportunitiesColumns.CAMPAIGN_NAME + " TEXT,"
-                + OpportunitiesColumns.CREATED_BY + " TEXT,"
-                + OpportunitiesColumns.CREATED_BY_NAME + " TEXT,"
-                + OpportunitiesColumns.CURRENCY_ID + " TEXT,"
-                + OpportunitiesColumns.CURRENCY_NAME + " TEXT,"
-                + OpportunitiesColumns.CURRENCY_SYMBOL + " TEXT,"
-                + OpportunitiesColumns.DATE_CLOSED + " TEXT,"
-                + OpportunitiesColumns.DATE_ENTERED + " TEXT,"
-                + OpportunitiesColumns.DATE_MODIFIED + " TEXT,"
-                + OpportunitiesColumns.DESCRIPTION + " TEXT,"
-                + OpportunitiesColumns.LEAD_SOURCE + " TEXT,"
-                + OpportunitiesColumns.MODIFIED_BY_NAME + " TEXT,"
-                + OpportunitiesColumns.MODIFIED_USER_ID + " TEXT,"
-                + OpportunitiesColumns.NEXT_STEP + " TEXT,"
-                + OpportunitiesColumns.OPPORTUNITY_TYPE + " TEXT,"
-                + OpportunitiesColumns.PROBABILITY + " TEXT,"
-                + OpportunitiesColumns.SALES_STAGE + " TEXT,"
-                + OpportunitiesColumns.DELETED + " INTEGER,"
-                + OpportunitiesColumns.ACCOUNT_ID + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + OPPORTUNITIES_TABLE_NAME + " ("
+                + OpportunitiesColumns.ID + INTEGER_PRIMARY_KEY
+                + OpportunitiesColumns.BEAN_ID + TEXT_COMMA
+                + OpportunitiesColumns.NAME + TEXT_COMMA
+                + OpportunitiesColumns.ACCOUNT_NAME + TEXT_COMMA
+                + OpportunitiesColumns.AMOUNT + TEXT_COMMA
+                + OpportunitiesColumns.AMOUNT_USDOLLAR + TEXT_COMMA
+                + OpportunitiesColumns.ASSIGNED_USER_ID + TEXT_COMMA
+                + OpportunitiesColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + OpportunitiesColumns.CAMPAIGN_NAME + TEXT_COMMA
+                + OpportunitiesColumns.CREATED_BY + TEXT_COMMA
+                + OpportunitiesColumns.CREATED_BY_NAME + TEXT_COMMA
+                + OpportunitiesColumns.CURRENCY_ID + TEXT_COMMA
+                + OpportunitiesColumns.CURRENCY_NAME + TEXT_COMMA
+                + OpportunitiesColumns.CURRENCY_SYMBOL + TEXT_COMMA
+                + OpportunitiesColumns.DATE_CLOSED + TEXT_COMMA
+                + OpportunitiesColumns.DATE_ENTERED + TEXT_COMMA
+                + OpportunitiesColumns.DATE_MODIFIED + TEXT_COMMA
+                + OpportunitiesColumns.DESCRIPTION + TEXT_COMMA
+                + OpportunitiesColumns.LEAD_SOURCE + TEXT_COMMA
+                + OpportunitiesColumns.MODIFIED_BY_NAME + TEXT_COMMA
+                + OpportunitiesColumns.MODIFIED_USER_ID + TEXT_COMMA
+                + OpportunitiesColumns.NEXT_STEP + TEXT_COMMA
+                + OpportunitiesColumns.OPPORTUNITY_TYPE + TEXT_COMMA
+                + OpportunitiesColumns.PROBABILITY + TEXT_COMMA
+                + OpportunitiesColumns.SALES_STAGE + TEXT_COMMA
+                + OpportunitiesColumns.DELETED + INTEGER_COMMA
+                + OpportunitiesColumns.ACCOUNT_ID + INTEGER_COMMA + " UNIQUE("
                 + OpportunitiesColumns.BEAN_ID + ")" + ");");
     }
 
@@ -769,18 +788,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createCasesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CASES_TABLE_NAME + " (" + CasesColumns.ID
-                + " INTEGER PRIMARY KEY," + CasesColumns.BEAN_ID + " TEXT,"
-                + CasesColumns.NAME + " TEXT," + CasesColumns.ACCOUNT_NAME
-                + " TEXT," + CasesColumns.CASE_NUMBER + " TEXT,"
-                + CasesColumns.PRIORITY + " TEXT,"
-                + CasesColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + CasesColumns.STATUS + " TEXT," + CasesColumns.DESCRIPTION
-                + " TEXT," + CasesColumns.RESOLUTION + " TEXT,"
-                + CasesColumns.CREATED_BY_NAME + " TEXT,"
-                + CasesColumns.DATE_ENTERED + " TEXT,"
-                + CasesColumns.DATE_MODIFIED + " TEXT," + CasesColumns.DELETED
-                + " INTEGER," + " UNIQUE(" + CasesColumns.BEAN_ID + ")" + ");");
+        db.execSQL(CREATE_TABLE + CASES_TABLE_NAME + " (" + CasesColumns.ID
+                + INTEGER_PRIMARY_KEY + CasesColumns.BEAN_ID + TEXT_COMMA
+                + CasesColumns.NAME + TEXT_COMMA + CasesColumns.ACCOUNT_NAME
+                + TEXT_COMMA + CasesColumns.CASE_NUMBER + TEXT_COMMA
+                + CasesColumns.PRIORITY + TEXT_COMMA
+                + CasesColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + CasesColumns.STATUS + TEXT_COMMA + CasesColumns.DESCRIPTION
+                + TEXT_COMMA + CasesColumns.RESOLUTION + TEXT_COMMA
+                + CasesColumns.CREATED_BY_NAME + TEXT_COMMA
+                + CasesColumns.DATE_ENTERED + TEXT_COMMA
+                + CasesColumns.DATE_MODIFIED + TEXT_COMMA
+                + CasesColumns.DELETED + INTEGER_COMMA + " UNIQUE("
+                + CasesColumns.BEAN_ID + ")" + ");");
     }
 
     /**
@@ -791,19 +811,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createCallsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CALLS_TABLE_NAME + " (" + CallsColumns.ID
-                + " INTEGER PRIMARY KEY," + CallsColumns.BEAN_ID + " TEXT,"
-                + CallsColumns.NAME + " TEXT," + CallsColumns.ACCOUNT_NAME
-                + " TEXT," + CallsColumns.STATUS + " TEXT,"
-                + CallsColumns.START_DATE + " TEXT,"
-                + CallsColumns.DURATION_HOURS + " TEXT,"
-                + CallsColumns.DURATION_MINUTES + " TEXT,"
-                + CallsColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + CallsColumns.DESCRIPTION + " TEXT,"
-                + CallsColumns.CREATED_BY_NAME + " TEXT,"
-                + CallsColumns.DATE_ENTERED + " TEXT,"
-                + CallsColumns.DATE_MODIFIED + " TEXT," + CallsColumns.DELETED
-                + " INTEGER," + " UNIQUE(" + CallsColumns.BEAN_ID + ")" + ");");
+        db.execSQL(CREATE_TABLE + CALLS_TABLE_NAME + " (" + CallsColumns.ID
+                + INTEGER_PRIMARY_KEY + CallsColumns.BEAN_ID + TEXT_COMMA
+                + CallsColumns.NAME + TEXT_COMMA + CallsColumns.ACCOUNT_NAME
+                + TEXT_COMMA + CallsColumns.STATUS + TEXT_COMMA
+                + CallsColumns.START_DATE + TEXT_COMMA
+                + CallsColumns.DURATION_HOURS + TEXT_COMMA
+                + CallsColumns.DURATION_MINUTES + TEXT_COMMA
+                + CallsColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + CallsColumns.DESCRIPTION + TEXT_COMMA
+                + CallsColumns.CREATED_BY_NAME + TEXT_COMMA
+                + CallsColumns.DATE_ENTERED + TEXT_COMMA
+                + CallsColumns.DATE_MODIFIED + TEXT_COMMA
+                + CallsColumns.DELETED + INTEGER_COMMA + " UNIQUE("
+                + CallsColumns.BEAN_ID + ")" + ");");
     }
 
     /**
@@ -814,20 +835,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createMeetingsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + MEETINGS_TABLE_NAME + " ("
-                + MeetingsColumns.ID + " INTEGER PRIMARY KEY,"
-                + MeetingsColumns.BEAN_ID + " TEXT," + MeetingsColumns.NAME
-                + " TEXT," + MeetingsColumns.ACCOUNT_NAME + " TEXT,"
-                + MeetingsColumns.STATUS + " TEXT," + MeetingsColumns.LOCATION
-                + " TEXT," + MeetingsColumns.START_DATE + " TEXT,"
-                + MeetingsColumns.DURATION_HOURS + " TEXT,"
-                + MeetingsColumns.DURATION_MINUTES + " TEXT,"
-                + MeetingsColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + MeetingsColumns.DESCRIPTION + " TEXT,"
-                + MeetingsColumns.CREATED_BY_NAME + " TEXT,"
-                + MeetingsColumns.DATE_ENTERED + " TEXT,"
-                + MeetingsColumns.DATE_MODIFIED + " TEXT,"
-                + MeetingsColumns.DELETED + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + MEETINGS_TABLE_NAME + " ("
+                + MeetingsColumns.ID + INTEGER_PRIMARY_KEY
+                + MeetingsColumns.BEAN_ID + TEXT_COMMA + MeetingsColumns.NAME
+                + TEXT_COMMA + MeetingsColumns.ACCOUNT_NAME + TEXT_COMMA
+                + MeetingsColumns.STATUS + TEXT_COMMA
+                + MeetingsColumns.LOCATION + TEXT_COMMA
+                + MeetingsColumns.START_DATE + TEXT_COMMA
+                + MeetingsColumns.DURATION_HOURS + TEXT_COMMA
+                + MeetingsColumns.DURATION_MINUTES + TEXT_COMMA
+                + MeetingsColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + MeetingsColumns.DESCRIPTION + TEXT_COMMA
+                + MeetingsColumns.CREATED_BY_NAME + TEXT_COMMA
+                + MeetingsColumns.DATE_ENTERED + TEXT_COMMA
+                + MeetingsColumns.DATE_MODIFIED + TEXT_COMMA
+                + MeetingsColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + MeetingsColumns.BEAN_ID + ")" + ");");
     }
 
@@ -838,26 +860,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     private static void createCampaignsTable(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + CAMPAIGNS_TABLE_NAME + " ("
-                + CampaignColumns.ID + " INTEGER PRIMARY KEY,"
-                + CampaignColumns.BEAN_ID + " TEXT," + CampaignColumns.NAME
-                + " TEXT," + CampaignColumns.STATUS + " TEXT,"
-                + CampaignColumns.START_DATE + " TEXT,"
-                + CampaignColumns.END_DATE + " TEXT,"
-                + CampaignColumns.CAMPAIGN_TYPE + " TEXT,"
-                + CampaignColumns.BUDGET + " TEXT,"
-                + CampaignColumns.ACTUAL_COST + " TEXT,"
-                + CampaignColumns.EXPECTED_COST + " TEXT,"
-                + CampaignColumns.EXPECTED_REVENUE + " TEXT,"
-                + CampaignColumns.IMPRESSIONS + " TEXT,"
-                + CampaignColumns.OBJECTIVE + " TEXT,"
-                + CampaignColumns.FREQUENCY + " TEXT,"
-                + CampaignColumns.ASSIGNED_USER_NAME + " TEXT,"
-                + CampaignColumns.DESCRIPTION + " TEXT,"
-                + CampaignColumns.CREATED_BY_NAME + " TEXT,"
-                + CampaignColumns.DATE_ENTERED + " TEXT,"
-                + CampaignColumns.DATE_MODIFIED + " TEXT,"
-                + CampaignColumns.DELETED + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + CAMPAIGNS_TABLE_NAME + " ("
+                + CampaignColumns.ID + INTEGER_PRIMARY_KEY
+                + CampaignColumns.BEAN_ID + TEXT_COMMA + CampaignColumns.NAME
+                + TEXT_COMMA + CampaignColumns.STATUS + TEXT_COMMA
+                + CampaignColumns.START_DATE + TEXT_COMMA
+                + CampaignColumns.END_DATE + TEXT_COMMA
+                + CampaignColumns.CAMPAIGN_TYPE + TEXT_COMMA
+                + CampaignColumns.BUDGET + TEXT_COMMA
+                + CampaignColumns.ACTUAL_COST + TEXT_COMMA
+                + CampaignColumns.EXPECTED_COST + TEXT_COMMA
+                + CampaignColumns.EXPECTED_REVENUE + TEXT_COMMA
+                + CampaignColumns.IMPRESSIONS + TEXT_COMMA
+                + CampaignColumns.OBJECTIVE + TEXT_COMMA
+                + CampaignColumns.FREQUENCY + TEXT_COMMA
+                + CampaignColumns.ASSIGNED_USER_NAME + TEXT_COMMA
+                + CampaignColumns.DESCRIPTION + TEXT_COMMA
+                + CampaignColumns.CREATED_BY_NAME + TEXT_COMMA
+                + CampaignColumns.DATE_ENTERED + TEXT_COMMA
+                + CampaignColumns.DATE_MODIFIED + TEXT_COMMA
+                + CampaignColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + MeetingsColumns.BEAN_ID + ")" + ");");
     }
 
@@ -869,10 +891,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createModulesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + MODULES_TABLE_NAME + " ("
-                + ModuleColumns.ID + " INTEGER PRIMARY KEY,"
-                + ModuleColumns.MODULE_NAME + " TEXT,"
-                + ModuleColumns.LAST_SYNC_TIME + " TEXT," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + MODULES_TABLE_NAME + " (" + ModuleColumns.ID
+                + INTEGER_PRIMARY_KEY + ModuleColumns.MODULE_NAME + TEXT_COMMA
+                + ModuleColumns.LAST_SYNC_TIME + TEXT_COMMA + " UNIQUE("
                 + ModuleColumns.MODULE_NAME + ")" + ");");
     }
 
@@ -884,12 +905,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createModuleFieldsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + MODULE_FIELDS_TABLE_NAME + " ("
-                + ModuleFieldColumns.ID + " INTEGER PRIMARY KEY,"
-                + ModuleFieldColumns.NAME + " TEXT," + ModuleFieldColumns.LABEL
-                + " TEXT," + ModuleFieldColumns.TYPE + " TEXT,"
-                + ModuleFieldColumns.IS_REQUIRED + " INTEGER,"
-                + ModuleFieldColumns.MODULE_ID + " INTEGER" + ");");
+        db.execSQL(CREATE_TABLE + MODULE_FIELDS_TABLE_NAME + " ("
+                + ModuleFieldColumns.ID + INTEGER_PRIMARY_KEY
+                + ModuleFieldColumns.NAME + TEXT_COMMA
+                + ModuleFieldColumns.LABEL + TEXT_COMMA
+                + ModuleFieldColumns.TYPE + TEXT_COMMA
+                + ModuleFieldColumns.IS_REQUIRED + INTEGER_COMMA
+                + ModuleFieldColumns.MODULE_ID + INTEGER + ");");
     }
 
     /**
@@ -900,13 +922,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createLinkFieldsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + LINK_FIELDS_TABLE_NAME + " ("
-                + LinkFieldColumns.ID + " INTEGER PRIMARY KEY,"
-                + LinkFieldColumns.NAME + " TEXT," + LinkFieldColumns.TYPE
-                + " TEXT," + LinkFieldColumns.RELATIONSHIP + " TEXT,"
-                + LinkFieldColumns.MODULE + " TEXT,"
-                + LinkFieldColumns.BEAN_NAME + " TEXT,"
-                + LinkFieldColumns.MODULE_ID + " INTEGER" + ");");
+        db.execSQL(CREATE_TABLE + LINK_FIELDS_TABLE_NAME + " ("
+                + LinkFieldColumns.ID + INTEGER_PRIMARY_KEY
+                + LinkFieldColumns.NAME + TEXT_COMMA + LinkFieldColumns.TYPE
+                + TEXT_COMMA + LinkFieldColumns.RELATIONSHIP + TEXT_COMMA
+                + LinkFieldColumns.MODULE + TEXT_COMMA
+                + LinkFieldColumns.BEAN_NAME + TEXT_COMMA
+                + LinkFieldColumns.MODULE_ID + INTEGER + ");");
     }
 
     /**
@@ -917,11 +939,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAccountsContactsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACCOUNTS_CONTACTS_TABLE_NAME + " ("
+        db.execSQL(CREATE_TABLE + ACCOUNTS_CONTACTS_TABLE_NAME + " ("
                 + AccountsContactsColumns.ACCOUNT_ID + " INTEGER ,"
                 + AccountsContactsColumns.CONTACT_ID + " INTEGER ,"
-                + AccountsContactsColumns.DATE_MODIFIED + " TEXT,"
-                + AccountsContactsColumns.DELETED + " INTEGER," + " UNIQUE("
+                + AccountsContactsColumns.DATE_MODIFIED + TEXT_COMMA
+                + AccountsContactsColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + AccountsContactsColumns.ACCOUNT_ID + ","
                 + AccountsContactsColumns.CONTACT_ID + ")" + ");");
     }
@@ -934,11 +956,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAccountsOpportunitiesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACCOUNTS_OPPORTUNITIES_TABLE_NAME + " ("
+        db.execSQL(CREATE_TABLE + ACCOUNTS_OPPORTUNITIES_TABLE_NAME + " ("
                 + AccountsOpportunitiesColumns.ACCOUNT_ID + " INTEGER ,"
                 + AccountsOpportunitiesColumns.OPPORTUNITY_ID + " INTEGER ,"
-                + AccountsOpportunitiesColumns.DATE_MODIFIED + " TEXT,"
-                + AccountsOpportunitiesColumns.DELETED + " INTEGER,"
+                + AccountsOpportunitiesColumns.DATE_MODIFIED + TEXT_COMMA
+                + AccountsOpportunitiesColumns.DELETED + INTEGER_COMMA
                 + " UNIQUE(" + AccountsOpportunitiesColumns.ACCOUNT_ID + ","
                 + AccountsOpportunitiesColumns.OPPORTUNITY_ID + ")" + ");");
     }
@@ -951,11 +973,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAccountsCasesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACCOUNTS_CASES_TABLE_NAME + " ("
+        db.execSQL(CREATE_TABLE + ACCOUNTS_CASES_TABLE_NAME + " ("
                 + AccountsCasesColumns.ACCOUNT_ID + " INTEGER ,"
                 + AccountsCasesColumns.CASE_ID + " INTEGER ,"
-                + AccountsCasesColumns.DATE_MODIFIED + " TEXT,"
-                + AccountsCasesColumns.DELETED + " INTEGER," + " UNIQUE("
+                + AccountsCasesColumns.DATE_MODIFIED + TEXT_COMMA
+                + AccountsCasesColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + AccountsCasesColumns.ACCOUNT_ID + ","
                 + AccountsCasesColumns.CASE_ID + ")" + ");");
     }
@@ -968,11 +990,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createContactsOpportunitiesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CONTACTS_OPPORTUNITIES_TABLE_NAME + " ("
+        db.execSQL(CREATE_TABLE + CONTACTS_OPPORTUNITIES_TABLE_NAME + " ("
                 + ContactsOpportunitiesColumns.CONTACT_ID + " INTEGER ,"
                 + ContactsOpportunitiesColumns.OPPORTUNITY_ID + " INTEGER ,"
-                + ContactsOpportunitiesColumns.DATE_MODIFIED + " TEXT,"
-                + ContactsOpportunitiesColumns.DELETED + " INTEGER,"
+                + ContactsOpportunitiesColumns.DATE_MODIFIED + TEXT_COMMA
+                + ContactsOpportunitiesColumns.DELETED + INTEGER_COMMA
                 + " UNIQUE(" + ContactsOpportunitiesColumns.CONTACT_ID + ","
                 + ContactsOpportunitiesColumns.OPPORTUNITY_ID + ")" + ");");
     }
@@ -985,11 +1007,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createContactsCases(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + CONTACTS_CASES_TABLE_NAME + " ("
+        db.execSQL(CREATE_TABLE + CONTACTS_CASES_TABLE_NAME + " ("
                 + ContactsCasesColumns.CONTACT_ID + " INTEGER ,"
                 + ContactsCasesColumns.CASE_ID + " INTEGER ,"
-                + ContactsCasesColumns.DATE_MODIFIED + " TEXT,"
-                + ContactsCasesColumns.DELETED + " INTEGER," + " UNIQUE("
+                + ContactsCasesColumns.DATE_MODIFIED + TEXT_COMMA
+                + ContactsCasesColumns.DELETED + INTEGER_COMMA + " UNIQUE("
                 + ContactsCasesColumns.CONTACT_ID + ","
                 + ContactsCasesColumns.CASE_ID + ")" + ");");
     }
@@ -1002,13 +1024,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createSyncTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + SYNC_TABLE_NAME + " (" + SyncColumns.ID
-                + " INTEGER PRIMARY KEY," + SyncColumns.SYNC_ID + " INTEGER ,"
+        db.execSQL(CREATE_TABLE + SYNC_TABLE_NAME + " (" + SyncColumns.ID
+                + INTEGER_PRIMARY_KEY + SyncColumns.SYNC_ID + " INTEGER ,"
                 + SyncColumns.SYNC_RELATED_ID + " INTEGER ,"
-                + SyncColumns.SYNC_COMMAND + " INTEGER," + SyncColumns.MODULE
-                + " TEXT," + SyncColumns.RELATED_MODULE + " TEXT,"
-                + SyncColumns.DATE_MODIFIED + " TEXT,"
-                + SyncColumns.SYNC_STATUS + " INTEGER," + " UNIQUE("
+                + SyncColumns.SYNC_COMMAND + INTEGER_COMMA + SyncColumns.MODULE
+                + TEXT_COMMA + SyncColumns.RELATED_MODULE + TEXT_COMMA
+                + SyncColumns.DATE_MODIFIED + TEXT_COMMA
+                + SyncColumns.SYNC_STATUS + INTEGER_COMMA + " UNIQUE("
                 + SyncColumns.SYNC_ID + "," + SyncColumns.MODULE + ","
                 + SyncColumns.RELATED_MODULE + ")" + ");");
     }
@@ -1020,10 +1042,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *            the db
      */
     private static void createUsersTable(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + USERS_TABLE_NAME + " (" + UserColumns.ID
-                + " INTEGER PRIMARY KEY," + UserColumns.USER_ID + " INTEGER,"
-                + UserColumns.USER_NAME + " TEXT," + UserColumns.FIRST_NAME
-                + " TEXT," + UserColumns.LAST_NAME + " TEXT," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + USERS_TABLE_NAME + " (" + UserColumns.ID
+                + INTEGER_PRIMARY_KEY + UserColumns.USER_ID + INTEGER_COMMA
+                + UserColumns.USER_NAME + TEXT_COMMA + UserColumns.FIRST_NAME
+                + TEXT_COMMA + UserColumns.LAST_NAME + TEXT_COMMA + " UNIQUE("
                 + UserColumns.USER_NAME + ")" + ");");
     }
 
@@ -1035,11 +1057,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAclRolesTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACL_ROLES_TABLE_NAME + " ("
-                + ACLRoleColumns.ID + " INTEGER PRIMARY KEY,"
-                + ACLRoleColumns.ROLE_ID + " INTEGER," + ACLRoleColumns.NAME
-                + " TEXT," + ACLRoleColumns.TYPE + " TEXT,"
-                + ACLRoleColumns.DESCRIPTION + " TEXT," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + ACL_ROLES_TABLE_NAME + " ("
+                + ACLRoleColumns.ID + INTEGER_PRIMARY_KEY
+                + ACLRoleColumns.ROLE_ID + INTEGER_COMMA + ACLRoleColumns.NAME
+                + TEXT_COMMA + ACLRoleColumns.TYPE + TEXT_COMMA
+                + ACLRoleColumns.DESCRIPTION + TEXT_COMMA + " UNIQUE("
                 + ACLRoleColumns.ROLE_ID + ")" + ");");
     }
 
@@ -1051,14 +1073,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void createAclActionsTable(final SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE " + ACL_ACTIONS_TABLE_NAME + " ("
-                + ACLActionColumns.ID + " INTEGER PRIMARY KEY,"
-                + ACLActionColumns.ACTION_ID + " INTEGER,"
-                + ACLActionColumns.NAME + " INTEGER,"
-                + ACLActionColumns.CATEGORY + " TEXT,"
-                + ACLActionColumns.ACLACCESS + " TEXT,"
-                + ACLActionColumns.ACLTYPE + " TEXT,"
-                + ACLActionColumns.ROLE_ID + " INTEGER," + " UNIQUE("
+        db.execSQL(CREATE_TABLE + ACL_ACTIONS_TABLE_NAME + " ("
+                + ACLActionColumns.ID + INTEGER_PRIMARY_KEY
+                + ACLActionColumns.ACTION_ID + INTEGER_COMMA
+                + ACLActionColumns.NAME + INTEGER_COMMA
+                + ACLActionColumns.CATEGORY + TEXT_COMMA
+                + ACLActionColumns.ACLACCESS + TEXT_COMMA
+                + ACLActionColumns.ACLTYPE + TEXT_COMMA
+                + ACLActionColumns.ROLE_ID + INTEGER_COMMA + " UNIQUE("
                 + ACLActionColumns.ACTION_ID + ")" + ");");
     }
 
@@ -1108,9 +1130,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return the acl access map
      */
     private Map<String, Map<String, Integer>> getAclAccessMap() {
-        if (accessMap != null && accessMap.size() != 0)
+        if (accessMap != null && accessMap.size() != 0) {
             return accessMap;
-        else {
+        } else {
             setAclAccessMap();
             return accessMap;
         }
@@ -1149,15 +1171,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean isAclEnabled(final String moduleName, final String name,
             final String ownerName) {
         final Map<String, Map<String, Integer>> aclAccessMap = getAclAccessMap();
-        // TODO - checkk if syncd ACLRoles and Actions succesfully- if no roles
         // are given to a user,
         // then we give access to the entire application
-        if (aclAccessMap.size() == 0)
+        if (aclAccessMap.size() == 0) {
             return true;
+        }
         final Map<String, Integer> moduleAccessMap = aclAccessMap
                 .get(moduleName);
-        // if (moduleAccessMap == null || moduleAccessMap.size() == 0)
-        // return true;
         final int aclAccess = moduleAccessMap.get(name);
         switch (aclAccess) {
         case ACLConstants.ACL_ALLOW_ADMIN:
@@ -1183,8 +1203,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // TODO: get the user name from Account Manager
                 final String userName = SugarCrmSettings.getUsername(mContext);
                 return userName.equals(ownerName) ? true : false;
-            } else
+            } else {
                 return false;
+            }
         }
         return true;
     }
@@ -1202,92 +1223,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * <p>
-     * Getter for the field <code>fieldsExcludedForDetails</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            the module name
-     * @param searchString
-     *            the search string
-     * @return a {@link java.util.Map} object.
-     */
-    /*
-     * public Map<String, String> getFieldsExcludedForDetails() { return
-     * fieldsExcludedForDetails; }
-     */
-    /**
-     * <p>
-     * Getter for the field <code>moduleProjections</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    /*
-     * public String[] getModuleProjections(String moduleName) { return
-     * moduleProjections.get(moduleName); }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>moduleListProjections</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    /*
-     * public String[] getModuleListProjections(String moduleName) { return
-     * moduleListProjections.get(moduleName); }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>moduleListSelections</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    // This moved to ContentUtil
-    /*
-     * public String[] getModuleListSelections(String moduleName) { return
-     * moduleListSelections.get(moduleName); }
-     */
-
-    /**
-     * <p>
-     * Getter for the field <code>moduleSortOrder</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    /*
-     * public String getModuleSortOrder(String moduleName) { return
-     * moduleSortOrder.get(moduleName); }
-     */
-
-    /**
-     * <p>
-     * getModuleUri
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return a {@link android.net.Uri} object.
-     */
-    // this moved to ContentUtils
-    /*
-     * public Uri getModuleUri(String moduleName) { return
-     * moduleUris.get(moduleName); }
-     */
-    /**
-     * <p>
      * getModuleSelection
      * </p>
      * 
@@ -1302,29 +1237,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // TODO: modify this if the selection criteria has to be applied on a
         // different module field
         // for a module
-        if (moduleName.equals(Util.CONTACTS) || moduleName.equals(Util.LEADS))
+        if (moduleName.equals(Util.CONTACTS) || moduleName.equals(Util.LEADS)) {
             return "(" + LeadsColumns.FIRST_NAME + " LIKE '%" + searchString
                     + "%' OR " + LeadsColumns.LAST_NAME + " LIKE '%"
                     + searchString + "%'" + ")";
-        else
+        } else {
             // for Accounts, Opportunities, Cases, Calls and Mettings
             return ModuleFields.NAME + " LIKE '%" + searchString + "%'";
+        }
     }
 
     // TODO - get from DB
-    /**
-     * <p>
-     * Getter for the field <code>moduleRelationshipItems</code>.
-     * </p>
-     * 
-     * @param moduleName
-     *            a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    /*
-     * public String[] getModuleRelationshipItems(String moduleName) { return
-     * moduleRelationshipItems.get(moduleName); }
-     */
+
     /**
      * <p>
      * Getter for the field <code>relationshipTables</code>.
@@ -1390,8 +1314,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Map<String, LinkField> getLinkFields(final String moduleName) {
         if (linkFields != null) {
             final HashMap<String, LinkField> map = linkFields.get(moduleName);
-            if (map != null && map.size() > 0)
+            if (map != null && map.size() > 0) {
                 return map;
+            }
         } else {
             linkFields = new HashMap<String, HashMap<String, LinkField>>();
         }
@@ -1562,14 +1487,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (num > 0) {
             cursor.moveToFirst();
             record = new SyncRecord();
-            record._id = cursor.getLong(Sync.ID_COLUMN);
-            record.syncId = cursor.getLong(Sync.SYNC_ID_COLUMN);
-            record.syncRelatedId = cursor.getLong(Sync.SYNC_RELATED_ID_COLUMN);
-            record.syncCommand = cursor.getInt(Sync.SYNC_COMMAND_COLUMN);
-            record.moduleName = cursor.getString(Sync.MODULE_NAME_COLUMN);
-            record.relatedModuleName = cursor
+            record.mid = cursor.getLong(Sync.ID_COLUMN);
+            record.mSsyncId = cursor.getLong(Sync.SYNC_ID_COLUMN);
+            record.mSyncRelatedId = cursor.getLong(Sync.SYNC_RELATED_ID_COLUMN);
+            record.mSyncCommand = cursor.getInt(Sync.SYNC_COMMAND_COLUMN);
+            record.mModuleName = cursor.getString(Sync.MODULE_NAME_COLUMN);
+            record.mRelatedModuleName = cursor
                     .getString(Sync.RELATED_MODULE_NAME_COLUMN);
-            record.status = cursor.getInt(Sync.STATUS_COLUMN);
+            record.mStatus = cursor.getInt(Sync.STATUS_COLUMN);
         }
         cursor.close();
         db.close();
@@ -1664,7 +1589,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selection = ModuleFieldColumns.ID + "=" + moduleFieldId + "";
             final Cursor moduleFieldCursor = db.query(
                     DatabaseHelper.MODULE_FIELDS_TABLE_NAME,
-                    ModuleFields_TableInfo.DETAILS_PROJECTION, selection, null,
+                    ModuleFieldsTableInfo.DETAILS_PROJECTION, selection, null,
                     null, null, null);
             moduleFieldCursor.moveToFirst();
             final String moduleFieldName = moduleFieldCursor.getString(1);
@@ -1703,10 +1628,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         final String selection = ModuleColumns.MODULE_NAME + "='" + moduleName
                 + "'";
         // using the DETAILS_PROJECTION here to select the columns
-        final Cursor cursor = db
-                .query(DatabaseHelper.MODULES_TABLE_NAME,
-                        com.imaginea.android.sugarcrm.provider.SugarCRMContent.Modules.DETAILS_PROJECTION,
-                        selection, null, null, null, null);
+        final Cursor cursor = db.query(DatabaseHelper.MODULES_TABLE_NAME,
+                Modules.DETAILS_PROJECTION, selection, null, null, null, null);
         cursor.moveToFirst();
         final int moduleId = cursor.getInt(0);
         cursor.close();
@@ -1730,18 +1653,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         final SQLiteDatabase db = getWritableDatabase();
         final ContentValues values = new ContentValues();
-        // values.put(SyncColumns.ID, record._id);
-        values.put(SyncColumns.SYNC_ID, record.syncId);
-        values.put(SyncColumns.SYNC_RELATED_ID, record.syncRelatedId);
-        // values.put(SyncColumns.SYNC_COMMAND, record.syncCommand);
-        values.put(SyncColumns.MODULE, record.moduleName);
-        values.put(SyncColumns.RELATED_MODULE, record.relatedModuleName);
-        values.put(SyncColumns.SYNC_STATUS, record.status);
+        values.put(SyncColumns.SYNC_ID, record.mSsyncId);
+        values.put(SyncColumns.SYNC_RELATED_ID, record.mSyncRelatedId);
+        values.put(SyncColumns.MODULE, record.mModuleName);
+        values.put(SyncColumns.RELATED_MODULE, record.mRelatedModuleName);
+        values.put(SyncColumns.SYNC_STATUS, record.mStatus);
 
         final int rowId = db.update(SYNC_TABLE_NAME, values, SyncColumns.ID
-                + "=?", new String[] { "" + record._id });
-        if (rowId < 0)
+                + "=?", new String[] { "" + record.mid });
+        if (rowId < 0) {
             throw new SugarCrmException("FAILED to update sync record!");
+        }
         return rowId;
     }
 
@@ -1761,8 +1683,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         final SQLiteDatabase db = getWritableDatabase();
         final int rowId = db.update(SYNC_TABLE_NAME, values, SyncColumns.ID
                 + "=?", new String[] { "" + syncRecordId });
-        if (rowId < 0)
+        if (rowId < 0) {
             throw new SugarCrmException("FAILED to update sync record!");
+        }
         return rowId;
     }
 
@@ -1784,17 +1707,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         final SQLiteDatabase db = getWritableDatabase();
         final ContentValues values = new ContentValues();
-        // values.put(SyncColumns.ID, record._id);
-        values.put(SyncColumns.SYNC_ID, record.syncId);
-        values.put(SyncColumns.SYNC_RELATED_ID, record.syncRelatedId);
-        values.put(SyncColumns.SYNC_COMMAND, record.syncCommand);
-        values.put(SyncColumns.MODULE, record.moduleName);
-        values.put(SyncColumns.RELATED_MODULE, record.relatedModuleName);
-        values.put(SyncColumns.SYNC_STATUS, record.status);
+        values.put(SyncColumns.SYNC_ID, record.mSsyncId);
+        values.put(SyncColumns.SYNC_RELATED_ID, record.mSyncRelatedId);
+        values.put(SyncColumns.SYNC_COMMAND, record.mSyncCommand);
+        values.put(SyncColumns.MODULE, record.mModuleName);
+        values.put(SyncColumns.RELATED_MODULE, record.mRelatedModuleName);
+        values.put(SyncColumns.SYNC_STATUS, record.mStatus);
 
         final long rowId = db.insert(SYNC_TABLE_NAME, "", values);
-        if (rowId < 0)
+        if (rowId < 0) {
             throw new SugarCrmException("FAILED to insert sync record!");
+        }
         return rowId;
     }
 
@@ -1807,11 +1730,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public int deleteSyncRecord(final long syncRecordId) {
         final SQLiteDatabase db = getWritableDatabase();
-        // String accountId = uri.getPathSegments().get(1);
         final int count = db.delete(DatabaseHelper.SYNC_TABLE_NAME,
                 SyncColumns.ID + "=" + syncRecordId, null);
-        // + (!TextUtils.isEmpty(where) ? " AND (" + where + ')'
-        // : ""), whereArgs);
         return count;
     }
 
@@ -1946,7 +1866,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         for (final Entry<String, Map<String, String>> entry : usersList
                 .entrySet()) {
-            // String userName = entry.getKey();
             final ContentValues values = new ContentValues();
             final Map<String, String> userListValues = entry.getValue();
             for (final Entry<String, String> userEntry : userListValues

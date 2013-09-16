@@ -73,20 +73,20 @@ public class SugarCrmSettings extends Activity {
     /** The m end date button. */
     private Button mEndDateButton;
 
-    /** The start date. */
-    private Date startDate;
+    /** The m start date. */
+    private Date mStartDate;
 
     /** The end date. */
-    private Date endDate;
+    private Date mEndDate;
 
     /** The m records size spinner. */
     private Spinner mRecordsSizeSpinner;
 
     /** The enable alarm. */
-    private CheckBox enableAlarm;
+    private CheckBox mEnableAlarm;
 
     /** The crm url. */
-    private EditText crmUrl;
+    private EditText mCrmUrl;
 
     /** The m records size. */
     private final String[] mRecordsSize = { "500", "1000", "2000", "5000",
@@ -103,13 +103,13 @@ public class SugarCrmSettings extends Activity {
     public static final long THREE_MONTHS = 3 * 30 * 24 * 60 * 60 * 1000L;
 
     /** The dialog. */
-    private Dialog dialog;
+    private Dialog mDialog;
 
     /** The is sync settings changed. */
     private boolean isSyncSettingsChanged = false;
 
     /** The cancel. */
-    public Button apply, cancel;;
+    private Button mApply, mCancel;;
 
     /**
      * Creates the settings dilog.
@@ -128,13 +128,13 @@ public class SugarCrmSettings extends Activity {
         super.onCreate(savedInstanceState);
         if (ViewUtil.isHoneycombTablet(this)) {
 
-            dialog = new Dialog(this);
-            mContext = dialog.getContext();
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setContentView(R.layout.settings_dialog);
+            mDialog = new Dialog(this);
+            mContext = mDialog.getContext();
+            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            mDialog.setCanceledOnTouchOutside(false);
+            mDialog.setContentView(R.layout.settings_dialog);
 
-            dialog.setOnKeyListener(new Dialog.OnKeyListener() {
+            mDialog.setOnKeyListener(new Dialog.OnKeyListener() {
 
                 @Override
                 public boolean onKey(DialogInterface arg0, int keyCode,
@@ -142,15 +142,15 @@ public class SugarCrmSettings extends Activity {
                     // TODO Auto-generated method stub
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         finish();
-                        dialog.dismiss();
+                        mDialog.dismiss();
                     }
                     return true;
                 }
             });
 
             /* Set the Apply Button to Save the Settings */
-            apply = (Button) dialog.findViewById(R.id.dialogButtonOK);
-            apply.setOnClickListener(new View.OnClickListener() {
+            mApply = (Button) mDialog.findViewById(R.id.dialogButtonOK);
+            mApply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -167,21 +167,21 @@ public class SugarCrmSettings extends Activity {
                         app.setSessionId(null);
                     }
                     finish();
-                    dialog.dismiss();
+                    mDialog.dismiss();
 
                 }
             });
             /* Set the Cancel Button to dismiss the Dialog */
-            cancel = (Button) dialog.findViewById(R.id.dialogButtonCancel);
-            cancel.setOnClickListener(new View.OnClickListener() {
+            mCancel = (Button) mDialog.findViewById(R.id.dialogButtonCancel);
+            mCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     finish();
-                    dialog.dismiss();
+                    mDialog.dismiss();
 
                 }
             });
-            dialog.show();
+            mDialog.show();
             /* set All the layout views */
             setDialogLayoutViews();
 
@@ -211,27 +211,29 @@ public class SugarCrmSettings extends Activity {
      */
     public static boolean currentSettingsChanged(Context context) {
 
-        if (savedSettings.isEmpty())
+        if (savedSettings.isEmpty()) {
             return false;
+        }
 
         try {
             if (!getSugarRestUrl(context).equals(
-                    savedSettings.get(Util.PREF_REST_URL)))
+                    savedSettings.get(Util.PREF_REST_URL))) {
                 return true;
+            }
 
             return false;
         } finally {
-
+            Log.e(LOG_TAG, "finally block");
         }
     }
 
     private void setDialogLayoutViewsForPhone() {
         /* LOGIN */
 
-        crmUrl = (EditText) findViewById(R.id.crmUrl);
+        mCrmUrl = (EditText) findViewById(R.id.crmUrl);
 
         /* NOTOFICATION */
-        enableAlarm = (CheckBox) findViewById(R.id.enableAlarm);
+        mEnableAlarm = (CheckBox) findViewById(R.id.enableAlarm);
 
         /* SYNCRONIZING */
         mRecordsSizeSpinner = (Spinner) findViewById(R.id.recordsize);
@@ -296,15 +298,15 @@ public class SugarCrmSettings extends Activity {
     private void setDialogLayoutViews() {
         /* LOGIN */
 
-        crmUrl = (EditText) dialog.findViewById(R.id.crmUrl);
+        mCrmUrl = (EditText) mDialog.findViewById(R.id.crmUrl);
 
         /* NOTOFICATION */
-        enableAlarm = (CheckBox) dialog.findViewById(R.id.enableAlarm);
+        mEnableAlarm = (CheckBox) mDialog.findViewById(R.id.enableAlarm);
 
         /* SYNCRONIZING */
-        mRecordsSizeSpinner = (Spinner) dialog.findViewById(R.id.recordsize);
-        mStartDateButton = (Button) dialog.findViewById(R.id.startDate);
-        mEndDateButton = (Button) dialog.findViewById(R.id.endDate);
+        mRecordsSizeSpinner = (Spinner) mDialog.findViewById(R.id.recordsize);
+        mStartDateButton = (Button) mDialog.findViewById(R.id.startDate);
+        mEndDateButton = (Button) mDialog.findViewById(R.id.endDate);
 
     }
 
@@ -315,9 +317,9 @@ public class SugarCrmSettings extends Activity {
 
         if (savedSettings != null && !savedSettings.isEmpty()) {
             /* Set CRM URL */
-            crmUrl.setText(savedSettings.get(Util.PREF_REST_URL).toString());
+            mCrmUrl.setText(savedSettings.get(Util.PREF_REST_URL).toString());
             /* Set Alarm state */
-            enableAlarm.setChecked((Boolean) savedSettings
+            mEnableAlarm.setChecked((Boolean) savedSettings
                     .get(Util.PREF_ALARM_STATE));
 
             /* Set Start Date */
@@ -334,8 +336,8 @@ public class SugarCrmSettings extends Activity {
             }
 
         } else {
-            crmUrl.setText(getSugarRestUrl(getApplicationContext()));
-            enableAlarm.setChecked(PreferenceManager
+            mCrmUrl.setText(getSugarRestUrl(getApplicationContext()));
+            mEnableAlarm.setChecked(PreferenceManager
                     .getDefaultSharedPreferences(getApplicationContext())
                     .getBoolean(Util.PREF_ALARM_STATE, false));
 
@@ -365,9 +367,9 @@ public class SugarCrmSettings extends Activity {
 
         populateWhen();
 
-        final String records_size = SugarCrmSettings
+        final String recordsSize = SugarCrmSettings
                 .getFetchRecordsSize(getApplicationContext());
-        final int position = Arrays.binarySearch(mRecordsSize, records_size);
+        final int position = Arrays.binarySearch(mRecordsSize, recordsSize);
         mRecordsSizeSpinner.setSelection(position);
     }
 
@@ -380,7 +382,6 @@ public class SugarCrmSettings extends Activity {
      */
     public static String getUsername(Context context) {
         /* Get the User NAme Edit Text Box */
-        // return mUserName.getText().toString();
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(Util.PREF_USERNAME, null);
 
@@ -412,10 +413,11 @@ public class SugarCrmSettings extends Activity {
             final ApplicationInfo appInfo = pm.getApplicationInfo(
                     "com.imaginea.android.sugarcrm",
                     ApplicationInfo.FLAG_DEBUGGABLE);
-            if ((ApplicationInfo.FLAG_DEBUGGABLE & appInfo.flags) == ApplicationInfo.FLAG_DEBUGGABLE)
+            if ((ApplicationInfo.FLAG_DEBUGGABLE & appInfo.flags) == ApplicationInfo.FLAG_DEBUGGABLE) {
                 return PreferenceManager.getDefaultSharedPreferences(context)
                         .getString(Util.PREF_REST_URL,
                                 context.getString(R.string.defaultUrl));
+            }
         } catch (final Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
@@ -434,19 +436,19 @@ public class SugarCrmSettings extends Activity {
     private void saveCurrentSettings(Context context) {
         savedSettings = new HashMap<String, Object>();
         savedSettings.clear();
-        savedSettings.put(Util.PREF_REST_URL, crmUrl.getText().toString());
+        savedSettings.put(Util.PREF_REST_URL, mCrmUrl.getText().toString());
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        if (crmUrl.getText().toString() != null
-                && URLUtil.isValidUrl(crmUrl.getText().toString())) {
+        if (mCrmUrl.getText().toString() != null
+                && URLUtil.isValidUrl(mCrmUrl.getText().toString())) {
             final Editor editor = prefs.edit();
-            editor.putString(Util.PREF_REST_URL, crmUrl.getText().toString());
+            editor.putString(Util.PREF_REST_URL, mCrmUrl.getText().toString());
             editor.commit();
         }
-        savedSettings.put(Util.PREF_ALARM_STATE, enableAlarm.isChecked());
+        savedSettings.put(Util.PREF_ALARM_STATE, mEnableAlarm.isChecked());
 
-        savedSettings.put(Util.PREF_SYNC_START_TIME, startDate);
-        savedSettings.put(Util.PREF_SYNC_END_TIME, endDate);
+        savedSettings.put(Util.PREF_SYNC_START_TIME, mStartDate);
+        savedSettings.put(Util.PREF_SYNC_END_TIME, mEndDate);
 
     }
 
@@ -525,7 +527,7 @@ public class SugarCrmSettings extends Activity {
     private class DateListener implements OnDateSetListener {
 
         /** The m view. */
-        View mView;
+        private final View mView;
 
         /**
          * Instantiates a new date listener.
@@ -548,8 +550,8 @@ public class SugarCrmSettings extends Activity {
         public void onDateSet(final DatePicker view, final int year,
                 final int month, final int monthDay) {
             // Cache the member variables locally to avoid inner class overhead.
-            startDate = mStartTime;
-            endDate = mEndTime;
+            mStartDate = mStartTime;
+            mEndDate = mEndTime;
 
             final Calendar calendar = Calendar.getInstance();
 
@@ -558,11 +560,11 @@ public class SugarCrmSettings extends Activity {
             // expensive.
             long startMillis;
             long endMillis;
-            if (mView == mStartDateButton) {
+            if (mView.equals(mStartDateButton)) {
                 // The start date was changed.
                 calendar.set(year, month, monthDay);
                 startMillis = calendar.getTimeInMillis();
-                endMillis = endDate.getTime();
+                endMillis = mEndDate.getTime();
                 final long curTime = System.currentTimeMillis();
                 // see to that the endDate does not exceed the current date
                 if (endMillis > curTime) {
@@ -575,7 +577,7 @@ public class SugarCrmSettings extends Activity {
 
             } else {
                 // The end date was changed.
-                startMillis = startDate.getTime();
+                startMillis = mStartDate.getTime();
                 calendar.set(year, month, monthDay);
                 endMillis = calendar.getTimeInMillis();
 
@@ -593,11 +595,11 @@ public class SugarCrmSettings extends Activity {
 
             }
 
-            startDate.setTime(startMillis);
-            endDate.setTime(endMillis);
+            mStartDate.setTime(startMillis);
+            mEndDate.setTime(endMillis);
 
-            setDate(mStartDateButton, startDate);
-            setDate(mEndDateButton, endDate);
+            setDate(mStartDateButton, mStartDate);
+            setDate(mEndDateButton, mEndDate);
 
         }
     }
@@ -614,8 +616,9 @@ public class SugarCrmSettings extends Activity {
         final String usr = SugarCrmSettings
                 .getUsername(getApplicationContext());
         if (ContentResolver.isSyncActive(app.getAccount(usr),
-                SugarCRMProvider.AUTHORITY))
+                SugarCRMProvider.AUTHORITY)) {
             return;
+        }
 
         ContentResolver.requestSync(app.getAccount(usr),
                 SugarCRMProvider.AUTHORITY, extras);

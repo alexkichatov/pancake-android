@@ -99,9 +99,9 @@ public class GenerateModuleFieldsTest extends RestAPITest {
                 .getModuleFields();
         addToModuleFieldList(moduleFields);
 
-        for (final Iterator iterator = moduleFields.iterator(); iterator
+        for (final Iterator<ModuleField> iterator = moduleFields.iterator(); iterator
                 .hasNext();) {
-            final ModuleField field = (ModuleField) iterator.next();
+            final ModuleField field = iterator.next();
             Log.i("ModuleFields:", field.getName());
         }
         // generateClass(moduleFieldsSet);

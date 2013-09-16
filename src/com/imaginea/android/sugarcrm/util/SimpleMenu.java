@@ -13,6 +13,7 @@
 package com.imaginea.android.sugarcrm.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,8 +38,10 @@ public class SimpleMenu implements Menu {
     /** The m resources. */
     private final Resources mResources;
 
+    private static final String ERROR_MSG = "This operation is not supported for SimpleMenu";
+
     /** The m items. */
-    private final ArrayList<SimpleMenuItem> mItems;
+    private final List<SimpleMenuItem> mItems;
 
     /**
      * Instantiates a new simple menu.
@@ -137,12 +140,12 @@ public class SimpleMenu implements Menu {
      *            the order
      * @return the int
      */
-    private static int findInsertIndex(ArrayList<? extends MenuItem> items,
-            int order) {
+    private static int findInsertIndex(List<? extends MenuItem> items, int order) {
         for (int i = items.size() - 1; i >= 0; i--) {
             final MenuItem item = items.get(i);
-            if (item.getOrder() <= order)
+            if (item.getOrder() <= order) {
                 return i + 1;
+            }
         }
 
         return 0;
@@ -160,8 +163,9 @@ public class SimpleMenu implements Menu {
 
         for (int i = 0; i < size; i++) {
             final SimpleMenuItem item = mItems.get(i);
-            if (item.getItemId() == id)
+            if (item.getItemId() == id) {
                 return i;
+            }
         }
 
         return -1;
@@ -184,8 +188,9 @@ public class SimpleMenu implements Menu {
      *            the index
      */
     private void removeItemAtInt(int index) {
-        if ((index < 0) || (index >= mItems.size()))
+        if ((index < 0) || (index >= mItems.size())) {
             return;
+        }
         mItems.remove(index);
     }
 
@@ -209,8 +214,9 @@ public class SimpleMenu implements Menu {
         final int size = size();
         for (int i = 0; i < size; i++) {
             final SimpleMenuItem item = mItems.get(i);
-            if (item.getItemId() == id)
+            if (item.getItemId() == id) {
                 return item;
+            }
         }
 
         return null;
@@ -236,19 +242,6 @@ public class SimpleMenu implements Menu {
         return mItems.get(index);
     }
 
-    // Unsupported operations.
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.view.Menu#addSubMenu(java.lang.CharSequence)
-     */
-    @Override
-    public SubMenu addSubMenu(CharSequence charSequence) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -256,8 +249,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public SubMenu addSubMenu(int titleRes) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -268,8 +260,7 @@ public class SimpleMenu implements Menu {
     @Override
     public SubMenu addSubMenu(int groupId, int itemId, int order,
             CharSequence title) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -279,8 +270,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public SubMenu addSubMenu(int groupId, int itemId, int order, int titleRes) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -294,8 +284,7 @@ public class SimpleMenu implements Menu {
     public int addIntentOptions(int i, int i1, int i2,
             ComponentName componentName, Intent[] intents, Intent intent,
             int i3, MenuItem[] menuItems) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -305,8 +294,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void removeGroup(int i) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -316,8 +304,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void setGroupCheckable(int i, boolean b, boolean b1) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -327,8 +314,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void setGroupVisible(int i, boolean b) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -338,8 +324,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void setGroupEnabled(int i, boolean b) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -349,8 +334,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public boolean hasVisibleItems() {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -360,8 +344,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void close() {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -371,8 +354,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public boolean performShortcut(int i, KeyEvent keyEvent, int i1) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -382,8 +364,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public boolean isShortcutKey(int i, KeyEvent keyEvent) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -393,8 +374,7 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public boolean performIdentifierAction(int i, int i1) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
     }
 
     /*
@@ -404,7 +384,17 @@ public class SimpleMenu implements Menu {
      */
     @Override
     public void setQwertyMode(boolean b) {
-        throw new UnsupportedOperationException(
-                "This operation is not supported for SimpleMenu");
+        throw new UnsupportedOperationException(ERROR_MSG);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.view.Menu#addSubMenu(java.lang.CharSequence)
+     */
+    @Override
+    public SubMenu addSubMenu(CharSequence arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

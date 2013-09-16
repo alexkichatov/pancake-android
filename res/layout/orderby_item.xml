@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-	<TextView
-            android:id="@+id/listText1"
-            style="@style/menulist_item"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/selector" />    
+
+    <TextView
+        android:id="@+id/listText1"
+        style="@style/menulist_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector" />
 
 </LinearLayout>

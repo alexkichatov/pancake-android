@@ -18,6 +18,7 @@
 package com.imaginea.android.sugarcrm.sync;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
@@ -36,9 +37,8 @@ public class BatchOperation {
     /** The m resolver. */
     private final ContentResolver mResolver;
 
-    /** The m operations. */
-    ArrayList<ContentProviderOperation> mOperations;// List for storing the
-                                                    // batch mOperations
+    /** The List for storing the batch mOperations */
+    private final List<ContentProviderOperation> mOperations;
 
     /** The log tag. */
     private final String LOG_TAG = BatchOperation.class.getSimpleName();
@@ -85,7 +85,8 @@ public class BatchOperation {
         try {
             Log.v(LOG_TAG, " Batch Operations Size:" + mOperations.size());
             final ContentProviderResult[] result = mResolver.applyBatch(
-                    SugarCRMProvider.AUTHORITY, mOperations);
+                    SugarCRMProvider.AUTHORITY,
+                    (ArrayList<ContentProviderOperation>) mOperations);
             Log.v(LOG_TAG, " result.length" + result.length);
         } catch (final OperationApplicationException e1) {
             Log.e(LOG_TAG, "storing Module data failed", e1);

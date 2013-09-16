@@ -11,6 +11,8 @@
    *******************************************************************************/
 -->
 <resources>
-    <item type="id" name="test" />   
-    <item type="id" name="actionbar_compat" />
+
+    <item name="test" type="id"/>
+    <item name="actionbar_compat" type="id"/>
+
 </resources>

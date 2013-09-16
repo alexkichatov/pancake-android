@@ -47,7 +47,7 @@ import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 /**
  * The Class Util.
  */
-public class Util {
+public final class Util {
 
     /** The m request id. */
     private static int mRequestId = 0;
@@ -329,6 +329,16 @@ public class Util {
     /** The Constant PREF_SORT_ORDER. */
     public static final String PREF_SORT_ORDER = "sortby";
 
+    /** The boolean for open from image fragment. */
+    public static String isOpenFromImageFragment = "openFrom_Fragment";
+
+    /**
+     * Instantiates a new util.
+     */
+    private Util() {
+
+    }
+
     /**
      * <p>
      * MD5, calculate the MD5 hash of a string
@@ -341,7 +351,7 @@ public class Util {
      * @throws SugarCrmException
      *             the sugar crm exception
      */
-    public static String MD5(String text) throws SugarCrmException {
+    public static String MD5(final String text) throws SugarCrmException {
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(text.getBytes("iso-8859-1"), 0, text.length());
@@ -366,7 +376,7 @@ public class Util {
         final StringBuffer buf = new StringBuffer();
         for (int i = 0; i < data.length; i++) {
             int halfbyte = (data[i] >>> 4) & 0x0F;
-            int two_halfs = 0;
+            int twoHalfs = 0;
             do {
                 if ((0 <= halfbyte) && (halfbyte <= 9)) {
                     buf.append((char) ('0' + halfbyte));
@@ -374,7 +384,7 @@ public class Util {
                     buf.append((char) ('a' + (halfbyte - 10)));
                 }
                 halfbyte = data[i] & 0x0F;
-            } while (two_halfs++ < 1);
+            } while (twoHalfs++ < 1);
         }
         return buf.toString();
     }
@@ -469,7 +479,8 @@ public class Util {
      * @return ID of notification so it can be cancelled/updated
      */
     public static synchronized int notify(Context context, String packageName,
-            Class clazz, int tickerTextRes, int titleRes, String message) {
+            @SuppressWarnings("rawtypes") Class clazz, int tickerTextRes,
+            int titleRes, String message) {
         final CharSequence tickerText = context.getResources().getText(
                 tickerTextRes);
         final CharSequence title = context.getResources().getText(titleRes);
@@ -545,10 +556,10 @@ public class Util {
     private static void savePrefs(FragmentActivity activity) {
         final SharedPreferences pref = PreferenceManager
                 .getDefaultSharedPreferences(activity);
-        final long SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000L;
+        final long sevenDays = 7 * 24 * 60 * 60 * 1000L;
         final long time = System.currentTimeMillis();
 
-        final long startMillis = time - SEVEN_DAYS;
+        final long startMillis = time - sevenDays;
         final long endMillis = time;
         final Editor editor = pref.edit();
         editor.putLong(Util.PREF_SYNC_START_TIME, startMillis);
@@ -663,7 +674,7 @@ public class Util {
      * @param bRecent
      *            the b recent
      */
-    public static void OpenDetailScreenWithSelectedRow(Context c,
+    public static void openDetailScreenWithSelectedRow(Context c,
             Cursor cursor, Intent detailIntent, boolean bRecent) {
         if (cursor.getCount() > 0) {
             cursor.moveToNext();

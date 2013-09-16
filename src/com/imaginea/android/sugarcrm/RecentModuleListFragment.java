@@ -19,14 +19,11 @@ package com.imaginea.android.sugarcrm;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,7 +38,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.imaginea.android.sugarcrm.provider.SugarCRMContent.Contacts;
 import com.imaginea.android.sugarcrm.rest.RestConstants;
 import com.imaginea.android.sugarcrm.ui.BaseMultiPaneActivity;
 import com.imaginea.android.sugarcrm.util.ContentUtils;
@@ -53,35 +49,11 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
  */
 public class RecentModuleListFragment extends ListFragment {
 
-    /** The m list view. */
-    private ListView mListView;
-
     /** The list position. */
     private int mlistPosition = -1;
 
-    /** The m empty. */
-    private View mEmpty;
-
-    /** The m list footer view. */
-    private View mListFooterView;
-
-    /** The m list footer text. */
-    private TextView mListFooterText;
-
-    /** The m list footer progress. */
-    private View mListFooterProgress;
-
-    /** The m busy. */
-    private boolean mBusy = false;
-
     /** The m module name. */
     private String mModuleName;
-
-    /** The m module uri. */
-    private Uri mModuleUri;
-
-    /** The m intent uri. */
-    private Uri mIntentUri;
 
     /** The m adapter. */
     private GenericCursorAdapter mAdapter;
@@ -96,7 +68,7 @@ public class RecentModuleListFragment extends ListFragment {
     private SugarCrmApp app;
 
     /** The Constant LOG_TAG. */
-    public final static String LOG_TAG = "RecentModuleList";
+    public static final String LOG_TAG = "RecentModuleList";
 
     /*
      * (non-Javadoc)
@@ -117,11 +89,17 @@ public class RecentModuleListFragment extends ListFragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        /** The module uri. */
+        Uri mModuleUri;
+        View mEmpty;
+        /** The intent uri. */
+        Uri mIntentUri;
+        /** The list view. */
+        ListView mListView;
 
         app = (SugarCrmApp) getActivity().getApplication();
         final Intent intent = getActivity().getIntent();
         // final Intent intent =
-        // BaseActivity.fragmentArgumentsToIntent(getArguments());
         final Bundle extras = intent.getExtras();
 
         mModuleName = Util.CONTACTS;
@@ -133,24 +111,9 @@ public class RecentModuleListFragment extends ListFragment {
 
         mListView = getListView();
 
+        setListView(mListView);
+
         mIntentUri = intent.getData();
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> arg0, final View view,
-                    final int position, final long id) {
-
-                mAdapter.setSelectedPosition(position);
-                openDetailScreen(position);
-            }
-        });
-
-        // button code in the layout - 1.6 SDK feature to specify onClick
-        mListView.setItemsCanFocus(true);
-        mListView.setFocusable(true);
-        mEmpty = getActivity().findViewById(R.id.empty);
-        mListView.setEmptyView(mEmpty);
-        mListView.setFastScrollEnabled(false);
-        mListView.setScrollbarFadingEnabled(true);
 
         if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
             Log.d(LOG_TAG, "ModuleName:-->" + mModuleName);
@@ -164,9 +127,7 @@ public class RecentModuleListFragment extends ListFragment {
         // Perform a managed query. The Activity will handle closing and
         // re querying the cursor
         // when needed.
-        // TODO - optimize this, if we sync up a data set, then no need to run
-        // detail projection
-        // here, just do a list projection
+
         final Cursor cursor = getActivity().managedQuery(intent.getData(),
                 ContentUtils.getModuleProjections(mModuleName), mSelections,
                 mSelectionArgs, getSortOrder());
@@ -200,7 +161,7 @@ public class RecentModuleListFragment extends ListFragment {
                 .getBaseContext(), listResourcesId));
         // make the list filterable using the keyboard
         mListView.setTextFilterEnabled(true);
-
+        mEmpty = getActivity().findViewById(R.id.empty);
         final TextView tv1 = (TextView) (mEmpty.findViewById(R.id.mainText));
 
         if (mAdapter.getCount() == 0) {
@@ -215,24 +176,33 @@ public class RecentModuleListFragment extends ListFragment {
             tv1.setVisibility(View.GONE);
         }
 
-        mListFooterView = ((LayoutInflater) getActivity().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE)).inflate(
-                R.layout.list_item_footer, mListView, false);
-        getListView().addFooterView(mListFooterView);
-        mListFooterText = (TextView) getActivity().findViewById(R.id.status);
-
-        mListFooterProgress = mListFooterView.findViewById(R.id.progress);
-        if (ViewUtil.isHoneycombTablet(getActivity())
-                && mAdapter.getCount() != 0) {
-
-        }
-
         /* open details screen with 1st row highlighted */
 
         final Intent detailIntent = new Intent(getActivity(),
                 ModuleDetailActivity.class);
-        Util.OpenDetailScreenWithSelectedRow(getActivity(), cursor,
+        Util.openDetailScreenWithSelectedRow(getActivity(), cursor,
                 detailIntent, true);
+
+    }
+
+    private void setListView(ListView listView) {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> arg0, final View view,
+                    final int position, final long id) {
+
+                mAdapter.setSelectedPosition(position);
+                openDetailScreen(position);
+            }
+        });
+
+        // button code in the layout - 1.6 SDK feature to specify onClick
+        listView.setItemsCanFocus(true);
+        listView.setFocusable(true);
+        final View mEmpty = getActivity().findViewById(R.id.empty);
+        listView.setEmptyView(mEmpty);
+        listView.setFastScrollEnabled(false);
+        listView.setScrollbarFadingEnabled(true);
 
     }
 
@@ -275,6 +245,7 @@ public class RecentModuleListFragment extends ListFragment {
             }
         });
 
+        /* Set the Settings View */
         final ImageView settingsView = (ImageView) getActivity().findViewById(
                 R.id.settings);
         settingsView.setVisibility(View.VISIBLE);
@@ -308,6 +279,7 @@ public class RecentModuleListFragment extends ListFragment {
             }
         });
 
+        /* Set the Sync View */
         final ImageView syncView = (ImageView) getActivity().findViewById(
                 R.id.sync);
 
@@ -333,7 +305,7 @@ public class RecentModuleListFragment extends ListFragment {
             @Override
             public void onClick(View v) {
 
-                SyncAction(v);
+                syncAction(v);
             }
         });
 
@@ -345,7 +317,7 @@ public class RecentModuleListFragment extends ListFragment {
      * @param view
      *            the view
      */
-    public void SyncAction(final View view) {
+    public void syncAction(final View view) {
         if (!Util.isNetworkOn(getActivity().getBaseContext())) {
             Toast.makeText(getActivity(), R.string.networkUnavailable,
                     Toast.LENGTH_SHORT).show();
@@ -360,15 +332,6 @@ public class RecentModuleListFragment extends ListFragment {
      */
     private final class GenericCursorAdapter extends SimpleCursorAdapter
             implements Filterable {
-
-        /** The realoffset. */
-        private int realoffset = 0;
-
-        /** The limit. */
-        private final int limit = 20;
-
-        /** The m content. */
-        private final ContentResolver mContent;
 
         /**
          * Instantiates a new generic cursor adapter.
@@ -387,7 +350,7 @@ public class RecentModuleListFragment extends ListFragment {
         public GenericCursorAdapter(final Context context, final int layout,
                 final Cursor c, final String[] from, final int[] to) {
             super(context, layout, c, from, to);
-            mContent = context.getContentResolver();
+
         }
 
         /**
@@ -415,54 +378,18 @@ public class RecentModuleListFragment extends ListFragment {
                 final ViewGroup parent) {
 
             final View v = super.getView(position, convertView, parent);
-            final int count = getCursor().getCount();
             final TextView text1 = (TextView) v.findViewById(R.id.text1);
             final TextView text2 = (TextView) v.findViewById(R.id.text2);
             v.findViewById(R.id.textLastName);
 
             final TextView text3 = (TextView) v.findViewById(R.id.text3);
             text3.setVisibility(View.GONE);
-            if (!mBusy && position != 0 && position == count - 1) {
-                mBusy = true;
-                realoffset += count;
-                // Uri uri = getIntent().getData();
-                // TODO - fix this, this is no longer used
-                final Uri newUri = Uri.withAppendedPath(Contacts.CONTENT_URI,
-                        realoffset + "/" + limit);
-                Log.d(LOG_TAG, "Changing cursor:" + newUri.toString());
-                final Cursor cursor = getActivity().managedQuery(newUri,
-                        Contacts.LIST_PROJECTION, null, null,
-                        Contacts.DEFAULT_SORT_ORDER);
-                final CRMContentObserver observer = new CRMContentObserver(
-                        new Handler() {
-
-                            @Override
-                            public void handleMessage(final Message msg) {
-                                super.handleMessage(msg);
-                                Log.d(LOG_TAG, "Changing cursor: in handler");
-                                changeCursor(cursor);
-                                mListFooterText.setVisibility(View.GONE);
-                                mListFooterProgress.setVisibility(View.GONE);
-                                mBusy = false;
-                            }
-                        });
-                cursor.registerContentObserver(observer);
-            }
-            if (mBusy) {
-                mListFooterProgress.setVisibility(View.VISIBLE);
-                mListFooterText.setVisibility(View.VISIBLE);
-                mListFooterText.setText("Loading...");
-                // Non-null tag means the view still needs to load it's data
-                // text.setTag(this);
-            }
 
             final TextView moduleTextView = (TextView) v
                     .findViewById(R.id.text5);
             final String moduleName = moduleTextView.getText().toString();
-            if (moduleTextView != null) {
-                moduleTextView.setBackgroundColor(getResources().getColor(
-                        ContentUtils.getRecentModulelablesColors(moduleName)));
-            }
+            moduleTextView.setBackgroundColor(getResources().getColor(
+                    ContentUtils.getRecentModulelablesColors(moduleName)));
 
             if (moduleName.equals(Util.CONTACTS)
                     || moduleName.equals(Util.LEADS)) {
@@ -475,17 +402,15 @@ public class RecentModuleListFragment extends ListFragment {
             if (position % 2 == 0) {
                 v.setBackgroundColor(getResources().getColor(
                         R.color.listview_row1));
-                if (moduleTextView != null) {
-                    moduleTextView.setTextColor(getResources().getColor(
-                            R.color.listview_row1));
-                }
+                moduleTextView.setTextColor(getResources().getColor(
+                        R.color.listview_row1));
+
             } else {
                 v.setBackgroundColor(getResources().getColor(
                         R.color.listview_row2));
-                if (moduleTextView != null) {
-                    moduleTextView.setTextColor(getResources().getColor(
-                            R.color.listview_row1));
-                }
+                moduleTextView.setTextColor(getResources().getColor(
+                        R.color.listview_row1));
+
             }
 
             if (position == mlistPosition) {
@@ -519,33 +444,6 @@ public class RecentModuleListFragment extends ListFragment {
             return cursor.getString(2);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.widget.CursorAdapter#runQueryOnBackgroundThread(java.lang
-         * .CharSequence)
-         */
-        @Override
-        public Cursor runQueryOnBackgroundThread(final CharSequence constraint) {
-            if (getFilterQueryProvider() != null)
-                return getFilterQueryProvider().runQuery(constraint);
-
-            StringBuilder buffer = null;
-            String[] args = null;
-            if (constraint != null) {
-                buffer = new StringBuilder();
-                buffer.append("UPPER(");
-                buffer.append(ContentUtils.getModuleListSelections(mModuleName)[0]);
-                buffer.append(") GLOB ?");
-                args = new String[] { constraint.toString().toUpperCase() + "*" };
-            }
-
-            return mContent.query(ContentUtils.getModuleUri(mModuleName),
-                    ContentUtils.getModuleListProjections(mModuleName),
-                    buffer == null ? null : buffer.toString(), args,
-                    ContentUtils.getModuleSortOrder(mModuleName));
-        }
     }
 
     /**
@@ -559,18 +457,15 @@ public class RecentModuleListFragment extends ListFragment {
                 ModuleDetailActivity.class);
 
         final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        if (cursor == null)
+        if (cursor == null) {
             // For some reason the requested item isn't available, do nothing
             return;
+        }
         // use the details available from cursor to open detailed view
         detailIntent.putExtra(Util.ROW_ID, cursor.getString(1));
         detailIntent.putExtra(RestConstants.BEAN_ID, cursor.getString(2));
         detailIntent.putExtra(RestConstants.MODULE_NAME, cursor.getString(3));
         detailIntent.putExtra("Recent", true);
-        Log.d(LOG_TAG,
-                "rowId:" + cursor.getString(1) + "BEAN_ID:"
-                        + cursor.getString(2) + "MODULE_NAME:"
-                        + cursor.getString(3));
 
         if (ViewUtil.isTablet(getActivity())) {
             ((BaseMultiPaneActivity) getActivity())
@@ -579,12 +474,6 @@ public class RecentModuleListFragment extends ListFragment {
             startActivity(detailIntent);
         }
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     /**

@@ -89,10 +89,10 @@ import com.imaginea.android.sugarcrm.util.ViewUtil;
 public class EditModuleDetailFragment extends Fragment {
 
     /** The Constant TAG. */
-    private final static String TAG = "EditModuleDetail";
+    private static final String TAG = "EditModuleDetail";
 
     /** The mode. */
-    private int MODE = -1;
+    private int mMODE = -1;
 
     /** The m details table. */
     private ViewGroup mDetailsTable;
@@ -103,11 +103,11 @@ public class EditModuleDetailFragment extends Fragment {
     /** The m cursor. */
     private Cursor mCursor;
 
-    /** The date view. */
-    private AutoCompleteTextView dateView;
+    /** The m date view. */
+    private AutoCompleteTextView mDateView;
 
-    /** The time view. */
-    private AutoCompleteTextView timeView;
+    /** The m time view. */
+    private AutoCompleteTextView mTimeView;
 
     /** The m sugar bean id. */
     private String mSugarBeanId;
@@ -119,7 +119,7 @@ public class EditModuleDetailFragment extends Fragment {
     private String mRowId;
 
     /** The import flag. */
-    private int importFlag;
+    private int mImportFlag;
 
     /** The m select fields. */
     private String[] mSelectFields;
@@ -167,7 +167,7 @@ public class EditModuleDetailFragment extends Fragment {
     private ProgressDialog mProgressDialog;
 
     /** The has error. */
-    private boolean hasError;
+    private boolean mHasError;
 
     /** The m description. */
     private String mDescription;
@@ -211,9 +211,8 @@ public class EditModuleDetailFragment extends Fragment {
 
         mModuleName = Util.CONTACTS;
         if (extras != null) {
-            // i always get the module name
             mModuleName = extras.getString(RestConstants.MODULE_NAME);
-            importFlag = extras.getInt(Util.IMPORT_FLAG);
+            mImportFlag = extras.getInt(Util.IMPORT_FLAG);
             mRowId = intent.getStringExtra(Util.ROW_ID);
             mSugarBeanId = intent.getStringExtra(RestConstants.BEAN_ID);
         }
@@ -223,22 +222,22 @@ public class EditModuleDetailFragment extends Fragment {
         Log.v(TAG, "uri - " + (mIntentUri != null ? mIntentUri : ""));
 
         if (intent.getData() != null && mRowId != null) {
-            MODE = Util.EDIT_RELATIONSHIP_MODE;
+            mMODE = Util.EDIT_RELATIONSHIP_MODE;
         } else if (mRowId != null) {
-            MODE = Util.EDIT_ORPHAN_MODE;
+            mMODE = Util.EDIT_ORPHAN_MODE;
         } else if (intent.getData() != null) {
-            MODE = Util.NEW_RELATIONSHIP_MODE;
+            mMODE = Util.NEW_RELATIONSHIP_MODE;
         } else {
-            MODE = Util.NEW_ORPHAN_MODE;
+            mMODE = Util.NEW_ORPHAN_MODE;
         }
 
-        Log.v(TAG, "mode - " + MODE);
+        Log.v(TAG, "mode - " + mMODE);
 
-        if (intent.getData() == null && MODE == Util.EDIT_ORPHAN_MODE) {
+        if (intent.getData() == null && mMODE == Util.EDIT_ORPHAN_MODE) {
             mIntentUri = Uri.withAppendedPath(
                     ContentUtils.getModuleUri(mModuleName), mRowId);
             intent.setData(mIntentUri);
-        } else if (intent.getData() == null && MODE == Util.NEW_ORPHAN_MODE) {
+        } else if (intent.getData() == null && mMODE == Util.NEW_ORPHAN_MODE) {
             mIntentUri = ContentUtils.getModuleUri(mModuleName);
             intent.setData(mIntentUri);
         }
@@ -248,7 +247,7 @@ public class EditModuleDetailFragment extends Fragment {
         mTask = new LoadContentTask(getActivity());
         mTask.execute(null, null, null);
 
-        if (importFlag == Util.CONTACT_IMPORT_FLAG) {
+        if (mImportFlag == Util.CONTACT_IMPORT_FLAG) {
             importContact();
         }
 
@@ -285,21 +284,20 @@ public class EditModuleDetailFragment extends Fragment {
         actionBar.setHomeAction(recentAction);
 
         String header = null;
-        if (mCursor != null) {
-            if (mCursor.moveToNext()) {
-                if (mModuleName.equals(Util.CONTACTS)
-                        || mModuleName.equals(Util.LEADS)) {
-                    header = mCursor.getString(mCursor
-                            .getColumnIndex(mSelectFields[2]))
-                            + mCursor.getString(mCursor
-                                    .getColumnIndex(mSelectFields[3]));
+        if ((mCursor != null) && (mCursor.moveToNext())) {
+            if (mModuleName.equals(Util.CONTACTS)
+                    || mModuleName.equals(Util.LEADS)) {
+                header = mCursor.getString(mCursor
+                        .getColumnIndex(mSelectFields[2]))
+                        + mCursor.getString(mCursor
+                                .getColumnIndex(mSelectFields[3]));
 
-                } else {
-                    header = mCursor.getString(mCursor
-                            .getColumnIndex(mSelectFields[2]));
+            } else {
+                header = mCursor.getString(mCursor
+                        .getColumnIndex(mSelectFields[2]));
 
-                }
             }
+
         }
         if (header == null) {
             header = mModuleName;
@@ -390,16 +388,16 @@ public class EditModuleDetailFragment extends Fragment {
         Context mContext;
 
         /** The Constant STATIC_ROW. */
-        final static int STATIC_ROW = 1;
+        static final int STATIC_ROW = 1;
 
         /** The Constant DYNAMIC_ROW. */
-        final static int DYNAMIC_ROW = 2;
+        static final int DYNAMIC_ROW = 2;
 
         /** The Constant SAVE_BUTTON. */
-        final static int SAVE_BUTTON = 3;
+        static final int SAVE_BUTTON = 3;
 
         /** The Constant INPUT_TYPE. */
-        final static int INPUT_TYPE = 4;
+        static final int INPUT_TYPE = 4;
 
         /** The m duration group. */
         private final List<String> mDurationGroup = new ArrayList<String>();
@@ -432,12 +430,12 @@ public class EditModuleDetailFragment extends Fragment {
             super.onPreExecute();
 
             final CustomActionbar tv = (CustomActionbar) mParent.getChildAt(0);
-            if (MODE == Util.EDIT_ORPHAN_MODE
-                    || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+            if (mMODE == Util.EDIT_ORPHAN_MODE
+                    || mMODE == Util.EDIT_RELATIONSHIP_MODE) {
                 tv.setTitle(String.format(
                         getString(R.string.editDetailsHeader), mModuleName));
-            } else if (MODE == Util.NEW_ORPHAN_MODE
-                    || MODE == Util.NEW_RELATIONSHIP_MODE) {
+            } else if (mMODE == Util.NEW_ORPHAN_MODE
+                    || mMODE == Util.NEW_RELATIONSHIP_MODE) {
                 tv.setTitle(String.format(getString(R.string.newDetailsHeader),
                         mModuleName));
             }
@@ -503,7 +501,7 @@ public class EditModuleDetailFragment extends Fragment {
                                     if (!ModuleFieldValidator.isNotEmpty(email)
                                             || !ModuleFieldValidator
                                                     .isEmailValid(email)) {
-                                        hasError = true;
+                                        mHasError = true;
                                         valueView
                                                 .setError(getString(R.string.emailValidationErrorMsg));
                                     }
@@ -534,7 +532,7 @@ public class EditModuleDetailFragment extends Fragment {
                                             .isNotEmpty(phoneNumber)
                                             && !ModuleFieldValidator
                                                     .isPhoneNumberValid(phoneNumber)) {
-                                        hasError = true;
+                                        mHasError = true;
                                         valueView
                                                 .setError(getString(R.string.phNoValidationErrorMsg));
                                     }
@@ -561,7 +559,7 @@ public class EditModuleDetailFragment extends Fragment {
                                 public boolean isValid(CharSequence text) {
                                     if (!ModuleFieldValidator.isNotEmpty(text
                                             .toString())) {
-                                        hasError = true;
+                                        mHasError = true;
                                         valueView.setError(String
                                                 .format(getString(R.string.emptyValidationErrorMsg),
                                                         fieldName));
@@ -577,7 +575,7 @@ public class EditModuleDetailFragment extends Fragment {
                     // only if the module is directly related to Accounts,
                     // disable the account name
                     // field populating it with the corresponding account name
-                    if (MODE == Util.NEW_RELATIONSHIP_MODE) {
+                    if (mMODE == Util.NEW_RELATIONSHIP_MODE) {
 
                         // get the module name from the URI
                         final String module = mIntentUri.getPathSegments().get(
@@ -628,14 +626,14 @@ public class EditModuleDetailFragment extends Fragment {
                         valueView
                                 .setOnItemClickListener(new AccountsClickedItemListener());
 
-                        if (MODE == Util.EDIT_ORPHAN_MODE
-                                || MODE == Util.EDIT_RELATIONSHIP_MODE)
+                        if ((mMODE == Util.EDIT_ORPHAN_MODE || mMODE == Util.EDIT_RELATIONSHIP_MODE)
+                                && (!TextUtils.isEmpty(editTextValue))) {
                             // store the account name in mAccountName if the
                             // bean is already related
                             // to an account
-                            if (!TextUtils.isEmpty(editTextValue)) {
-                                mAccountName = editTextValue;
-                            }
+                            mAccountName = editTextValue;
+                        }
+
                     }
                 } else if (fieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
                     // set the adapter to show the auto-suggest
@@ -643,14 +641,12 @@ public class EditModuleDetailFragment extends Fragment {
                     valueView
                             .setOnItemClickListener(new UsersClickedItemListener());
 
-                    if (MODE == Util.EDIT_ORPHAN_MODE
-                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    if ((mMODE == Util.EDIT_ORPHAN_MODE || mMODE == Util.EDIT_RELATIONSHIP_MODE)
+                            && (!TextUtils.isEmpty(editTextValue))) {
                         // store the user name in mUserName if the bean is
                         // already assigned to a
                         // user
-                        if (!TextUtils.isEmpty(editTextValue)) {
-                            mUserName = editTextValue;
-                        }
+                        mUserName = editTextValue;
                     }
                 }
                 break;
@@ -685,7 +681,7 @@ public class EditModuleDetailFragment extends Fragment {
                                     if (!ModuleFieldValidator.isNotEmpty(email)
                                             || !ModuleFieldValidator
                                                     .isEmailValid(email)) {
-                                        hasError = true;
+                                        mHasError = true;
                                         dynamicValueView
                                                 .setError(getString(R.string.emailValidationErrorMsg));
                                     }
@@ -716,7 +712,7 @@ public class EditModuleDetailFragment extends Fragment {
                                             .isNotEmpty(phoneNumber)
                                             && !ModuleFieldValidator
                                                     .isPhoneNumberValid(phoneNumber)) {
-                                        hasError = true;
+                                        mHasError = true;
                                         dynamicValueView
                                                 .setError(getString(R.string.phNoValidationErrorMsg));
                                     }
@@ -743,7 +739,7 @@ public class EditModuleDetailFragment extends Fragment {
                                 public boolean isValid(CharSequence text) {
                                     if (!ModuleFieldValidator.isNotEmpty(text
                                             .toString())) {
-                                        hasError = true;
+                                        mHasError = true;
                                         dynamicValueView.setError(String
                                                 .format(getString(R.string.emptyValidationErrorMsg),
                                                         dynamicFieldName));
@@ -761,7 +757,7 @@ public class EditModuleDetailFragment extends Fragment {
                      * disable the account name field populating it with the
                      * corresponding account name
                      */
-                    if (MODE == Util.NEW_RELATIONSHIP_MODE) {
+                    if (mMODE == Util.NEW_RELATIONSHIP_MODE) {
 
                         // get the module name from the URI
                         final String module = mIntentUri.getPathSegments().get(
@@ -813,14 +809,11 @@ public class EditModuleDetailFragment extends Fragment {
                         dynamicValueView
                                 .setOnItemClickListener(new AccountsClickedItemListener());
 
-                        if (MODE == Util.EDIT_ORPHAN_MODE
-                                || MODE == Util.EDIT_RELATIONSHIP_MODE)
-                            // store the account name in mAccountName if the
-                            // bean is already related
-                            // to an account
-                            if (!TextUtils.isEmpty(editTextValue)) {
-                                mAccountName = editTextValue;
-                            }
+                        if ((mMODE == Util.EDIT_ORPHAN_MODE || mMODE == Util.EDIT_RELATIONSHIP_MODE)
+                                && (!TextUtils.isEmpty(editTextValue))) {
+                            mAccountName = editTextValue;
+                        }
+
                     }
                 } else if (dynamicFieldName
                         .equals(ModuleFields.ASSIGNED_USER_NAME)) {
@@ -829,14 +822,13 @@ public class EditModuleDetailFragment extends Fragment {
                     dynamicValueView
                             .setOnItemClickListener(new UsersClickedItemListener());
 
-                    if (MODE == Util.EDIT_ORPHAN_MODE
-                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    if ((mMODE == Util.EDIT_ORPHAN_MODE || mMODE == Util.EDIT_RELATIONSHIP_MODE)
+                            && (!TextUtils.isEmpty(editTextValue))) {
                         // store the user name in mUserName if the bean is
                         // already assigned to a
                         // user
-                        if (!TextUtils.isEmpty(editTextValue)) {
-                            mUserName = editTextValue;
-                        }
+                        mUserName = editTextValue;
+
                     }
                 }
 
@@ -859,8 +851,8 @@ public class EditModuleDetailFragment extends Fragment {
         @Override
         protected Object doInBackground(Object... params) {
             try {
-                if (MODE == Util.EDIT_ORPHAN_MODE
-                        || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                if (mMODE == Util.EDIT_ORPHAN_MODE
+                        || mMODE == Util.EDIT_RELATIONSHIP_MODE) {
                     mCursor = getActivity().getContentResolver().query(
                             Uri.withAppendedPath(
                                     ContentUtils.getModuleUri(mModuleName),
@@ -873,17 +865,6 @@ public class EditModuleDetailFragment extends Fragment {
             }
 
             return Util.FETCH_SUCCESS;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see android.os.AsyncTask#onCancelled()
-         */
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-
         }
 
         /*
@@ -902,8 +883,9 @@ public class EditModuleDetailFragment extends Fragment {
                 mCursor.close();
             }
 
-            if (isCancelled())
+            if (isCancelled()) {
                 return;
+            }
             final int retVal = (Integer) result;
             switch (retVal) {
             case Util.FETCH_FAILED:
@@ -931,13 +913,10 @@ public class EditModuleDetailFragment extends Fragment {
                 mDbHelper = new DatabaseHelper(getActivity().getBaseContext());
             }
 
-            if (MODE == Util.EDIT_ORPHAN_MODE
-                    || MODE == Util.EDIT_RELATIONSHIP_MODE) {
-                if (!isCancelled()) {
-                    mCursor.moveToFirst();
-                    mSugarBeanId = mCursor.getString(1); // beanId has
-
-                }
+            if ((mMODE == Util.EDIT_ORPHAN_MODE || mMODE == Util.EDIT_RELATIONSHIP_MODE)
+                    && (!isCancelled())) {
+                mCursor.moveToFirst();
+                mSugarBeanId = mCursor.getString(1);
             }
 
             final Map<String, ModuleField> fieldNameVsModuleField = ContentUtils
@@ -945,8 +924,8 @@ public class EditModuleDetailFragment extends Fragment {
 
             final Map<String, String> fieldsExcludedForEdit = mDbHelper
                     .getFieldsExcludedForEdit();
-
-            int rowsCount = 1; // to keep track of number of rows being used
+            /* To keep track of number of rows being used */
+            int rowsCount = 1;
 
             TextView textViewForLabel;
             AutoCompleteTextView editTextForValue;
@@ -1020,7 +999,7 @@ public class EditModuleDetailFragment extends Fragment {
                     }
                     if (label.contains("Start Date:")) {
 
-                        dateView = editTextForValue;
+                        mDateView = editTextForValue;
                         editTextForValue.setInputType(InputType.TYPE_NULL);
                         editTextForValue
                                 .setOnClickListener(new View.OnClickListener() {
@@ -1045,7 +1024,7 @@ public class EditModuleDetailFragment extends Fragment {
                     }
 
                     if (label.contains("Duration Hours")) {
-                        timeView = editTextForValue;
+                        mTimeView = editTextForValue;
                         editTextForValue.setInputType(InputType.TYPE_NULL);
                         editTextForValue
                                 .setOnClickListener(new View.OnClickListener() {
@@ -1084,8 +1063,8 @@ public class EditModuleDetailFragment extends Fragment {
                         command = DYNAMIC_ROW;
                     }
 
-                    if (MODE == Util.EDIT_ORPHAN_MODE
-                            || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+                    if (mMODE == Util.EDIT_ORPHAN_MODE
+                            || mMODE == Util.EDIT_RELATIONSHIP_MODE) {
                         final String value = mCursor.getString(mCursor
                                 .getColumnIndex(fieldName));
                         if (!TextUtils.isEmpty(value)) {
@@ -1133,9 +1112,9 @@ public class EditModuleDetailFragment extends Fragment {
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                     int dayOfMonth) {
 
-                final String Date = year + "-" + (monthOfYear + 1) + "-"
+                final String date = year + "-" + (monthOfYear + 1) + "-"
                         + dayOfMonth;
-                dateView.setText(Date);
+                mDateView.setText(date);
 
             }
         };
@@ -1162,8 +1141,8 @@ public class EditModuleDetailFragment extends Fragment {
              */
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                final String Time = hourOfDay + ":" + minute + ":" + "00";
-                timeView.setText(Time);
+                final String time = hourOfDay + ":" + minute + ":" + "00";
+                mTimeView.setText(time);
 
             }
         };
@@ -1207,8 +1186,8 @@ public class EditModuleDetailFragment extends Fragment {
         final String[] detailsProjection = mSelectFields;
 
         final Map<String, String> modifiedValues = new LinkedHashMap<String, String>();
-        if (MODE == Util.EDIT_ORPHAN_MODE
-                || MODE == Util.EDIT_RELATIONSHIP_MODE) {
+        if (mMODE == Util.EDIT_ORPHAN_MODE
+                || mMODE == Util.EDIT_RELATIONSHIP_MODE) {
             modifiedValues.put(RestConstants.ID, mSugarBeanId);
         }
 
@@ -1220,17 +1199,15 @@ public class EditModuleDetailFragment extends Fragment {
                 .getFieldsExcludedForEdit();
         int rowsCount = 1;
         for (int i = 0; i < detailsProjection.length; i++) {
-
             final String fieldName = detailsProjection[i];
-
             // if the field name is excluded in details screen, skip it
             if (fieldsExcludedForEdit.containsKey(fieldName)) {
                 continue;
             }
-
             final ModuleField moduleField = fieldNameVsModuleField
                     .get(fieldName);
             if (moduleField != null) {
+
                 final AutoCompleteTextView editText;
                 ViewGroup tableRow;
                 if (moduleField.isRequired()) {
@@ -1238,18 +1215,15 @@ public class EditModuleDetailFragment extends Fragment {
                     tableRow = (ViewGroup) mDetailsTable.getChildAt(rowsCount);
                     editText = (AutoCompleteTextView) tableRow.getChildAt(1);
                     if (editText.getText().toString().isEmpty()) {
-                        hasError = true;
+                        mHasError = true;
                         editText.setError("Please fill the mandatory field "
                                 + moduleField.getName());
                     }
-
                 } else {
                     tableRow = (ViewGroup) mDetailsOptionalTable
                             .getChildAt(rowsCount);
-
                     editText = (AutoCompleteTextView) tableRow.getChildAt(1);
                 }
-
                 String fieldValue = editText.getText().toString();
 
                 if (!Util.ACCOUNTS.equals(mModuleName)
@@ -1264,7 +1238,7 @@ public class EditModuleDetailFragment extends Fragment {
                             // check if the field value is the selected value
                             if (!mSelectedAccountName.equals(fieldValue)) {
                                 // account name is incorrect.
-                                hasError = true;
+                                mHasError = true;
                                 editText.setError(getString(R.string.accountNameErrorMsg));
                             }
 
@@ -1279,7 +1253,7 @@ public class EditModuleDetailFragment extends Fragment {
                                  * if the user just enters some value without
                                  * selecting from the auto-suggest
                                  */
-                                hasError = true;
+                                mHasError = true;
                                 editText.setError(getString(R.string.accountNameErrorMsg));
                             }
 
@@ -1293,7 +1267,7 @@ public class EditModuleDetailFragment extends Fragment {
                                 // selecting((ViewGroup)
                                 // mDetailsTable.getChildAt(rowsCount)).getChildAt(1)
                                 // from the auto-suggest
-                                hasError = true;
+                                mHasError = true;
                                 editText.setError(getString(R.string.accountNameErrorMsg));
                             }
                         }
@@ -1302,38 +1276,37 @@ public class EditModuleDetailFragment extends Fragment {
                         fieldValue = null;
                     }
 
-                } else if (fieldName.equals(ModuleFields.ASSIGNED_USER_NAME)) {
+                } else if ((fieldName.equals(ModuleFields.ASSIGNED_USER_NAME))
+                        && (!TextUtils.isEmpty(fieldValue))) {
 
-                    if (!TextUtils.isEmpty(fieldValue)) {
+                    if (!TextUtils.isEmpty(mSelectedUserName)) {
+                        // if the user has selected a user name from the
+                        // auto-suggest list
 
-                        if (!TextUtils.isEmpty(mSelectedUserName)) {
-                            // if the user has selected a user name from the
-                            // auto-suggest list
+                        // check if the field value is the selected value
+                        if (!mSelectedUserName.equals(fieldValue)) {
+                            // user name is incorrect.
+                            mHasError = true;
+                            editText.setError(getString(R.string.userNameErrorMsg));
+                        }
+                    } else if (!TextUtils.isEmpty(mUserName)) {
+                        // if the user doesn't change the user name and it
+                        // remains the same
 
-                            // check if the field value is the selected value
-                            if (!mSelectedUserName.equals(fieldValue)) {
-                                // user name is incorrect.
-                                hasError = true;
-                                editText.setError(getString(R.string.userNameErrorMsg));
-                            }
-                        } else if (!TextUtils.isEmpty(mUserName)) {
-                            // if the user doesn't change the user name and it
-                            // remains the same
+                        if (!mUserName.equals(fieldValue)) {
+                            mHasError = true;
+                            editText.setError(getString(R.string.userNameErrorMsg));
+                        }
+                    } else {
+                        // if the editText has been disabled, do not show
+                        // the error
+                        if (editText.isEnabled()) {
 
-                            if (!mUserName.equals(fieldValue)) {
-                                hasError = true;
-                                editText.setError(getString(R.string.userNameErrorMsg));
-                            }
-                        } else {
-                            // if the editText has been disabled, do not show
-                            // the error
-                            if (editText.isEnabled()) {
-
-                                hasError = true;
-                                editText.setError(getString(R.string.userNameErrorMsg));
-                            }
+                            mHasError = true;
+                            editText.setError(getString(R.string.userNameErrorMsg));
                         }
                     }
+
                 }
                 if (fieldName.contains(ModuleFields.DURATION_MINUTES)) {
                     mDescription = editText.getText().toString();
@@ -1348,20 +1321,20 @@ public class EditModuleDetailFragment extends Fragment {
             }
         }
 
-        if (!hasError) {
-            if (MODE == Util.EDIT_ORPHAN_MODE) {
+        if (!mHasError) {
+            if (mMODE == Util.EDIT_ORPHAN_MODE) {
                 ServiceHelper.startServiceForUpdate(getActivity()
                         .getBaseContext(), uri, mModuleName, mSugarBeanId,
                         modifiedValues);
-            } else if (MODE == Util.EDIT_RELATIONSHIP_MODE) {
+            } else if (mMODE == Util.EDIT_RELATIONSHIP_MODE) {
                 ServiceHelper.startServiceForUpdate(getActivity()
                         .getBaseContext(), uri, mModuleName, mSugarBeanId,
                         modifiedValues);
-            } else if (MODE == Util.NEW_RELATIONSHIP_MODE) {
+            } else if (mMODE == Util.NEW_RELATIONSHIP_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
                 ServiceHelper.startServiceForInsert(getActivity()
                         .getBaseContext(), uri, mModuleName, modifiedValues);
-            } else if (MODE == Util.NEW_ORPHAN_MODE) {
+            } else if (mMODE == Util.NEW_ORPHAN_MODE) {
                 modifiedValues.put(ModuleFields.DELETED, Util.NEW_ITEM);
                 ServiceHelper
                         .startServiceForInsert(getActivity().getBaseContext(),
@@ -1372,7 +1345,7 @@ public class EditModuleDetailFragment extends Fragment {
         } else {
             ViewUtil.makeToast(getActivity().getBaseContext(),
                     R.string.validationErrorMsg);
-            hasError = false;
+            mHasError = false;
             mProgressDialog.cancel();
 
         }
@@ -1512,30 +1485,21 @@ public class EditModuleDetailFragment extends Fragment {
         }
         cursor.close();
 
-    }// getContactInfo
+    }
 
-    /** {@inheritDoc} */
-    // @Override
-    // TODO
     /*
-     * public boolean onCreateOptionsMenu(Menu menu) { // Hold on to this //
-     * Inflate the currently selected menu XML resource. MenuItem item; item =
-     * menu.add(1, R.id.save, 1, R.string.save);
-     * item.setIcon(android.R.drawable.ic_menu_save);
-     * item.setAlphabeticShortcut('s'); return true; }
+     * (non-Javadoc)
+     * 
+     * @see
+     * android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem
+     * )
      */
-    /** {@inheritDoc} */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        /*
-         * case R.id.save: saveModuleItem(getActivity().getCurrentFocus());
-         * return true;
-         */
         default:
             return true;
         }
-        // return false;
     }
 
     /*
@@ -1674,8 +1638,9 @@ public class EditModuleDetailFragment extends Fragment {
          */
         @Override
         public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null)
+            if (getFilterQueryProvider() != null) {
                 return getFilterQueryProvider().runQuery(constraint);
+            }
 
             StringBuilder buffer = null;
             String[] args = null;
@@ -1727,8 +1692,9 @@ public class EditModuleDetailFragment extends Fragment {
          */
         @Override
         public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            if (getFilterQueryProvider() != null)
+            if (getFilterQueryProvider() != null) {
                 return getFilterQueryProvider().runQuery(constraint);
+            }
 
             StringBuilder buffer = null;
             String[] args = null;

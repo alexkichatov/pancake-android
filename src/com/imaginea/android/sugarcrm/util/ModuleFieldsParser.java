@@ -31,13 +31,14 @@ import com.imaginea.android.sugarcrm.rest.RestConstants;
 public class ModuleFieldsParser {
 
     /** The log tag. */
-    private final String LOG_TAG = ModuleFieldsParser.class.getSimpleName();
+    private static final String LOG_TAG = ModuleFieldsParser.class
+            .getSimpleName();
 
-    /** The module fields. */
-    private List<ModuleField> moduleFields;
+    /** The m module fields. */
+    private List<ModuleField> mModuleFields;
 
-    /** The link fields. */
-    private List<LinkField> linkFields;
+    /** The m link fields. */
+    private List<LinkField> mLinkFields;
 
     /**
      * Instantiates a new module fields parser.
@@ -59,7 +60,7 @@ public class ModuleFieldsParser {
                     .get("link_fields");
             setLinkFields(linkFieldsJSON);
         } catch (final ClassCastException cce) {
-            linkFields = new ArrayList<LinkField>();
+            mLinkFields = new ArrayList<LinkField>();
         }
 
     }
@@ -74,7 +75,7 @@ public class ModuleFieldsParser {
      */
     private void setModuleFields(final JSONObject moduleFieldsJSON)
             throws JSONException {
-        moduleFields = new ArrayList<ModuleField>();
+        mModuleFields = new ArrayList<ModuleField>();
         final Iterator<?> iterator = moduleFieldsJSON.keys();
         while (iterator.hasNext()) {
             final String key = (String) iterator.next();
@@ -83,7 +84,7 @@ public class ModuleFieldsParser {
             }
             final JSONObject nameValuePairsJson = (JSONObject) moduleFieldsJSON
                     .get(key);
-            moduleFields.add(getModuleField(nameValuePairsJson));
+            mModuleFields.add(getModuleField(nameValuePairsJson));
         }
     }
 
@@ -97,7 +98,7 @@ public class ModuleFieldsParser {
      */
     private void setLinkFields(final JSONObject linkFieldsJSON)
             throws JSONException {
-        linkFields = new ArrayList<LinkField>();
+        mLinkFields = new ArrayList<LinkField>();
         final Iterator<?> iterator = linkFieldsJSON.keys();
         while (iterator.hasNext()) {
             final String key = (String) iterator.next();
@@ -106,7 +107,7 @@ public class ModuleFieldsParser {
             }
             final JSONObject nameValuePairsJson = (JSONObject) linkFieldsJSON
                     .get(key);
-            linkFields.add(getLinkFieldAttributes(nameValuePairsJson));
+            mLinkFields.add(getLinkFieldAttributes(nameValuePairsJson));
         }
     }
 
@@ -158,7 +159,7 @@ public class ModuleFieldsParser {
      * @return the module fields
      */
     public List<ModuleField> getModuleFields() {
-        return moduleFields;
+        return mModuleFields;
     }
 
     /**
@@ -167,7 +168,7 @@ public class ModuleFieldsParser {
      * @return the link fields
      */
     public List<LinkField> getLinkFields() {
-        return linkFields;
+        return mLinkFields;
     }
 
 }
