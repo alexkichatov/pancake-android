@@ -27,7 +27,7 @@ import com.imaginea.android.sugarcrm.services.SugarService;
 /**
  * The Class ServiceHelper.
  */
-public class ServiceHelper {
+public final class ServiceHelper {
 
     /**
      * Instantiates a new service helper.

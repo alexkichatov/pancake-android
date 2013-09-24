@@ -28,7 +28,7 @@ import org.json.JSONObject;
 /**
  * The Class SBParseHelper.
  */
-public class SBParseHelper {
+public final class SBParseHelper {
 
     /**
      * Instantiates a new sB parse helper.

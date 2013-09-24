@@ -24,7 +24,7 @@ import android.util.Log;
 /**
  * The Class ModuleFieldValidator.
  */
-public class ModuleFieldValidator {
+public final class ModuleFieldValidator {
 
     /**
      * Instantiates a new module field validator.

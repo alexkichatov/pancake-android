@@ -70,10 +70,7 @@ import com.imaginea.android.sugarcrm.util.Util;
 /**
  * The Class SugarSyncManager.
  */
-public class SugarSyncManager {
-
-    /** The m total records. */
-    public static int mTotalRecords;
+public final class SugarSyncManager {
 
     /** The m database helper. */
     private static DatabaseHelper mDatabaseHelper;

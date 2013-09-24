@@ -40,13 +40,13 @@ public class ModulesActivity extends BaseActivity implements
         OnItemSelectedListener {
 
     /** The menu layout. */
-    LinearLayout menuLayout;
+    private LinearLayout menuLayout;
 
     /** The module list fragment. */
-    ListFragment moduleListFragment;
+    private ListFragment moduleListFragment;
 
     /** The m fragment. */
-    Fragment mFragment;
+    private Fragment mFragment;
 
     /** The m module name. */
     private String mModuleName;

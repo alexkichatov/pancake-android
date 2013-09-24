@@ -356,12 +356,15 @@ public class WizardAuthActivity extends AccountAuthenticatorActivity {
             // the same variables
             mUsername = usr;
             mPassword = args[1].toString();
-
-            String restUrl = SugarCrmSettings
-                    .getSugarRestUrl(WizardAuthActivity.this);
+            String restUrl = null;
             // first time Url should read from mUrlEditText
-            if (restUrl == null) {
+            if (mUrlEditText != null) {
                 restUrl = mUrlEditText.getText().toString();
+            }
+            if (restUrl == null || !(URLUtil.isValidUrl(restUrl))) {
+                restUrl = SugarCrmSettings
+                        .getSugarRestUrl(WizardAuthActivity.this);
+
             }
 
             String sessionId = null;

@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.imaginea.android.sugarcrm.EditModuleDetailActivity;
 import com.imaginea.android.sugarcrm.EditModuleDetailFragment;
-import com.imaginea.android.sugarcrm.ModuleCalendarFragment;
 import com.imaginea.android.sugarcrm.ModuleDetailActivity;
 import com.imaginea.android.sugarcrm.ModuleDetailFragment;
 import com.imaginea.android.sugarcrm.ModuleImageListFragment.OnItemSelectedListener;
@@ -58,8 +57,6 @@ public class RecentModuleMultiPaneActivity extends BaseMultiPaneActivity
 
         ModuleDetailFragment moduleDetailFragment = (ModuleDetailFragment) getSupportFragmentManager()
                 .findFragmentByTag(MODULE_DETAILS);
-        moduleListFragment = (RecentModuleListFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.list_frag);
         /* The m menu Drop Down Layout */
         final LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.settings_menu);
         final TextView settingsView = (TextView) findViewById(R.id.settingsTv);

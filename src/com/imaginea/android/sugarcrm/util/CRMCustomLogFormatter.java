@@ -27,7 +27,7 @@ import java.util.logging.LogRecord;
 public class CRMCustomLogFormatter extends Formatter {
 
     /** The m date format. */
-    DateFormat mDateFormat;
+    private final DateFormat mDateFormat;
 
     /**
      * Instantiates a new cRM custom log formatter.

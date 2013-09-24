@@ -23,7 +23,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMContent.ContactsColumns;
 /**
  * The Class ImportContactsUtility.
  */
-public class ImportContactsUtility {
+public final class ImportContactsUtility {
 
     /**
      * Instantiates a new import contacts utility.
