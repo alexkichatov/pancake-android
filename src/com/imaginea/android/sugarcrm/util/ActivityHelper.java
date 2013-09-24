@@ -33,7 +33,7 @@ import com.imaginea.android.sugarcrm.R;
 public class ActivityHelper {
 
     /** The m activity. */
-    protected Activity mActivity;
+    private final Activity mActivity;
 
     /**
      * Factory method for creating {@link ActivityHelper} objects for a given

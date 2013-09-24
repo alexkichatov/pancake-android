@@ -588,7 +588,7 @@ public class ModuleDetailFragment extends Fragment {
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
         /** The m context. */
-        Context mContext;
+        private final Context mContext;
 
         /** The m billing address group. */
         private final List<String> mBillingAddressGroup = new ArrayList<String>();
@@ -967,7 +967,7 @@ public class ModuleDetailFragment extends Fragment {
     static class InternalURLSpan extends ClickableSpan {
 
         /** The m listener. */
-        OnClickListener mListener;
+        private final OnClickListener mListener;
 
         /**
          * Instantiates a new internal url span.
@@ -1160,15 +1160,15 @@ public class ModuleDetailFragment extends Fragment {
         private final LinkedHashMap<String, DetailsItem> mData;
 
         /** The inflater. */
-        final LayoutInflater inflater = (LayoutInflater) getActivity()
+        private final LayoutInflater inflater = (LayoutInflater) getActivity()
                 .getBaseContext().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
 
         /** The headerview1. */
-        public TextView headerview1;
+        private TextView headerview1;
 
         /** The headerview2. */
-        public TextView headerview2;
+        private TextView headerview2;
 
         /** The assigned icon view. */
         private ImageView assignedIconView;

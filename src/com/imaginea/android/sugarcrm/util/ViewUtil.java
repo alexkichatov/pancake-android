@@ -25,7 +25,7 @@ import android.widget.Toast;
 /**
  * The Class ViewUtil.
  */
-public class ViewUtil {
+public final class ViewUtil {
 
     private ViewUtil() {
 

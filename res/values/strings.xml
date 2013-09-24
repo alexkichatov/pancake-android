@@ -32,7 +32,7 @@
 
     <!-- default values for settings -->
 
-    <string name="defaultUrl">http://50.16.5.141/html/sugarcrm/service/v2/rest.php</string>
+    <string name="defaultUrl">http://50.16.40.64/html/sugarcrm/service/v2/rest.php</string>
     <string name="defaultUser">will</string>
     <string name="defaultPwd">will</string>
 

@@ -62,7 +62,7 @@
         android:layout_below="@+id/loginPassword"
         android:hint="@string/sugarCrmUrlHeader"
         android:inputType="textUri"
-        android:minWidth="240dip"
+        android:minWidth="244dip"
         android:singleLine="true"
         android:text="@string/defaultUrl"
         android:textColor="@android:color/white"

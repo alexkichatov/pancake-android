@@ -35,7 +35,7 @@
             android:layout_alignBaseline="@id/list_assigned_icon"
             android:layout_gravity="center"
             android:layout_toRightOf="@id/list_assigned_icon"
-            android:autoLink="web|email|map" />
+            android:autoLink="web|email|map|phone" />
     </RelativeLayout>
 
 </LinearLayout>

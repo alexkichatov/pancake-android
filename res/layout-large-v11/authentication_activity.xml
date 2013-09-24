@@ -62,15 +62,16 @@
 
     <EditText
         android:id="@+id/wizardUrl"
-        android:layout_width="wrap_content"
+        android:layout_width="470dp"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/editUserPass"
         android:layout_below="@+id/editUserPass"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:hint="@string/sugarCrmUrlHeader"
         android:inputType="textUri"
-        android:minWidth="230dp"
+        android:minWidth="470dp"
         android:paddingTop="20dp"
         android:scrollHorizontally="true"
         android:singleLine="true"
@@ -83,12 +84,13 @@
         style="@style/signin_button_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/editUserPass"
         android:layout_below="@+id/wizardUrl"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:minWidth="460dip"
+        android:minWidth="470dip"
         android:text="@string/signIn" />
 
 </RelativeLayout> <!-- </LinearLayout> -->

@@ -51,13 +51,13 @@ public class ModuleImageListFragment extends Fragment {
     private View mRoot;
 
     /** The m adapter. */
-    ImageListAdapter mAdapter;
+    private ImageListAdapter mAdapter;
 
     /** The m storedpos. */
     private static int mStoredpos = 0;
 
     /** The b open from image fragment. */
-    public static boolean bOpenFromImageFragment;
+    private static boolean bOpenFromImageFragment;
 
     private static int mInitialPosition = -2;
 

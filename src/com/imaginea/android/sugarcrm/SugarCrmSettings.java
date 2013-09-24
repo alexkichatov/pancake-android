@@ -143,8 +143,9 @@ public class SugarCrmSettings extends Activity {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         finish();
                         mDialog.dismiss();
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
 

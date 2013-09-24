@@ -128,7 +128,7 @@ public class EditModuleDetailFragment extends Fragment {
     private Uri mIntentUri;
 
     /** The m db helper. */
-    private DatabaseHelper mDbHelper;
+    private static DatabaseHelper mDbHelper;
 
     /** The m task. */
     private LoadContentTask mTask;
@@ -382,10 +382,10 @@ public class EditModuleDetailFragment extends Fragment {
     class LoadContentTask extends AsyncTask<Object, Object, Object> {
 
         /** The static rows count. */
-        int staticRowsCount;
+        private final int staticRowsCount;
 
         /** The m context. */
-        Context mContext;
+        private final Context mContext;
 
         /** The Constant STATIC_ROW. */
         static final int STATIC_ROW = 1;
@@ -1548,9 +1548,6 @@ public class EditModuleDetailFragment extends Fragment {
 
         /** The m content. */
         protected ContentResolver mContent;
-
-        /** The m db helper. */
-        protected DatabaseHelper mDbHelper;
 
         /**
          * Instantiates a new auto suggest adapter.

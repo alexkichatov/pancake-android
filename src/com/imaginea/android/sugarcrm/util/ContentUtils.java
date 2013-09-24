@@ -50,7 +50,7 @@ import com.imaginea.android.sugarcrm.provider.SugarCRMProvider;
 /**
  * The Class ContentUtils.
  */
-public class ContentUtils {
+public final class ContentUtils {
     /** The default supported modules. */
     private static String[] defaultSupportedModules = { Util.CALLS,
             Util.MEETINGS, Util.CAMPAIGNS, Util.OPPORTUNITIES, Util.LEADS,

@@ -95,7 +95,7 @@ public class ModuleListFragment extends ListFragment implements
     private Uri mModuleUri;
 
     /** The m Search filter. */
-    String mCurFilter;
+    private String mCurFilter;
 
     /** The m intent uri. */
     private Uri mIntentUri;
@@ -113,7 +113,7 @@ public class ModuleListFragment extends ListFragment implements
     private String[] mModuleFields;
 
     /** The Searchrow id. */
-    public static String mSearchrowId;
+    private static String mSearchrowId;
 
     private int mlistPosition = -1;
 
@@ -1320,6 +1320,17 @@ public class ModuleListFragment extends ListFragment implements
                                                     .beginTransaction()
                                                     .remove(fragment).commit();
                                             final ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+
+                                            final Bundle args = new Bundle();
+                                            args.putString(
+                                                    RestConstants.MODULE_NAME,
+                                                    mModuleName);
+
+                                            args.putString(
+                                                    Util.ROW_ID,
+                                                    Integer.toString(mCurrentSelection - 1));
+                                            moduleDetailFragment
+                                                    .setArguments(args);
                                             getActivity()
                                                     .getSupportFragmentManager()
                                                     .beginTransaction()
